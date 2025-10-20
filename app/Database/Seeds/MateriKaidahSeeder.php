@@ -1,0 +1,71 @@
+<?php
+
+namespace App\Database\Seeds;
+
+use CodeIgniter\Database\Seeder;
+
+class MateriKaidahSeeder extends Seeder
+{
+    public function run()
+    {
+        $data = [
+            [
+                'judul_kaidah'      => 'إِسْمٌ الْمُفْرَدُ وَالْجَمْعُ (Isim Mufrad dan Jamak)',
+                'deskripsi'        => 'Pengenalan isim mufrad (tunggal) dan jamak dalam bahasa Arab',
+                'penjelasan'       => 'Isim mufrad adalah kata benda tunggal yang menunjukkan satu orang, benda, atau konsep. Isim jamak adalah bentuk jamak dari kata benda yang menunjukkan lebih dari satu.',
+                'contoh'           => 'مُعَلِّمٌ (muallimun) = guru، مُعَلِّمُونَ (muallimuna) = guru-guru',
+                'tingkat_kesulitan'=> 'mudah',
+                'urutan'           => 1,
+                'dibuat_oleh'      => 2, // guru1
+                'waktu_dibuat'     => date('Y-m-d H:i:s'),
+                'waktu_diubah'     => date('Y-m-d H:i:s'),
+            ],
+            [
+                'judul_kaidah'      => 'إِسْمُ الْمُذَكَّرِ وَالْمُؤَنَّثُ (Isim Mudzakkar dan Muannats)',
+                'deskripsi'        => 'Pengenalan isim maskulin (laki-laki) dan feminin (perempuan) dalam bahasa Arab',
+                'penjelasan'       => 'Isim mudzakkar adalah kata benda yang menunjukkan jenis kelamin laki-laki, sedangkan isim muannats menunjukkan jenis kelamin perempuan.',
+                'contoh'           => 'وَلَدٌ (waladun) = anak laki-laki، بِنْتٌ (bintun) = anak perempuan',
+                'tingkat_kesulitan'=> 'mudah',
+                'urutan'           => 2,
+                'dibuat_oleh'      => 2, // guru1
+                'waktu_dibuat'     => date('Y-m-d H:i:s'),
+                'waktu_diubah'     => date('Y-m-d H:i:s'),
+            ],
+            [
+                'judul_kaidah'      => 'رَفْعٌ وَنَصْبٌ وَخَفْضٌ (Rafa\', Nashab, dan Khafdh)',
+                'deskripsi'        => 'Pengenalan tiga kasus nahwu dalam bahasa Arab',
+                'penjelasan'       => 'Rafa\' adalah keadaan isim/fiil yang mendapat dhommah, Nashab mendapat fathah, dan Khafdh mendapatkan kasrah.',
+                'contoh'           => 'الْوَلَدُُ (al-waladu) = si anak (rafa\')، رَأَيْتُ الْوَلَدَ (ra\'aitul walada) = aku melihat si anak (nashab)',
+                'tingkat_kesulitan'=> 'sedang',
+                'urutan'           => 3,
+                'dibuat_oleh'      => 3, // guru2
+                'waktu_dibuat'     => date('Y-m-d H:i:s'),
+                'waktu_diubah'     => date('Y-m-d H:i:s'),
+            ],
+            [
+                'judul_kaidah'      => 'الْمَرْفُوعَاتُ (Kata-kata yang di-Rafa\')',
+                'deskripsi'        => 'Kata-kata yang selalu berada dalam keadaan rafa\'',
+                'penjelasan'       => 'Terdapat beberapa jenis kata yang selalu rafa\' yaitu: fa\'il mubtada\', khabar, dan lain-lain.',
+                'contoh'           => 'مُحَمَّدٌ مُجْتَهِدٌ (Muhammadun mujtahidun) = Muhammad rajin',
+                'tingkat_kesulitan'=> 'sedang',
+                'urutan'           => 4,
+                'dibuat_oleh'      => 3, // guru2
+                'waktu_dibuat'     => date('Y-m-d H:i:s'),
+                'waktu_diubah'     => date('Y-m-d H:i:s'),
+            ],
+            [
+                'judul_kaidah'      => 'الْمَنْصُوبَاتُ (Kata-kata yang di-Nashab)',
+                'deskripsi'        => 'Kata-kata yang selalu berada dalam keadaan nashab',
+                'penjelasan'       => 'Terdapat beberapa jenis kata yang selalu nashab yaitu: maf\'ul bihi, masdar, dan lain-lain.',
+                'contoh'           => 'قَرَأْتُ الْكِتَابَ (qara\'tul kitaba) = aku membaca buku',
+                'tingkat_kesulitan'=> 'sedang',
+                'urutan'           => 5,
+                'dibuat_oleh'      => 2, // guru1
+                'waktu_dibuat'     => date('Y-m-d H:i:s'),
+                'waktu_diubah'     => date('Y-m-d H:i:s'),
+            ],
+        ];
+
+        $this->db->table('materi_kaidah')->insertBatch($data);
+    }
+}
