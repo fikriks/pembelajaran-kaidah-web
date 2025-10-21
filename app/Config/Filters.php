@@ -34,6 +34,8 @@ class Filters extends BaseFilters
         'forcehttps'    => ForceHTTPS::class,
         'pagecache'     => PageCache::class,
         'performance'   => PerformanceMetrics::class,
+        'api-auth'      => \App\Filters\ApiAuthFilter::class,
+        'auth'          => \App\Filters\AuthFilter::class,
     ];
 
     /**
@@ -106,5 +108,25 @@ class Filters extends BaseFilters
      *
      * @var array<string, array<string, list<string>>>
      */
-    public array $filters = [];
+    public array $filters = [
+        'api-auth' => [
+            'before' => [
+                'api/kaidah*',
+                'api/sesi*',
+                'api/progress*',
+                'api/auth/profile',
+                'api/auth/logout'
+            ]
+        ],
+        'auth' => [
+            'before' => [
+                'dashboard*',
+                'users*',
+                'kaidah*',
+                'soal*',
+                'reports*',
+                'settings*'
+            ]
+        ]
+    ];
 }
