@@ -71,6 +71,34 @@
         text-align: center;
     }
 
+    .statistics-info .fs-1 {
+        font-size: 3.5rem !important;
+        margin-bottom: 1.5rem;
+        display: inline-block;
+        width: 80px;
+        height: 80px;
+        line-height: 80px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .statistics-info .text-primary .fs-1 {
+        background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1));
+        box-shadow: 0 8px 32px rgba(76, 175, 80, 0.15);
+    }
+
+    .statistics-info .text-success .fs-1 {
+        background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1));
+        box-shadow: 0 8px 32px rgba(76, 175, 80, 0.15);
+    }
+
+    .statistics-info .text-info .fs-1 {
+        background: linear-gradient(135deg, rgba(33, 150, 243, 0.2), rgba(33, 150, 243, 0.1));
+        box-shadow: 0 8px 32px rgba(33, 150, 243, 0.15);
+    }
+
     .btn-back {
         background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
         border: none;
@@ -233,11 +261,11 @@
     </div>
 
     <!-- Statistics Info -->
-    <div class="row mt-4">
+    <div class="row mt-4 statistics-info">
         <div class="col-md-4">
             <div class="card text-center border-0 shadow-sm">
                 <div class="card-body">
-                    <i class="ti ti-list-numbers text-primary fs-2 mb-3"></i>
+                    <i class="ti ti-list-numbers text-primary fs-1 mb-3"></i>
                     <h5 class="card-title">Total Pilihan</h5>
                     <h2 class="text-primary"><?= count($soal['pilihan_jawaban']) ?></h2>
                     <p class="text-muted mb-0">Opsi jawaban</p>
@@ -247,7 +275,7 @@
         <div class="col-md-4">
             <div class="card text-center border-0 shadow-sm">
                 <div class="card-body">
-                    <i class="ti ti-circle-check text-success fs-2 mb-3"></i>
+                    <i class="ti ti-circle-check text-success fs-1 mb-3"></i>
                     <h5 class="card-title">Jawaban Benar</h5>
                     <h2 class="text-success">
                         <?php
@@ -265,7 +293,7 @@
         <div class="col-md-4">
             <div class="card text-center border-0 shadow-sm">
                 <div class="card-body">
-                    <i class="ti ti-calendar-event text-info fs-2 mb-3"></i>
+                    <i class="ti ti-calendar-event text-info fs-1 mb-3"></i>
                     <h5 class="card-title">Dibuat</h5>
                     <h2 class="text-info"><?= date('d', strtotime($soal['waktu_dibuat'])) ?></h2>
                     <p class="text-muted mb-0"><?= date('M Y', strtotime($soal['waktu_dibuat'])) ?></p>
@@ -274,55 +302,9 @@
         </div>
     </div>
 
-    <!-- Action Buttons -->
-    <div class="d-flex gap-3 mt-4">
-        <a href="<?= site_url('soal/edit/' . $soal['id_soal']) ?>" class="btn btn-warning">
-            <i class="ti ti-edit me-2"></i>
-            Edit Soal
-        </a>
-        <button type="button" class="btn btn-danger" onclick="confirmDelete(<?= $soal['id_soal'] ?>)">
-            <i class="ti ti-trash me-2"></i>
-            Hapus Soal
-        </button>
-        <button type="button" class="btn btn-info" onclick="window.print()">
-            <i class="ti ti-printer me-2"></i>
-            Cetak
-        </button>
-    </div>
-</div>
+  </div>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
-<script>
-function confirmDelete(id) {
-    if (confirm('Apakah Anda yakin ingin menghapus soal ini? Tindakan ini tidak dapat dibatalkan.')) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = `<?= site_url('soal/delete/') ?>${id}`;
-
-        const csrfToken = document.querySelector('meta[name="csrf-token"]');
-        if (csrfToken) {
-            const csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = '<?= csrf_token() ?>';
-            csrfInput.value = '<?= csrf_hash() ?>';
-            form.appendChild(csrfInput);
-        }
-
-        document.body.appendChild(form);
-        form.submit();
-    }
-}
-
-// Print functionality - hide action buttons when printing
-window.addEventListener('beforeprint', function() {
-    document.querySelector('.btn-back').style.display = 'none';
-    document.querySelector('.d-flex.gap-3').style.display = 'none';
-});
-
-window.addEventListener('afterprint', function() {
-    document.querySelector('.btn-back').style.display = 'inline-flex';
-    document.querySelector('.d-flex.gap-3').style.display = 'flex';
-});
-</script>
+<!-- No additional scripts needed for read-only view -->
 <?= $this->endSection() ?>
