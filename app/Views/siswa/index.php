@@ -27,9 +27,9 @@
                         <i class="ti ti-users text-white"></i>
                     </div>
                     <div class="ms-3">
-                        <h6 class="mb-0 opacity-75">Total Siswa</h6>
+                        <h6 class="mb-0">Total Siswa</h6>
                         <h2 class="mb-0 fw-bold"><?= $stats['total'] ?? 0 ?></h2>
-                        <small class="opacity-50">Terdaftar</small>
+                        <small>Terdaftar</small>
                     </div>
                 </div>
             </div>
@@ -43,9 +43,9 @@
                         <i class="ti ti-circle-check text-white"></i>
                     </div>
                     <div class="ms-3">
-                        <h6 class="mb-0 opacity-75">Aktif</h6>
+                        <h6 class="mb-0">Aktif</h6>
                         <h2 class="mb-0 fw-bold"><?= $stats['aktif'] ?? 0 ?></h2>
-                        <small class="opacity-50">Siswa</small>
+                        <small>Siswa</small>
                     </div>
                 </div>
             </div>
@@ -59,9 +59,9 @@
                         <i class="ti ti-circle-x text-white"></i>
                     </div>
                     <div class="ms-3">
-                        <h6 class="mb-0 opacity-75">Nonaktif</h6>
+                        <h6 class="mb-0">Nonaktif</h6>
                         <h2 class="mb-0 fw-bold"><?= $stats['nonaktif'] ?? 0 ?></h2>
-                        <small class="opacity-50">Siswa</small>
+                        <small>Siswa</small>
                     </div>
                 </div>
             </div>
@@ -75,9 +75,9 @@
                         <i class="ti ti-building text-white"></i>
                     </div>
                     <div class="ms-3">
-                        <h6 class="mb-0 opacity-75">Total Kelas</h6>
+                        <h6 class="mb-0">Total Kelas</h6>
                         <h2 class="mb-0 fw-bold"><?= count($kelasOptions) ?></h2>
-                        <small class="opacity-50">Kelas</small>
+                        <small>Kelas</small>
                     </div>
                 </div>
             </div>
