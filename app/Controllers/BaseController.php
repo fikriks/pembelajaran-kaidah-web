@@ -123,22 +123,44 @@ abstract class BaseController extends Controller
         ];
 
         // User Management (Admin only)
-        if ($role === 'admin') {
+        if ($role === 'ADMIN') {
             $menuItems[] = [
                 'title' => 'Manajemen Pengguna',
                 'icon'  => 'fas fa-users',
-                'url'   => site_url('users'),
-                'active' => strpos(uri_string(), 'users') === 0,
+                'url'   => site_url('pengguna'),
+                'active' => strpos(uri_string(), 'pengguna') === 0,
                 'submenu' => [
                     [
                         'title' => 'Daftar Pengguna',
-                        'url'   => site_url('users'),
-                        'active' => uri_string() === 'users'
+                        'url'   => site_url('pengguna'),
+                        'active' => uri_string() === 'pengguna'
                     ],
                     [
                         'title' => 'Tambah Pengguna',
-                        'url'   => site_url('users/create'),
-                        'active' => uri_string() === 'users/create'
+                        'url'   => site_url('pengguna/create'),
+                        'active' => uri_string() === 'pengguna/create'
+                    ]
+                ]
+            ];
+        }
+
+        // Siswa Management (Admin only)
+        if ($role === 'ADMIN') {
+            $menuItems[] = [
+                'title' => 'Manajemen Siswa',
+                'icon'  => 'fas fa-user-graduate',
+                'url'   => site_url('siswa'),
+                'active' => strpos(uri_string(), 'siswa') === 0,
+                'submenu' => [
+                    [
+                        'title' => 'Daftar Siswa',
+                        'url'   => site_url('siswa'),
+                        'active' => uri_string() === 'siswa'
+                    ],
+                    [
+                        'title' => 'Tambah Siswa',
+                        'url'   => site_url('siswa/create'),
+                        'active' => uri_string() === 'siswa/create'
                     ]
                 ]
             ];

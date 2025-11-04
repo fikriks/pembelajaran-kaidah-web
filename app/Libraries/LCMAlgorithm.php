@@ -5,334 +5,319 @@ namespace App\Libraries;
 /**
  * Linear Congruent Method (LCM) Algorithm Library
  *
- * Implementasi algoritma LCM untuk pengacakan soal-soal pembelajaran
- * Sesuai dengan parameter penelitian:
- * - a (pengali) = 10
- * - c (penambah) = 23
+ * Library ini mengimplementasikan algoritma Linear Congruent Method (LCM)
+ * untuk menghasilkan bilangan acak pseudo-random dengan parameter yang telah ditentukan.
+ * Algoritma ini digunakan untuk mengacak soal dan jawaban dalam sistem pembelajaran
+ * kaidah bahasa Arab.
+ *
+ * Parameter LCM (hardcoded sesuai penelitian skripsi):
+ * - a (multiplier) = 10
+ * - c (increment) = 23
  * - m (modulus) = 29
+ * - X0 (seed) = dinamis berdasarkan timestamp + user_id
+ *
+ * Formula: Xn+1 = (a × Xn + c) mod m
+ *
+ * @author Khozinnatul Ulum (20210810076)
+ * @version 1.0.0
+ * @since 2025-11-04
  */
 class LCMAlgorithm
 {
-    // Parameter LCM berdasarkan penelitian
-    private const A = 10;  // Multiplier (pengali)
-    private const C = 23;  // Increment (penambah)
-    private const M = 29;  // Modulus
+    /**
+     * Parameter LCM yang hardcoded sesuai penelitian skripsi
+     *
+     * @var int
+     */
+    private const MULTIPLIER = 10;      // a
+    private const INCREMENT = 23;       // c
+    private const MODULUS = 29;         // m
 
     /**
-     * Generate sequence of random numbers using LCM
+     * Seed yang digunakan untuk generate sequence
      *
-     * @param int $seed Nilai awal (X0)
-     * @param int $count Jumlah angka yang akan di-generate
-     * @return array Array of random numbers
+     * @var int
      */
-    public function generate(int $seed, int $count): array
-    {
-        $result = [];
-        $x = $seed;
+    private $seed;
 
-        for ($i = 0; $i < $count; $i++) {
-            $x = ($this::A * $x + $this::C) % $this::M;
-            $result[] = $x;
+    /**
+     * Konstruktor class
+     *
+     * @param int|null $seed Seed awal untuk LCM. Jika null, akan digenerate dari timestamp
+     */
+    public function __construct(?int $seed = null)
+    {
+        $this->seed = $seed ?? $this->generateSeed();
+    }
+
+    /**
+     * Generate seed dari timestamp dan user_id
+     *
+     * @param int|null $userId ID user untuk membuat seed unik per user
+     * @return int Seed yang digenerate
+     */
+    public function generateSeed(?int $userId = null): int
+    {
+        $timestamp = time();
+        $microtime = (int)(microtime(true) * 1000);
+
+        if ($userId) {
+            // Kombinasi timestamp + user_id untuk seed unik
+            return $timestamp + $userId + $microtime;
         }
 
-        return $result;
+        return $timestamp + $microtime;
+    }
+
+    /**
+     * Generate satu bilangan acak berikutnya menggunakan LCM
+     *
+     * @return int Bilangan acak yang dihasilkan (0 - m-1)
+     */
+    public function next(): int
+    {
+        $this->seed = (self::MULTIPLIER * $this->seed + self::INCREMENT) % self::MODULUS;
+        return $this->seed;
+    }
+
+    /**
+     * Generate sequence bilangan acak sebanyak n
+     *
+     * @param int $count Jumlah bilangan yang ingin di-generate
+     * @return array Array of random numbers
+     */
+    public function generateSequence(int $count): array
+    {
+        $sequence = [];
+
+        for ($i = 0; $i < $count; $i++) {
+            $sequence[] = $this->next();
+        }
+
+        return $sequence;
+    }
+
+    /**
+     * Generate bilangan acak dalam range tertentu
+     *
+     * @param int $min Nilai minimum
+     * @param int $max Nilai maksimum
+     * @return int Bilangan acak dalam range [min, max]
+     */
+    public function generateInRange(int $min, int $max): int
+    {
+        $randomValue = $this->next();
+        $range = $max - $min + 1;
+
+        return $min + ($randomValue % $range);
     }
 
     /**
      * Shuffle array menggunakan LCM
      *
-     * @param array $array Array yang akan diacak
-     * @param int $seed Seed untuk reproducible results
-     * @return array Array yang sudah diacak
+     * @param array $array Array yang akan di-shuffle
+     * @param bool $preserveKeys Apakah keys array dipertahankan
+     * @return array Array yang sudah di-shuffle
      */
-    public function shuffleArray(array $array, int $seed): array
+    public function shuffleArray(array $array, bool $preserveKeys = false): array
     {
-        if (empty($array)) {
-            return $array;
-        }
+        $shuffled = [];
+        $indices = array_keys($array);
 
-        $count = count($array);
-        if ($count <= 1) {
-            return $array;
-        }
+        // Acak indeks menggunakan LCM
+        $shuffledIndices = $this->shuffleIndices($indices);
 
-        // Generate random indices using LCM
-        $indices = $this->generate($seed, $count * 2); // Generate lebih untuk memastikan覆盖
-
-        // Shuffle array using Fisher-Yates dengan LCM indices
-        $shuffled = $array;
-        for ($i = $count - 1; $i > 0; $i--) {
-            $randomIndex = $indices[$count - 1 - $i] % ($i + 1);
-
-            // Swap elements
-            $temp = $shuffled[$i];
-            $shuffled[$i] = $shuffled[$randomIndex];
-            $shuffled[$randomIndex] = $temp;
+        // Bangun array baru dengan indeks yang sudah diacak
+        foreach ($shuffledIndices as $index) {
+            if ($preserveKeys) {
+                $shuffled[$index] = $array[$index];
+            } else {
+                $shuffled[] = $array[$index];
+            }
         }
 
         return $shuffled;
     }
 
     /**
-     * Shuffle list of questions dengan LCM
+     * Shuffle indeks array
      *
-     * @param array $questions Array soal
-     * @param int $seed Seed LCM
-     * @return array Array soal yang sudah diacak
+     * @param array $indices Array indeks yang akan di-shuffle
+     * @return array Indeks yang sudah di-shuffle
      */
-    public function shuffleQuestions(array $questions, int $seed): array
+    private function shuffleIndices(array $indices): array
     {
-        return $this->shuffleArray($questions, $seed);
+        $shuffled = $indices;
+        $n = count($shuffled);
+
+        // Fisher-Yates shuffle dengan LCM
+        for ($i = $n - 1; $i > 0; $i--) {
+            $j = $this->generateInRange(0, $i);
+            // Swap
+            $temp = $shuffled[$i];
+            $shuffled[$i] = $shuffled[$j];
+            $shuffled[$j] = $temp;
+        }
+
+        return $shuffled;
     }
 
     /**
-     * Shuffle jawaban untuk setiap soal
+     * Generate indeks soal untuk quiz
      *
-     * @param array $questions Array soal dengan jawaban
-     * @param int $baseSeed Seed dasar
-     * @return array Array soal dengan jawaban yang diacak
+     * @param int $totalSoal Jumlah total soal yang tersedia
+     * @param int $jumlahYangDiambil Jumlah soal yang akan diambil
+     * @return array Array indeks soal yang sudah diacak
      */
-    public function shuffleAnswers(array $questions, int $baseSeed): array
+    public function generateQuestionIndices(int $totalSoal, int $jumlahYangDiambil): array
     {
-        foreach ($questions as $index => &$question) {
-            if (isset($question['jawaban']) && is_array($question['jawaban'])) {
-                // Gunakan seed yang berbeda untuk setiap soal
-                $seed = $baseSeed + $index;
-                $question['jawaban'] = $this->shuffleArray($question['jawaban'], $seed);
-
-                // Update urutan jawaban
-                foreach ($question['jawaban'] as $answerIndex => &$answer) {
-                    $answer['urutan_acak'] = $answerIndex + 1;
-                }
-            }
+        if ($totalSoal <= $jumlahYangDiambil) {
+            // Jika total soal <= yang diambil, ambil semua dengan acak
+            $indices = range(0, $totalSoal - 1);
+            return $this->shuffleArray($indices);
         }
 
-        return $questions;
+        $indices = range(0, $totalSoal - 1);
+        $selectedIndices = [];
+
+        // Pilih indeks secara acak tanpa duplikasi
+        for ($i = 0; $i < $jumlahYangDiambil; $i++) {
+            $randomIndex = $this->generateInRange(0, count($indices) - 1);
+            $selectedIndices[] = $indices[$randomIndex];
+
+            // Hapus indeks yang sudah dipilih
+            array_splice($indices, $randomIndex, 1);
+        }
+
+        return $selectedIndices;
     }
 
     /**
-     * Generate random soal untuk sesi pembelajaran
+     * Generate data quiz lengkap dengan LCM
      *
-     * @param array $allQuestions Semua soal yang tersedia
-     * @param int $jumlahSoal Jumlah soal yang dibutuhkan
-     * @param int $seed Seed LCM
-     * @return array Soal-soal yang sudah diacak
+     * @param array $soalList Array semua soal yang tersedia
+     * @param int $jumlahSoal Jumlah soal yang akan ditampilkan
+     * @param bool $shuffleAnswers Apakah jawaban juga diacak
+     * @return array Data quiz yang sudah disiapkan
      */
-    public function generateRandomQuestions(array $allQuestions, int $jumlahSoal, int $seed): array
+    public function generateQuizData(array $soalList, int $jumlahSoal = 20, bool $shuffleAnswers = true): array
     {
-        if (empty($allQuestions)) {
-            return [];
+        $totalSoal = count($soalList);
+
+        if ($totalSoal === 0) {
+            return [
+                'success' => false,
+                'message' => 'Tidak ada soal tersedia',
+                'data' => []
+            ];
         }
 
-        $totalSoal = count($allQuestions);
+        // Generate indeks soal yang akan digunakan
+        $questionIndices = $this->generateQuestionIndices($totalSoal, $jumlahSoal);
 
-        // Jika jumlah soal yang diminta lebih dari yang tersedia, ambil semua
-        if ($jumlahSoal >= $totalSoal) {
-            $questions = $allQuestions;
-        } else {
-            // Generate random indices untuk memilih soal
-            $randomIndices = $this->generate($seed, $totalSoal);
-            $selectedIndices = array_unique(array_slice($randomIndices, 0, $jumlahSoal));
+        $quizData = [];
+        foreach ($questionIndices as $index) {
+            $soal = $soalList[$index];
 
-            // Ambil soal berdasarkan indices yang dipilih
-            $questions = [];
-            foreach ($selectedIndices as $index) {
-                if ($index < $totalSoal) {
-                    $questions[] = $allQuestions[$index];
-                }
+            // Acak jawaban jika diperlukan
+            if ($shuffleAnswers && isset($soal['pilihan_jawaban']) && is_array($soal['pilihan_jawaban'])) {
+                $shuffledJawaban = $this->shuffleArray($soal['pilihan_jawaban']);
+                $soal['pilihan_jawaban'] = $shuffledJawaban;
             }
 
-            // Jika hasil kurang dari yang diminta, tambahkan dari awal
-            while (count($questions) < $jumlahSoal && count($questions) < $totalSoal) {
-                $remainingIndices = array_diff(range(0, $totalSoal - 1), $selectedIndices);
-                if (empty($remainingIndices)) {
-                    break;
-                }
-                $questions[] = $allQuestions[array_values($remainingIndices)[0]];
-            }
+            $quizData[] = $soal;
         }
-
-        // Acak urutan soal
-        $questions = $this->shuffleQuestions($questions, $seed);
-
-        // Acak jawaban untuk setiap soal
-        $questions = $this->shuffleAnswers($questions, $seed);
-
-        // Update urutan soal
-        foreach ($questions as $index => &$question) {
-            $question['urutan_soal'] = $index + 1;
-        }
-
-        return $questions;
-    }
-
-    /**
-     * Test kualitas random number generation
-     *
-     * @param int $seed Seed untuk testing
-     * @param int $count Jumlah angka untuk testing
-     * @return array Analisis distribusi
-     */
-    public function testRandomQuality(int $seed, int $count = 1000): array
-    {
-        $numbers = $this->generate($seed, $count);
-
-        // Hitung distribusi
-        $distribution = array_fill(0, $this::M, 0);
-        foreach ($numbers as $num) {
-            $distribution[$num]++;
-        }
-
-        // Hitung statistik
-        $mean = array_sum($numbers) / count($numbers);
-        $variance = 0;
-        foreach ($numbers as $num) {
-            $variance += pow($num - $mean, 2);
-        }
-        $variance /= count($numbers);
-        $stdDev = sqrt($variance);
-
-        // Period detection
-        $period = $this->detectPeriod($seed);
 
         return [
-            'seed' => $seed,
-            'count' => $count,
-            'mean' => $mean,
-            'variance' => $variance,
-            'std_deviation' => $stdDev,
-            'period' => $period,
-            'distribution' => $distribution,
-            'uniformity' => $this->calculateUniformity($distribution),
-            'chi_square' => $this->chiSquareTest($distribution)
+            'success' => true,
+            'message' => 'Data quiz berhasil di-generate',
+            'data' => $quizData,
+            'metadata' => [
+                'total_soal_tersedia' => $totalSoal,
+                'jumlah_soal_diambil' => count($quizData),
+                'seed_digunakan' => $this->seed,
+                'lcm_parameters' => [
+                    'a' => self::MULTIPLIER,
+                    'c' => self::INCREMENT,
+                    'm' => self::MODULUS
+                ]
+            ]
         ];
     }
 
     /**
-     * Deteksi periode dari LCM sequence
+     * Uji chi-square untuk validasi distribusi LCM
      *
-     * @param int $seed Seed awal
-     * @return int Periode yang terdeteksi
+     * @param int $sampleSize Jumlah sample untuk pengujian
+     * @return array Hasil uji chi-square
      */
-    private function detectPeriod(int $seed): int
+    public function chiSquareTest(int $sampleSize = 1000): array
     {
-        $maxIterations = 1000;
-        $sequence = [];
-        $x = $seed;
-
-        for ($i = 0; $i < $maxIterations; $i++) {
-            $x = ($this::A * $x + $this::C) % $this::M;
-
-            // Cek apakah angka sudah muncul sebelumnya
-            if (in_array($x, $sequence)) {
-                return $i + 1;
-            }
-
-            $sequence[] = $x;
+        // Generate sample data
+        $samples = [];
+        for ($i = 0; $i < $sampleSize; $i++) {
+            $samples[] = $this->next();
         }
 
-        return $maxIterations; // Default jika tidak menemukan periode
-    }
-
-    /**
-     * Hitung uniformity distribusi
-     *
-     * @param array $distribution Distribusi angka
-     * @return float Skor uniformity (0-1)
-     */
-    private function calculateUniformity(array $distribution): float
-    {
-        $total = array_sum($distribution);
-        $expected = $total / count($distribution);
-
-        $variance = 0;
-        foreach ($distribution as $count) {
-            $variance += pow($count - $expected, 2);
+        // Hitung frekuensi setiap nilai (0 - m-1)
+        $frequencies = array_fill(0, self::MODULUS, 0);
+        foreach ($samples as $sample) {
+            $frequencies[$sample]++;
         }
 
-        $maxVariance = $total * $total / count($distribution);
+        // Expected frequency (uniform distribution)
+        $expectedFrequency = $sampleSize / self::MODULUS;
 
-        return $maxVariance > 0 ? 1 - ($variance / $maxVariance) : 0;
-    }
-
-    /**
-     * Chi-square test untuk uniformity
-     *
-     * @param array $distribution Distribusi observed
-     * @return array Hasil chi-square test
-     */
-    private function chiSquareTest(array $distribution): array
-    {
-        $total = array_sum($distribution);
-        $expected = $total / count($distribution);
-
+        // Hitung chi-square statistic
         $chiSquare = 0;
-        foreach ($distribution as $observed) {
-            if ($expected > 0) {
-                $chiSquare += pow($observed - $expected, 2) / $expected;
-            }
+        foreach ($frequencies as $observed) {
+            $chiSquare += pow($observed - $expectedFrequency, 2) / $expectedFrequency;
         }
 
-        $degreesOfFreedom = count($distribution) - 1;
+        // Degrees of freedom = m - 1
+        $degreesOfFreedom = self::MODULUS - 1;
+
+        // Critical value untuk alpha = 0.05 (dari chi-square table)
+        // Untuk df = 28, critical value ≈ 41.337
+        $criticalValue = 41.337;
+
+        $isUniform = $chiSquare <= $criticalValue;
 
         return [
-            'chi_square' => $chiSquare,
+            'success' => true,
+            'chi_square_statistic' => round($chiSquare, 4),
+            'critical_value' => $criticalValue,
             'degrees_of_freedom' => $degreesOfFreedom,
-            'p_value' => $this->approxPValue($chiSquare, $degreesOfFreedom),
-            'is_uniform' => $chiSquare < $this->getCriticalValue($degreesOfFreedom, 0.05)
+            'alpha' => 0.05,
+            'is_uniform_distribution' => $isUniform,
+            'sample_size' => $sampleSize,
+            'frequencies' => $frequencies,
+            'expected_frequency' => round($expectedFrequency, 2),
+            'conclusion' => $isUniform ?
+                'Distribusi LCM seragam (terbukti valid)' :
+                'Distribusi LCM tidak seragam (perlu evaluasi parameter)'
         ];
     }
 
     /**
-     * Approximate p-value calculation
-     */
-    private function approxPValue(float $chiSquare, int $df): float
-    {
-        // Simplified approximation
-        return exp(-$chiSquare / (2 * $df));
-    }
-
-    /**
-     * Get critical value for chi-square test
-     */
-    private function getCriticalValue(int $df, float $alpha): float
-    {
-        // Simplified critical values for common alpha levels
-        $criticalValues = [
-            1 => [0.05 => 3.841, 0.01 => 6.635],
-            2 => [0.05 => 5.991, 0.01 => 9.210],
-            5 => [0.05 => 11.070, 0.01 => 15.086],
-            10 => [0.05 => 18.307, 0.01 => 23.209],
-            20 => [0.05 => 31.410, 0.01 => 37.566],
-            28 => [0.05 => 41.337, 0.01 => 48.278] // M-1 untuk modulus 29
-        ];
-
-        return $criticalValues[$df][$alpha] ?? 41.337;
-    }
-
-    /**
-     * Generate seed dari kombinasi user_id, timestamp, dan materi_id
+     * Reset seed ke nilai awal
      *
-     * @param int $userId ID user
-     * @param int $timestamp Unix timestamp
-     * @param int $materiId ID materi
-     * @return int Generated seed
+     * @param int|null $newSeed Seed baru, jika null gunakan generateSeed()
+     * @return void
      */
-    public function generateSeed(int $userId, int $timestamp, int $materiId): int
+    public function resetSeed(?int $newSeed = null): void
     {
-        // Kombinasi berbagai faktor untuk seed yang unik
-        return ($userId * 1000) + ($timestamp % 10000) + ($materiId * 100);
+        $this->seed = $newSeed ?? $this->generateSeed();
     }
 
     /**
-     * Validasi seed yang digunakan untuk reproducibility
+     * Get current seed
      *
-     * @param int $seed Seed yang akan divalidasi
-     * @return bool True jika seed valid
+     * @return int Seed saat ini
      */
-    public function validateSeed(int $seed): bool
+    public function getCurrentSeed(): int
     {
-        return $seed >= 0 && $seed < PHP_INT_MAX;
+        return $this->seed;
     }
 
     /**
@@ -343,42 +328,156 @@ class LCMAlgorithm
     public function getParameters(): array
     {
         return [
-            'a' => $this::A,
-            'c' => $this::C,
-            'm' => $this::M,
-            'description' => 'Parameter LCM berdasarkan penelitian skripsi'
+            'multiplier' => self::MULTIPLIER,
+            'increment' => self::INCREMENT,
+            'modulus' => self::MODULUS,
+            'current_seed' => $this->seed
         ];
     }
 
     /**
-     * Simulasi LCM dengan visual output (untuk debugging/educational)
+     * Reproduce sequence dari seed tertentu (untuk debugging/testing)
      *
      * @param int $seed Seed awal
-     * @param int $iterations Jumlah iterasi
-     * @return array Detail simulasi
+     * @param int $count Jumlah bilangan yang ingin di-generate
+     * @return array Sequence yang dihasilkan
      */
-    public function simulate(int $seed, int $iterations = 10): array
+    public function reproduceSequence(int $seed, int $count): array
     {
-        $result = [
-            'parameters' => $this->getParameters(),
-            'seed' => $seed,
-            'iterations' => []
-        ];
+        $originalSeed = $this->seed;
+        $this->seed = $seed;
 
-        $x = $seed;
-        for ($i = 0; $i < $iterations; $i++) {
-            $nextX = ($this::A * $x + $this::C) % $this::M;
+        $sequence = $this->generateSequence($count);
 
-            $result['iterations'][] = [
+        // Restore original seed
+        $this->seed = $originalSeed;
+
+        return $sequence;
+    }
+
+    /**
+     * Generate unique session ID untuk quiz
+     *
+     * @param int $userId ID user
+     * @param int $materiId ID materi
+     * @return string Unique session ID
+     */
+    public function generateSessionId(int $userId, int $materiId): string
+    {
+        $seed = $this->generateSeed($userId + $materiId);
+        $timestamp = time();
+
+        return hash('sha256', $seed . $timestamp . $userId . $materiId);
+    }
+
+    /**
+     * Debug: Print sequence generation info
+     *
+     * @param int $count Jumlah bilangan yang akan di-generate
+     * @return array Debug information
+     */
+    public function debugSequence(int $count = 10): array
+    {
+        $originalSeed = $this->seed;
+        $sequence = [];
+
+        for ($i = 0; $i < $count; $i++) {
+            $step = [
                 'iteration' => $i + 1,
-                'current_x' => $x,
-                'calculation' => "({$this::A} × $x + $this::C) mod $this::M = $nextX",
-                'next_x' => $nextX
+                'seed_before' => $this->seed,
+                'formula' => sprintf("(%d × %d + %d) mod %d", self::MULTIPLIER, $this->seed, self::INCREMENT, self::MODULUS),
+                'result' => $this->next(),
+                'seed_after' => $this->seed
             ];
-
-            $x = $nextX;
+            $sequence[] = $step;
         }
 
-        return $result;
+        // Restore original seed
+        $this->seed = $originalSeed;
+
+        return [
+            'parameters' => $this->getParameters(),
+            'sequence' => $sequence,
+            'total_generated' => count($sequence)
+        ];
+    }
+
+    /**
+     * Shuffle soal untuk sesi pembelajaran (compatibility dengan existing code)
+     *
+     * @param array $questions Array soal
+     * @param int $seed Seed LCM
+     * @return array Array soal yang sudah diacak
+     */
+    public function shuffleQuestions(array $questions, int $seed): array
+    {
+        $originalSeed = $this->seed;
+        $this->seed = $seed;
+
+        $shuffled = $this->shuffleArray($questions);
+
+        // Restore original seed
+        $this->seed = $originalSeed;
+
+        return $shuffled;
+    }
+
+    /**
+     * Shuffle jawaban untuk setiap soal (compatibility dengan existing code)
+     *
+     * @param array $questions Array soal dengan jawaban
+     * @param int $baseSeed Seed dasar
+     * @return array Array soal dengan jawaban yang diacak
+     */
+    public function shuffleAnswers(array $questions, int $baseSeed): array
+    {
+        $originalSeed = $this->seed;
+
+        foreach ($questions as $index => &$question) {
+            if (isset($question['pilihan_jawaban']) && is_array($question['pilihan_jawaban'])) {
+                // Gunakan seed yang berbeda untuk setiap soal
+                $this->seed = $baseSeed + $index;
+                $question['pilihan_jawaban'] = $this->shuffleArray($question['pilihan_jawaban']);
+            }
+        }
+
+        // Restore original seed
+        $this->seed = $originalSeed;
+
+        return $questions;
+    }
+
+    /**
+     * Generate random soal untuk sesi pembelajaran (compatibility dengan existing code)
+     *
+     * @param array $allQuestions Semua soal yang tersedia
+     * @param int $jumlahSoal Jumlah soal yang dibutuhkan
+     * @param int $seed Seed LCM
+     * @return array Soal-soal yang sudah diacak
+     */
+    public function generateRandomQuestions(array $allQuestions, int $jumlahSoal, int $seed): array
+    {
+        $originalSeed = $this->seed;
+        $this->seed = $seed;
+
+        $result = $this->generateQuizData($allQuestions, $jumlahSoal, true);
+
+        // Restore original seed
+        $this->seed = $originalSeed;
+
+        return $result['success'] ? $result['data'] : [];
+    }
+
+    /**
+     * Generate seed dari kombinasi user_id, timestamp, dan materi_id (compatibility)
+     *
+     * @param int $userId ID user
+     * @param int $timestamp Unix timestamp
+     * @param int $materiId ID materi
+     * @return int Generated seed
+     */
+    public function generateSeedLegacy(int $userId, int $timestamp, int $materiId): int
+    {
+        return ($userId * 1000) + ($timestamp % 10000) + ($materiId * 100);
     }
 }

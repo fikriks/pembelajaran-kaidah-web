@@ -3,92 +3,185 @@
 namespace App\Controllers\API;
 
 use App\Controllers\BaseController;
-use App\Libraries\QuizEngine;
-use App\Models\RiwayatBelajarModel;
-use App\Models\SesiLatihanModel;
+use App\Models\KaidahModel;
+use App\Models\SesiModel;
+use App\Models\SiswaModel;
+use CodeIgniter\API\ResponseTrait;
 
 class ProgressController extends BaseController
 {
-    protected $quizEngine;
-    protected $riwayatBelajarModel;
-    protected $sesiLatihanModel;
+    use ResponseTrait;
+
+    protected $kaidahModel;
+    protected $sesiModel;
+    protected $siswaModel;
 
     public function __construct()
     {
-        $this->quizEngine = new QuizEngine();
-        $this->riwayatBelajarModel = new RiwayatBelajarModel();
-        $this->sesiLatihanModel = new SesiLatihanModel();
+        $this->kaidahModel = new KaidahModel();
+        $this->sesiModel = new SesiModel();
+        $this->siswaModel = new SiswaModel();
     }
 
     /**
-     * Get overall progress belajar siswa
+     * Get overall progress for student
      * GET /api/progress
      */
     public function index()
     {
-        $userId = $this->getUserIdFromToken();
-
-        if (!$userId) {
-            return $this->respondWithError('Token tidak valid', 401);
+        $authHeader = $this->request->getHeader('Authorization');
+        if (!$authHeader) {
+            return $this->fail('Token diperlukan', 401);
         }
 
-        $stats = $this->riwayatBelajarModel->getStats($userId);
+        $token = str_replace('Bearer ', '', $authHeader->getValue());
+        $userId = $this->extractUserIdFromToken($token);
 
-        if (!$stats) {
-            $stats = [
-                'total_kaidah' => 0,
-                'kaidah_selesai' => 0,
-                'kaidah_sedang_belajar' => 0,
-                'kaidah_belum_dimulai' => 0,
-                'rata_rata_skor' => 0,
-                'total_sesi_selesai' => 0
+        if (!$userId) {
+            return $this->fail('Token tidak valid', 401);
+        }
+
+        $db = \Config\Database::connect();
+
+        // Get student data
+        $siswa = $this->siswaModel->find($userId);
+        if (!$siswa) {
+            return $this->fail('Siswa tidak ditemukan', 404);
+        }
+
+        // Get all kaidah
+        $allKaidah = $this->kaidahModel->findAll();
+        $totalKaidah = count($allKaidah);
+
+        // Get completed sessions
+        $completedSessions = $db->table('sesi_pembelajaran')
+            ->where('id_siswa', $userId)
+            ->where('status', 'selesai')
+            ->get()
+            ->getResultArray();
+
+        // Calculate statistics
+        $totalSesi = count($completedSessions);
+        $avgScore = $totalSesi > 0 ? array_sum(array_column($completedSessions, 'skor')) / $totalSesi : 0;
+        $totalQuestions = array_sum(array_column($completedSessions, 'total_soal'));
+        $correctAnswers = array_sum(array_column($completedSessions, 'soal_benar'));
+
+        // Get kaidah progress
+        $kaidahProgress = [];
+        foreach ($allKaidah as $kaidah) {
+            $kaidahSessions = array_filter($completedSessions, function($session) use ($kaidah) {
+                return $session['id_materi'] == $kaidah['id_materi'];
+            });
+
+            $bestScore = 0;
+            $totalAttempts = count($kaidahSessions);
+            $status = 'belum_dimulai';
+
+            if (!empty($kaidahSessions)) {
+                $bestScore = max(array_column($kaidahSessions, 'skor'));
+                $avgKaidahScore = array_sum(array_column($kaidahSessions, 'skor')) / $totalAttempts;
+
+                if ($avgKaidahScore >= 80) {
+                    $status = 'selesai';
+                } else {
+                    $status = 'sedang_belajar';
+                }
+            }
+
+            $kaidahProgress[] = [
+                'id_materi' => $kaidah['id_materi'],
+                'judul_kaidah' => $kaidah['judul_kaidah'],
+                'tingkat_kesulitan' => $kaidah['tingkat_kesulitan'],
+                'status' => $status,
+                'total_attempts' => $totalAttempts,
+                'best_score' => round($bestScore, 2),
+                'average_score' => $totalAttempts > 0 ? round(array_sum(array_column($kaidahSessions, 'skor')) / $totalAttempts, 2) : 0,
+                'last_attempt' => !empty($kaidahSessions) ? max(array_column($kaidahSessions, 'waktu_selesai')) : null
             ];
         }
 
-        // Calculate percentage
-        $persentaseKelulusan = $stats['total_kaidah'] > 0
-            ? round(($stats['kaidah_selesai'] / $stats['total_kaidah']) * 100, 2)
-            : 0;
+        // Get weekly activity (last 7 days)
+        $weeklyActivity = $this->getWeeklyActivity($userId);
 
-        $result = [
-            'overview' => [
-                'total_kaidah' => $stats['total_kaidah'],
-                'kaidah_selesai' => $stats['kaidah_selesai'],
-                'kaidah_sedang_belajar' => $stats['kaidah_sedang_belajar'],
-                'kaidah_belum_dimulai' => $stats['kaidah_belum_dimulai'],
-                'persentase_kelulusan' => $persentaseKelulusan,
-                'rata_rata_skor' => floatval($stats['rata_rata_skor'] ?? 0),
-                'total_sesi_selesai' => $stats['total_sesi_selesai']
+        // Get achievements/badges
+        $achievements = $this->calculateAchievements($userId, $totalSesi, $avgScore, count($kaidahProgress));
+
+        $response = [
+            'status' => 'success',
+            'message' => 'Progress berhasil diambil',
+            'data' => [
+                'siswa' => [
+                    'id' => $siswa['id'],
+                    'nama_lengkap' => $siswa['nama_lengkap'],
+                    'kelas' => $siswa['kelas'],
+                    'status' => $siswa['status']
+                ],
+                'overview' => [
+                    'total_kaidah' => $totalKaidah,
+                    'kaidah_selesai' => count(array_filter($kaidahProgress, fn($k) => $k['status'] == 'selesai')),
+                    'kaidah_sedang_belajar' => count(array_filter($kaidahProgress, fn($k) => $k['status'] == 'sedang_belajar')),
+                    'kaidah_belum_dimulai' => count(array_filter($kaidahProgress, fn($k) => $k['status'] == 'belum_dimulai')),
+                    'total_sesi' => $totalSesi,
+                    'rata_rata_skor' => round($avgScore, 2),
+                    'total_soal_dijawab' => $totalQuestions,
+                    'total_jawaban_benar' => $correctAnswers,
+                    'persentase_benar_keseluruhan' => $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100, 1) : 0,
+                    'persentase_kemajuan' => $totalKaidah > 0 ? round((count(array_filter($kaidahProgress, fn($k) => $k['status'] == 'selesai')) / $totalKaidah) * 100, 1) : 0
+                ],
+                'kaidah_progress' => $kaidahProgress,
+                'weekly_activity' => $weeklyActivity,
+                'achievements' => $achievements
             ]
         ];
 
-        // Get recent activity
-        $recentActivity = $this->getRecentActivity($userId);
-        $result['recent_activity'] = $recentActivity;
-
-        // Get learning streak
-        $streak = $this->calculateLearningStreak($userId);
-        $result['learning_streak'] = $streak;
-
-        return $this->respondWithSuccess($result, 'Progress berhasil diambil');
+        return $this->respond($response, 200);
     }
 
     /**
-     * Get detail progress per kaidah
+     * Get detailed progress
      * GET /api/progress/detail
      */
     public function detail()
     {
-        $userId = $this->getUserIdFromToken();
-
-        if (!$userId) {
-            return $this->respondWithError('Token tidak valid', 401);
+        $authHeader = $this->request->getHeader('Authorization');
+        if (!$authHeader) {
+            return $this->fail('Token diperlukan', 401);
         }
 
-        $filters = $this->request->getGet();
-        $progressList = $this->riwayatBelajarModel->getDetailedProgress($userId, $filters);
+        $token = str_replace('Bearer ', '', $authHeader->getValue());
+        $userId = $this->extractUserIdFromToken($token);
 
-        return $this->respondWithSuccess($progressList, 'Detail progress berhasil diambil');
+        if (!$userId) {
+            return $this->fail('Token tidak valid', 401);
+        }
+
+        $filters = [
+            'kaidah_id' => $this->request->getVar('kaidah_id'),
+            'status' => $this->request->getVar('status'),
+            'date_from' => $this->request->getVar('date_from'),
+            'date_to' => $this->request->getVar('date_to'),
+            'limit' => $this->request->getVar('limit') ?? 10,
+            'offset' => $this->request->getVar('offset') ?? 0
+        ];
+
+        $sessions = $this->getDetailedProgress($userId, $filters);
+
+        $response = [
+            'status' => 'success',
+            'message' => 'Detail progress berhasil diambil',
+            'data' => [
+                'filters' => $filters,
+                'sessions' => $sessions['data'],
+                'pagination' => [
+                    'total' => $sessions['total'],
+                    'limit' => $filters['limit'],
+                    'offset' => $filters['offset'],
+                    'has_more' => $sessions['total'] > ($filters['offset'] + $filters['limit'])
+                ]
+            ]
+        ];
+
+        return $this->respond($response, 200);
     }
 
     /**
@@ -97,68 +190,126 @@ class ProgressController extends BaseController
      */
     public function history()
     {
-        $userId = $this->getUserIdFromToken();
-
-        if (!$userId) {
-            return $this->respondWithError('Token tidak valid', 401);
+        $authHeader = $this->request->getHeader('Authorization');
+        if (!$authHeader) {
+            return $this->fail('Token diperlukan', 401);
         }
 
-        $page = $this->request->getGet('page', 1);
-        $limit = $this->request->getGet('limit', 20);
-        $offset = ($page - 1) * $limit;
+        $token = str_replace('Bearer ', '', $authHeader->getValue());
+        $userId = $this->extractUserIdFromToken($token);
 
-        $history = $this->sesiLatihanModel->getLearningHistory($userId, $limit, $offset);
-        $total = $this->sesiLatihanModel->countLearningHistory($userId);
+        if (!$userId) {
+            return $this->fail('Token tidak valid', 401);
+        }
 
-        $result = [
-            'data' => $history,
-            'pagination' => [
-                'current_page' => $page,
-                'per_page' => $limit,
-                'total' => $total,
-                'total_pages' => ceil($total / $limit)
+        $period = $this->request->getVar('period') ?? 'month'; // week, month, year
+        $limit = $this->request->getVar('limit') ?? 30;
+
+        $history = $this->getLearningHistory($userId, $period, $limit);
+
+        $response = [
+            'status' => 'success',
+            'message' => 'Riwayat pembelajaran berhasil diambil',
+            'data' => [
+                'period' => $period,
+                'history' => $history
             ]
         ];
 
-        return $this->respondWithSuccess($result, 'History pembelajaran berhasil diambil');
+        return $this->respond($response, 200);
     }
 
     /**
-     * Get statistik pembelajaran
+     * Get progress statistics
      * GET /api/progress/statistics
      */
     public function statistics()
     {
-        $userId = $this->getUserIdFromToken();
-
-        if (!$userId) {
-            return $this->respondWithError('Token tidak valid', 401);
+        $authHeader = $this->request->getHeader('Authorization');
+        if (!$authHeader) {
+            return $this->fail('Token diperlukan', 401);
         }
 
-        // Get learning statistics
-        $stats = $this->quizEngine->hitungProgress($userId);
+        $token = str_replace('Bearer ', '', $authHeader->getValue());
+        $userId = $this->extractUserIdFromToken($token);
 
-        // Get monthly progress (last 6 months)
-        $monthlyProgress = $this->getMonthlyProgress($userId);
+        if (!$userId) {
+            return $this->fail('Token tidak valid', 401);
+        }
 
-        // Get difficulty distribution
-        $difficultyStats = $this->getDifficultyStats($userId);
+        $db = \Config\Database::connect();
 
-        // Get best performing kaidah
-        $bestKaidah = $this->getBestPerformingKaidah($userId);
+        // Get session statistics
+        $sessionStats = $db->table('sesi_pembelajaran')
+            ->select('
+                COUNT(*) as total_sessions,
+                SUM(CASE WHEN status = "selesai" THEN 1 ELSE 0 END) as completed_sessions,
+                SUM(CASE WHEN status = "dibatalkan" THEN 1 ELSE 0 END) as cancelled_sessions,
+                AVG(CASE WHEN status = "selesai" THEN skor END) as avg_score,
+                MAX(CASE WHEN status = "selesai" THEN skor END) as best_score,
+                MIN(CASE WHEN status = "selesai" THEN skor END) as worst_score,
+                SUM(CASE WHEN status = "selesai" THEN total_soal END) as total_questions,
+                SUM(CASE WHEN status = "selesai" THEN soal_benar END) as total_correct,
+                AVG(CASE WHEN status = "selesai" THEN durasi_detik END) as avg_duration
+            ')
+            ->where('id_siswa', $userId)
+            ->get()
+            ->getRowArray();
 
-        // Get struggling kaidah
-        $strugglingKaidah = $this->getStrugglingKaidah($userId);
+        // Get difficulty breakdown
+        $difficultyStats = $db->table('sesi_pembelajaran sp')
+            ->select('
+                mk.tingkat_kesulitan,
+                COUNT(*) as total_sessions,
+                AVG(sp.skor) as avg_score,
+                MAX(sp.skor) as best_score
+            ')
+            ->join('materi_kaidah mk', 'mk.id_materi = sp.id_materi')
+            ->where('sp.id_siswa', $userId)
+            ->where('sp.status', 'selesai')
+            ->groupBy('mk.tingkat_kesulitan')
+            ->get()
+            ->getResultArray();
 
-        $result = [
-            'overall_stats' => $stats,
-            'monthly_progress' => $monthlyProgress,
-            'difficulty_distribution' => $difficultyStats,
-            'best_performing_kaidah' => $bestKaidah,
-            'struggling_kaidah' => $strugglingKaidah
+        // Get monthly performance (last 6 months)
+        $monthlyPerformance = $this->getMonthlyPerformance($userId);
+
+        // Get learning streak
+        $streak = $this->calculateLearningStreak($userId);
+
+        $response = [
+            'status' => 'success',
+            'message' => 'Statistik progress berhasil diambil',
+            'data' => [
+                'session_statistics' => [
+                    'total_sessions' => (int)$sessionStats['total_sessions'],
+                    'completed_sessions' => (int)$sessionStats['completed_sessions'],
+                    'cancelled_sessions' => (int)$sessionStats['cancelled_sessions'],
+                    'completion_rate' => $sessionStats['total_sessions'] > 0 ?
+                        round(($sessionStats['completed_sessions'] / $sessionStats['total_sessions']) * 100, 1) : 0,
+                    'average_score' => round($sessionStats['avg_score'] ?: 0, 2),
+                    'best_score' => round($sessionStats['best_score'] ?: 0, 2),
+                    'worst_score' => round($sessionStats['worst_score'] ?: 0, 2),
+                    'total_questions_answered' => (int)($sessionStats['total_questions'] ?: 0),
+                    'total_correct_answers' => (int)($sessionStats['total_correct'] ?: 0),
+                    'overall_accuracy' => $sessionStats['total_questions'] > 0 ?
+                        round(($sessionStats['total_correct'] / $sessionStats['total_questions']) * 100, 1) : 0,
+                    'average_duration_minutes' => round($sessionStats['avg_duration'] / 60 ?: 0, 1)
+                ],
+                'difficulty_breakdown' => array_map(function($stat) {
+                    return [
+                        'difficulty' => $stat['tingkat_kesulitan'],
+                        'total_sessions' => (int)$stat['total_sessions'],
+                        'average_score' => round($stat['avg_score'], 2),
+                        'best_score' => round($stat['best_score'], 2)
+                    ];
+                }, $difficultyStats),
+                'monthly_performance' => $monthlyPerformance,
+                'learning_streak' => $streak
+            ]
         ];
 
-        return $this->respondWithSuccess($result, 'Statistik pembelajaran berhasil diambil');
+        return $this->respond($response, 200);
     }
 
     /**
@@ -167,44 +318,289 @@ class ProgressController extends BaseController
      */
     public function chart()
     {
-        $userId = $this->getUserIdFromToken();
+        $authHeader = $this->request->getHeader('Authorization');
+        if (!$authHeader) {
+            return $this->fail('Token diperlukan', 401);
+        }
+
+        $token = str_replace('Bearer ', '', $authHeader->getValue());
+        $userId = $this->extractUserIdFromToken($token);
 
         if (!$userId) {
-            return $this->respondWithError('Token tidak valid', 401);
+            return $this->fail('Token tidak valid', 401);
         }
 
-        $type = $this->request->getGet('type', 'weekly'); // weekly, monthly, yearly
+        $chartType = $this->request->getVar('type') ?? 'line'; // line, bar, radar
+        $period = $this->request->getVar('period') ?? 'month'; // week, month, year
 
-        switch ($type) {
-            case 'weekly':
-                $chartData = $this->getWeeklyChart($userId);
-                break;
-            case 'monthly':
-                $chartData = $this->getMonthlyChart($userId);
-                break;
-            case 'yearly':
-                $chartData = $this->getYearlyChart($userId);
-                break;
-            default:
-                return $this->respondWithError('Tipe chart tidak valid', 400);
-        }
+        $chartData = $this->getChartData($userId, $chartType, $period);
 
-        return $this->respondWithSuccess($chartData, 'Data chart berhasil diambil');
+        $response = [
+            'status' => 'success',
+            'message' => 'Data chart progress berhasil diambil',
+            'data' => [
+                'chart_type' => $chartType,
+                'period' => $period,
+                'chart_data' => $chartData
+            ]
+        ];
+
+        return $this->respond($response, 200);
     }
 
     /**
-     * Get recent activity for user
+     * Get weekly activity data
      */
-    private function getRecentActivity($userId, $limit = 5)
+    private function getWeeklyActivity($userId)
     {
-        return $this->sesiLatihanModel
-            ->select('sesi_latihan.*, materi_kaidah.judul_kaidah')
-            ->join('materi_kaidah', 'materi_kaidah.id_materi = sesi_latihan.id_materi')
-            ->where('sesi_latihan.id_siswa', $userId)
-            ->where('sesi_latihan.status', 'selesai')
-            ->orderBy('sesi_latihan.waktu_selesai', 'DESC')
+        $db = \Config\Database::connect();
+
+        // Get last 7 days
+        $days = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = date('Y-m-d', strtotime("-$i days"));
+            $days[$date] = 0;
+        }
+
+        // Get sessions in last 7 days
+        $sessions = $db->table('sesi_pembelajaran')
+            ->select('DATE(waktu_mulai) as date, COUNT(*) as sessions')
+            ->where('id_siswa', $userId)
+            ->where('waktu_mulai >=', date('Y-m-d', strtotime('-6 days')))
+            ->groupBy('DATE(waktu_mulai)')
+            ->get()
+            ->getResultArray();
+
+        foreach ($sessions as $session) {
+            $days[$session['date']] = (int)$session['sessions'];
+        }
+
+        return array_map(function($date, $count) {
+            return [
+                'date' => $date,
+                'day_name' => date('D', strtotime($date)),
+                'sessions' => $count
+            ];
+        }, array_keys($days), $days);
+    }
+
+    /**
+     * Calculate achievements
+     */
+    private function calculateAchievements($userId, $totalSessions, $avgScore, $kaidahProgressCount)
+    {
+        $achievements = [];
+
+        // First session achievement
+        if ($totalSessions >= 1) {
+            $achievements[] = [
+                'id' => 'first_session',
+                'title' => 'Pemula',
+                'description' => 'Menyelesaikan sesi pembelajaran pertama',
+                'icon' => '🎯',
+                'earned_at' => $this->getFirstSessionDate($userId)
+            ];
+        }
+
+        // Score achievements
+        if ($avgScore >= 80) {
+            $achievements[] = [
+                'id' => 'high_scorer',
+                'title' => 'Pecandu Skor Tinggi',
+                'description' => 'Rata-rata skor 80+',
+                'icon' => '⭐',
+                'earned_at' => null
+            ];
+        }
+
+        if ($avgScore >= 90) {
+            $achievements[] = [
+                'id' => 'perfect_student',
+                'title' => 'Siswa Sempurna',
+                'description' => 'Rata-rata skor 90+',
+                'icon' => '🏆',
+                'earned_at' => null
+            ];
+        }
+
+        // Session count achievements
+        if ($totalSessions >= 10) {
+            $achievements[] = [
+                'id' => 'regular_learner',
+                'title' => 'Pembelajar Rutin',
+                'description' => 'Menyelesaikan 10 sesi',
+                'icon' => '📚',
+                'earned_at' => null
+            ];
+        }
+
+        if ($totalSessions >= 25) {
+            $achievements[] = [
+                'id' => 'dedicated_student',
+                'title' => 'Siswa Berdedikasi',
+                'description' => 'Menyelesaikan 25 sesi',
+                'icon' => '🎓',
+                'earned_at' => null
+            ];
+        }
+
+        // Kaidah achievements
+        if ($kaidahProgressCount >= 5) {
+            $achievements[] = [
+                'id' => 'kaidah_explorer',
+                'title' => 'Eksplorator Kaidah',
+                'description' => 'Mempelajari 5 kaidah berbeda',
+                'icon' => '🔍',
+                'earned_at' => null
+            ];
+        }
+
+        return $achievements;
+    }
+
+    /**
+     * Get detailed progress with filters
+     */
+    private function getDetailedProgress($userId, $filters)
+    {
+        $db = \Config\Database::connect();
+
+        $builder = $db->table('sesi_pembelajaran sp')
+            ->select('
+                sp.*,
+                mk.judul_kaidah,
+                mk.tingkat_kesulitan,
+                s.nama_lengkap as nama_siswa
+            ')
+            ->join('materi_kaidah mk', 'mk.id_materi = sp.id_materi')
+            ->join('siswa s', 's.id = sp.id_siswa')
+            ->where('sp.id_siswa', $userId);
+
+        // Apply filters
+        if (!empty($filters['kaidah_id'])) {
+            $builder->where('sp.id_materi', $filters['kaidah_id']);
+        }
+
+        if (!empty($filters['status'])) {
+            $builder->where('sp.status', $filters['status']);
+        }
+
+        if (!empty($filters['date_from'])) {
+            $builder->where('sp.waktu_mulai >=', $filters['date_from']);
+        }
+
+        if (!empty($filters['date_to'])) {
+            $builder->where('sp.waktu_mulai <=', $filters['date_to'] . ' 23:59:59');
+        }
+
+        $builder->orderBy('sp.waktu_mulai', 'DESC');
+
+        // Get total count
+        $total = $builder->countAllResults(false);
+
+        // Get paginated results
+        $data = $builder->limit($filters['limit'], $filters['offset'])
+                       ->get()
+                       ->getResultArray();
+
+        return [
+            'data' => array_map(function($session) {
+                return [
+                    'sesi_id' => $session['id_sesi'],
+                    'kaidah' => [
+                        'id_materi' => $session['id_materi'],
+                        'judul_kaidah' => $session['judul_kaidah'],
+                        'tingkat_kesulitan' => $session['tingkat_kesulitan']
+                    ],
+                    'skor' => round($session['skor'], 2),
+                    'total_soal' => $session['total_soal'],
+                    'soal_benar' => $session['soal_benar'],
+                    'persentase_benar' => round(($session['soal_benar'] / $session['total_soal']) * 100, 1),
+                    'durasi_menit' => round($session['durasi_detik'] / 60, 1),
+                    'status' => $session['status'],
+                    'waktu_mulai' => $session['waktu_mulai'],
+                    'waktu_selesai' => $session['waktu_selesai']
+                ];
+            }, $data),
+            'total' => $total
+        ];
+    }
+
+    /**
+     * Get learning history
+     */
+    private function getLearningHistory($userId, $period, $limit)
+    {
+        $db = \Config\Database::connect();
+
+        $dateFormat = match($period) {
+            'week' => '%Y-%u',
+            'month' => '%Y-%m',
+            'year' => '%Y',
+            default => '%Y-%m'
+        };
+
+        $history = $db->table('sesi_pembelajaran')
+            ->select("
+                DATE_FORMAT(waktu_mulai, '$dateFormat') as period,
+                COUNT(*) as total_sessions,
+                SUM(CASE WHEN status = 'selesai' THEN 1 ELSE 0 END) as completed_sessions,
+                AVG(CASE WHEN status = 'selesai' THEN skor END) as avg_score,
+                SUM(CASE WHEN status = 'selesai' THEN total_soal END) as total_questions,
+                SUM(CASE WHEN status = 'selesai' THEN soal_benar END) as total_correct
+            ")
+            ->where('id_siswa', $userId)
+            ->groupBy('period')
+            ->orderBy('period', 'DESC')
             ->limit($limit)
-            ->findAll();
+            ->get()
+            ->getResultArray();
+
+        return array_map(function($item) {
+            return [
+                'period' => $item['period'],
+                'total_sessions' => (int)$item['total_sessions'],
+                'completed_sessions' => (int)$item['completed_sessions'],
+                'completion_rate' => round(($item['completed_sessions'] / $item['total_sessions']) * 100, 1),
+                'average_score' => round($item['avg_score'] ?: 0, 2),
+                'total_questions' => (int)($item['total_questions'] ?: 0),
+                'total_correct' => (int)($item['total_correct'] ?: 0),
+                'accuracy' => $item['total_questions'] > 0 ?
+                    round(($item['total_correct'] / $item['total_questions']) * 100, 1) : 0
+            ];
+        }, $history);
+    }
+
+    /**
+     * Get monthly performance
+     */
+    private function getMonthlyPerformance($userId)
+    {
+        $db = \Config\Database::connect();
+
+        $performance = $db->table('sesi_pembelajaran')
+            ->select("
+                DATE_FORMAT(waktu_mulai, '%Y-%m') as month,
+                COUNT(*) as sessions,
+                AVG(CASE WHEN status = 'selesai' THEN skor END) as avg_score,
+                MAX(CASE WHEN status = 'selesai' THEN skor END) as best_score
+            ")
+            ->where('id_siswa', $userId)
+            ->where('waktu_mulai >=', date('Y-m-01', strtotime('-5 months')))
+            ->groupBy('month')
+            ->orderBy('month', 'ASC')
+            ->get()
+            ->getResultArray();
+
+        return array_map(function($item) {
+            return [
+                'month' => $item['month'],
+                'month_name' => date('F Y', strtotime($item['month'] . '-01')),
+                'sessions' => (int)$item['sessions'],
+                'average_score' => round($item['avg_score'] ?: 0, 2),
+                'best_score' => round($item['best_score'] ?: 0, 2)
+            ];
+        }, $performance);
     }
 
     /**
@@ -212,279 +608,145 @@ class ProgressController extends BaseController
      */
     private function calculateLearningStreak($userId)
     {
-        // Get last 30 days of activity
-        $activities = $this->sesiLatihanModel
-            ->select('DATE(waktu_selesai) as activity_date')
+        $db = \Config\Database::connect();
+
+        // Get dates of completed sessions in last 30 days
+        $sessions = $db->table('sesi_pembelajaran')
+            ->select('DISTINCT DATE(waktu_selesai) as date')
             ->where('id_siswa', $userId)
             ->where('status', 'selesai')
-            ->where('waktu_selesai >=', date('Y-m-d', strtotime('-30 days')))
-            ->groupBy('DATE(waktu_selesai)')
-            ->orderBy('activity_date', 'DESC')
-            ->findAll();
+            ->where('waktu_selesai >=', date('Y-m-d', strtotime('-29 days')))
+            ->orderBy('date', 'DESC')
+            ->get()
+            ->getResultArray();
 
-        if (empty($activities)) {
-            return [
-                'current_streak' => 0,
-                'longest_streak' => 0,
-                'last_activity_date' => null
-            ];
+        if (empty($sessions)) {
+            return ['current_streak' => 0, 'longest_streak' => 0];
         }
 
         $currentStreak = 0;
         $longestStreak = 0;
         $tempStreak = 0;
-        $lastDate = null;
+        $expectedDate = date('Y-m-d');
 
-        foreach ($activities as $activity) {
-            $activityDate = $activity['activity_date'];
-
-            if ($lastDate === null) {
-                // First activity
-                $currentStreak = 1;
-                $tempStreak = 1;
-            } else {
-                $dateDiff = (strtotime($lastDate) - strtotime($activityDate)) / (60 * 60 * 24);
-
-                if ($dateDiff == 1) {
-                    // Consecutive day
-                    $tempStreak++;
-                } else {
-                    // Break in streak
-                    $longestStreak = max($longestStreak, $tempStreak);
-                    $tempStreak = 1;
+        foreach ($sessions as $session) {
+            if ($session['date'] == $expectedDate) {
+                $tempStreak++;
+                if ($currentStreak == 0) {
+                    $currentStreak = $tempStreak;
                 }
+                $expectedDate = date('Y-m-d', strtotime($expectedDate . ' -1 day'));
+            } elseif ($session['date'] < $expectedDate) {
+                $currentStreak = 0;
+                break;
             }
-
-            $lastDate = $activityDate;
         }
 
-        $longestStreak = max($longestStreak, $tempStreak);
+        // Calculate longest streak
+        $expectedDate = date('Y-m-d', strtotime('-29 days'));
+        $tempStreak = 0;
 
-        // Check if current streak is still active (activity today or yesterday)
-        $lastActivityDate = $activities[0]['activity_date'];
-        $daysSinceLastActivity = (strtotime(date('Y-m-d')) - strtotime($lastActivityDate)) / (60 * 60 * 24);
-
-        if ($daysSinceLastActivity > 1) {
-            $currentStreak = 0;
-        } else {
-            $currentStreak = $tempStreak;
+        foreach ($sessions as $session) {
+            if ($session['date'] == $expectedDate) {
+                $tempStreak++;
+                $longestStreak = max($longestStreak, $tempStreak);
+                $expectedDate = date('Y-m-d', strtotime($expectedDate . ' -1 day'));
+            } else {
+                $tempStreak = 0;
+                $expectedDate = date('Y-m-d', strtotime($session['date'] . ' -1 day'));
+            }
         }
 
         return [
             'current_streak' => $currentStreak,
-            'longest_streak' => $longestStreak,
-            'last_activity_date' => $lastActivityDate
+            'longest_streak' => $longestStreak
         ];
     }
 
     /**
-     * Get monthly progress data
+     * Get chart data
      */
-    private function getMonthlyProgress($userId, $months = 6)
+    private function getChartData($userId, $chartType, $period)
     {
-        $data = [];
-        $currentDate = date('Y-m-d');
+        switch ($chartType) {
+            case 'line':
+            case 'bar':
+                return $this->getLearningHistory($userId, $period, 30);
 
-        for ($i = $months - 1; $i >= 0; $i--) {
-            $monthDate = date('Y-m-01', strtotime("-$i months", strtotime($currentDate)));
-            $monthName = date('F Y', strtotime($monthDate));
+            case 'radar':
+                return $this->getDifficultyRadarData($userId);
 
-            $sessions = $this->sesiLatihanModel
-                ->where('id_siswa', $userId)
-                ->where('status', 'selesai')
-                ->like('waktu_selesai', $monthDate, 'after')
-                ->countAllResults();
-
-            $avgScore = $this->sesiLatihanModel
-                ->selectAvg('skor')
-                ->where('id_siswa', $userId)
-                ->where('status', 'selesai')
-                ->like('waktu_selesai', $monthDate, 'after')
-                ->first();
-
-            $data[] = [
-                'month' => $monthName,
-                'sessions_completed' => $sessions,
-                'average_score' => floatval($avgScore['skor'] ?? 0)
-            ];
+            default:
+                return [];
         }
-
-        return $data;
     }
 
     /**
-     * Get difficulty statistics
+     * Get difficulty radar data
      */
-    private function getDifficultyStats($userId)
+    private function getDifficultyRadarData($userId)
     {
-        $stats = $this->sesiLatihanModel
+        $db = \Config\Database::connect();
+
+        $data = $db->table('sesi_pembelajaran sp')
             ->select('
-                materi_kaidah.tingkat_kesulitan,
-                COUNT(*) as total_sessions,
-                AVG(sesi_latihan.skor) as average_score
+                mk.tingkat_kesulitan,
+                AVG(sp.skor) as avg_score,
+                COUNT(*) as sessions
             ')
-            ->join('materi_kaidah', 'materi_kaidah.id_materi = sesi_latihan.id_materi')
-            ->where('sesi_latihan.id_siswa', $userId)
-            ->where('sesi_latihan.status', 'selesai')
-            ->groupBy('materi_kaidah.tingkat_kesulitan')
-            ->findAll();
+            ->join('materi_kaidah mk', 'mk.id_materi = sp.id_materi')
+            ->where('sp.id_siswa', $userId)
+            ->where('sp.status', 'selesai')
+            ->groupBy('mk.tingkat_kesulitan')
+            ->get()
+            ->getResultArray();
 
-        $result = [
-            'mudah' => ['sessions' => 0, 'avg_score' => 0],
-            'sedang' => ['sessions' => 0, 'avg_score' => 0],
-            'sulit' => ['sessions' => 0, 'avg_score' => 0]
-        ];
+        return array_map(function($item) {
+            return [
+                'difficulty' => $item['tingkat_kesulitan'],
+                'score' => round($item['avg_score'], 2),
+                'sessions' => (int)$item['sessions']
+            ];
+        }, $data);
+    }
 
-        foreach ($stats as $stat) {
-            $difficulty = $stat['tingkat_kesulitan'];
-            if (isset($result[$difficulty])) {
-                $result[$difficulty]['sessions'] = (int)$stat['total_sessions'];
-                $result[$difficulty]['avg_score'] = floatval($stat['average_score']);
+    /**
+     * Get first session date
+     */
+    private function getFirstSessionDate($userId)
+    {
+        $db = \Config\Database::connect();
+
+        $session = $db->table('sesi_pembelajaran')
+            ->where('id_siswa', $userId)
+            ->where('status', 'selesai')
+            ->orderBy('waktu_selesai', 'ASC')
+            ->limit(1)
+            ->get()
+            ->getRowArray();
+
+        return $session ? $session['waktu_selesai'] : null;
+    }
+
+    /**
+     * Extract user ID dari simple token
+     */
+    private function extractUserIdFromToken($token)
+    {
+        try {
+            $decoded = base64_decode($token);
+            if ($decoded && strpos($decoded, ':') !== false) {
+                list($userId, $timestamp) = explode(':', $decoded);
+
+                // Check if token is not too old (24 hours)
+                if (time() - $timestamp < 86400) {
+                    return (int)$userId;
+                }
             }
-        }
-
-        return $result;
-    }
-
-    /**
-     * Get best performing kaidah
-     */
-    private function getBestPerformingKaidah($userId, $limit = 3)
-    {
-        return $this->sesiLatihanModel
-            ->select('
-                materi_kaidah.id_materi,
-                materi_kaidah.judul_kaidah,
-                materi_kaidah.tingkat_kesulitan,
-                AVG(sesi_latihan.skor) as average_score,
-                COUNT(*) as total_sessions
-            ')
-            ->join('materi_kaidah', 'materi_kaidah.id_materi = sesi_latihan.id_materi')
-            ->where('sesi_latihan.id_siswa', $userId)
-            ->where('sesi_latihan.status', 'selesai')
-            ->groupBy('materi_kaidah.id_materi')
-            ->having('total_sessions >=', 2)
-            ->orderBy('average_score', 'DESC')
-            ->limit($limit)
-            ->findAll();
-    }
-
-    /**
-     * Get struggling kaidah
-     */
-    private function getStrugglingKaidah($userId, $limit = 3)
-    {
-        return $this->sesiLatihanModel
-            ->select('
-                materi_kaidah.id_materi,
-                materi_kaidah.judul_kaidah,
-                materi_kaidah.tingkat_kesulitan,
-                AVG(sesi_latihan.skor) as average_score,
-                COUNT(*) as total_sessions
-            ')
-            ->join('materi_kaidah', 'materi_kaidah.id_materi = sesi_latihan.id_materi')
-            ->where('sesi_latihan.id_siswa', $userId)
-            ->where('sesi_latihan.status', 'selesai')
-            ->groupBy('materi_kaidah.id_materi')
-            ->having('total_sessions >=', 2)
-            ->orderBy('average_score', 'ASC')
-            ->limit($limit)
-            ->findAll();
-    }
-
-    /**
-     * Get weekly chart data
-     */
-    private function getWeeklyChart($userId)
-    {
-        $data = [];
-        $currentDate = date('Y-m-d');
-
-        for ($i = 6; $i >= 0; $i--) {
-            $date = date('Y-m-d', strtotime("-$i days", strtotime($currentDate)));
-            $dayName = date('D', strtotime($date));
-
-            $sessions = $this->sesiLatihanModel
-                ->where('id_siswa', $userId)
-                ->where('status', 'selesai')
-                ->where('DATE(waktu_selesai)', $date)
-                ->countAllResults();
-
-            $data[] = [
-                'day' => $dayName,
-                'date' => $date,
-                'sessions' => $sessions
-            ];
-        }
-
-        return $data;
-    }
-
-    /**
-     * Get monthly chart data
-     */
-    private function getMonthlyChart($userId)
-    {
-        return $this->getMonthlyProgress($userId, 12);
-    }
-
-    /**
-     * Get yearly chart data
-     */
-    private function getYearlyChart($userId)
-    {
-        $data = [];
-        $currentYear = date('Y');
-
-        for ($i = 2; $i >= 0; $i--) {
-            $year = $currentYear - $i;
-
-            $sessions = $this->sesiLatihanModel
-                ->where('id_siswa', $userId)
-                ->where('status', 'selesai')
-                ->where('YEAR(waktu_selesai)', $year)
-                ->countAllResults();
-
-            $avgScore = $this->sesiLatihanModel
-                ->selectAvg('skor')
-                ->where('id_siswa', $userId)
-                ->where('status', 'selesai')
-                ->where('YEAR(waktu_selesai)', $year)
-                ->first();
-
-            $data[] = [
-                'year' => $year,
-                'sessions' => $sessions,
-                'average_score' => floatval($avgScore['skor'] ?? 0)
-            ];
-        }
-
-        return $data;
-    }
-
-    /**
-     * Helper method to get user ID from token
-     */
-    private function getUserIdFromToken()
-    {
-        $authorization = $this->request->getHeaderLine('Authorization');
-
-        if (empty($authorization) || !preg_match('/Bearer\s+(.*)$/i', $authorization, $matches)) {
+        } catch (\Exception $e) {
             return null;
         }
 
-        $token = $matches[1];
-        $payload = json_decode(base64_decode($token), true);
-
-        if (!$payload || !isset($payload['user_id']) || !isset($payload['exp'])) {
-            return null;
-        }
-
-        // Check if token expired
-        if ($payload['exp'] < time()) {
-            return null;
-        }
-
-        return $payload['user_id'];
+        return null;
     }
 }

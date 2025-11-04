@@ -1,45 +1,49 @@
 <?= $this->extend('layouts/app') ?>
 
+<?= $this->section('title') ?>Tambah Materi Kaidah - <?= $this->endSection() ?>
+
 <?= $this->section('styles') ?>
 <style>
     .form-label {
-        font-weight: 500;
-        color: var(--neutral-700);
+        font-weight: 600;
+        color: var(--bs-heading-color);
         margin-bottom: 0.5rem;
     }
     .form-control:focus {
-        border-color: var(--primary-500);
+        border-color: var(--bs-primary);
         box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
     }
     .arabic-input {
-        font-family: var(--font-arabic);
+        font-family: 'Amiri', 'Traditional Arabic', serif;
         font-size: 1.2rem;
         direction: rtl;
         text-align: right;
     }
     .preview-box {
-        background: var(--neutral-50);
-        border: 1px solid var(--neutral-200);
-        border-radius: var(--radius-md);
+        background: var(--bs-gray-100);
+        border: 1px solid var(--bs-gray-300);
+        border-radius: var(--bs-border-radius);
         padding: 1rem;
         min-height: 120px;
         direction: rtl;
-        font-family: var(--font-arabic);
+        font-family: 'Amiri', 'Traditional Arabic', serif;
     }
     .char-counter {
         font-size: 0.875rem;
-        color: var(--neutral-500);
+        color: var(--bs-gray-500);
     }
     .difficulty-option {
         cursor: pointer;
         transition: all 0.3s ease;
+        border: 2px solid transparent;
     }
     .difficulty-option:hover {
         transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     .difficulty-option.selected {
-        border-color: var(--primary-500);
-        background: var(--primary-50);
+        border-color: var(--bs-primary);
+        background: var(--bs-primary-bg-subtle);
     }
 </style>
 <?= $this->endSection() ?>
@@ -48,83 +52,104 @@
 <!-- Page Header -->
 <div class="d-flex justify-content-between align-items-center mb-4">
     <div>
-        <h4 class="fw-bold text-dark">Tambah Kaidah Baru</h4>
+        <h4 class="fw-bold text-dark">Tambah Materi Kaidah</h4>
         <nav aria-label="breadcrumb">
             <ol class="breadcrumb mb-0">
                 <li class="breadcrumb-item"><a href="<?= site_url('dashboard') ?>" class="text-muted">Dashboard</a></li>
-                <li class="breadcrumb-item"><a href="<?= site_url('kaidah') ?>" class="text-muted">Materi Kaidah</a></li>
-                <li class="breadcrumb-item active">Tambah Kaidah</li>
+                <li class="breadcrumb-item"><a href="<?= site_url('kaidah') ?>" class="text-muted">Manajemen Materi Kaidah</a></li>
+                <li class="breadcrumb-item active">Tambah Materi</li>
             </ol>
         </nav>
     </div>
     <div>
-        <a href="<?= site_url('kaidah') ?>" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left me-2"></i>Kembali
+        <a href="<?= site_url('kaidah') ?>" class="btn btn-secondary">
+            <i class="ti ti-arrow-left me-2"></i>Kembali
         </a>
     </div>
 </div>
 
-<form action="<?= site_url('kaidah') ?>" method="post" id="kaidahForm" enctype="multipart/form-data">
-    <?= csrf_field() ?>
+<!-- Form Card -->
+<div class="card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <!-- Flash Messages -->
+        <?= $this->include('partials/flash_messages') ?>
 
-    <div class="row">
-        <!-- Main Content -->
-        <div class="col-lg-8">
-            <!-- Basic Information -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-white border-0">
-                    <h6 class="mb-0 fw-bold">
-                        <i class="bi bi-info-circle me-2 text-primary"></i>Informasi Dasar
-                    </h6>
+        <form method="POST" action="<?= site_url('kaidah') ?>" class="needs-validation" novalidate>
+            <?= csrf_field() ?>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="judul_kaidah" class="form-label">Judul Kaidah *</label>
+                    <input type="text" class="form-control" id="judul_kaidah" name="judul_kaidah"
+                           value="<?= esc(old('judul_kaidah')) ?>"
+                           placeholder="Contoh: Isim Mufrad dan Jamak" required>
+                    <div class="invalid-feedback">
+                        Judul kaidah wajib diisi (minimal 3 karakter)
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="mb-4">
-                        <label for="judul_kaidah" class="form-label">Judul Kaidah <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="judul_kaidah" name="judul_kaidah"
-                               value="<?= esc(old('judul_kaidah')) ?>" required
-                               placeholder="Contoh: Isim Mufrad dan Jamak">
-                        <div class="form-text">Judul kaidah dalam Bahasa Indonesia</div>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="nama_arab" class="form-label">Nama Arab</label>
-                        <div class="input-group">
-                            <input type="text" class="form-control arabic-input" id="nama_arab" name="nama_arab"
-                                   value="<?= esc(old('nama_arab')) ?>"
-                                   placeholder="مفرد وجمع">
-                            <button class="btn btn-outline-secondary" type="button" id="toggleArabicKeyboard">
-                                <i class="bi bi-keyboard"></i>
-                            </button>
-                        </div>
-                        <div class="form-text">Nama kaidah dalam Bahasa Arab (opsional)</div>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="deskripsi" class="form-label">Deskripsi <span class="text-danger">*</span></label>
-                        <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3" required
-                                  placeholder="Deskripsi singkat tentang kaidah ini..."><?= esc(old('deskripsi')) ?></textarea>
-                        <div class="char-counter">
-                            <span id="deskripsiCount">0</span> / 500 karakter
-                        </div>
+                <div class="col-md-6 mb-3">
+                    <label for="urutan" class="form-label">Urutan *</label>
+                    <input type="number" class="form-control" id="urutan" name="urutan"
+                           value="<?= esc(old('urutan') ?? $lastOrder ?? 1) ?>"
+                           placeholder="Urutan tampilan" min="0" required>
+                    <div class="invalid-feedback">
+                        Urutan wajib diisi
                     </div>
                 </div>
             </div>
 
-            <!-- Penjelasan -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-white border-0">
-                    <h6 class="mb-0 fw-bold">
-                        <i class="bi bi-book me-2 text-primary"></i>Penjelasan
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label for="penjelasan" class="form-label">Penjelasan Kaidah</label>
-                        <textarea class="form-control" id="penjelasan" name="penjelasan" rows="6"
-                                  placeholder="Tulis penjelasan lengkap tentang kaidah ini..."><?= esc(old('penjelasan')) ?></textarea>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="deskripsi" class="form-label">Deskripsi</label>
+                    <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3"
+                              placeholder="Deskripsi singkat tentang kaidah ini..."><?= esc(old('deskripsi')) ?></textarea>
+                    <div class="char-counter">
+                        <span id="deskripsiCount">0</span> / 500 karakter
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label">Preview Teks Arab:</label>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="tingkat_kesulitan" class="form-label">Tingkat Kesulitan *</label>
+                    <select class="form-select" id="tingkat_kesulitan" name="tingkat_kesulitan" required>
+                        <option value="">Pilih tingkat kesulitan</option>
+                        <option value="mudah" <?= (old('tingkat_kesulitan') ?? '') === 'mudah' ? 'selected' : '' ?>>Mudah</option>
+                        <option value="sedang" <?= (old('tingkat_kesulitan') ?? '') === 'sedang' ? 'selected' : '' ?>>Sedang</option>
+                        <option value="sulit" <?= (old('tingkat_kesulitan') ?? '') === 'sulit' ? 'selected' : '' ?>>Sulit</option>
+                    </select>
+                    <div class="invalid-feedback">
+                        Tingkat kesulitan wajib dipilih
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="nama_arab" class="form-label">Nama Arab (Opsional)</label>
+                    <div class="input-group">
+                        <span class="input-group-text">
+                            <i class="ti ti-language"></i>
+                        </span>
+                        <input type="text" class="form-control arabic-input" id="nama_arab" name="nama_arab"
+                               value="<?= esc(old('nama_arab')) ?>"
+                               placeholder="مفرد وجمع"
+                               style="font-family: 'Amiri', 'Traditional Arabic', serif; direction: rtl; text-align: right;">
+                        <button class="btn btn-outline-secondary" type="button" id="toggleArabicKeyboard" title="Toggle Arabic Keyboard">
+                            <i class="ti ti-keyboard"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="penjelasan" class="form-label">Penjelasan Kaidah *</label>
+                    <textarea class="form-control" id="penjelasan" name="penjelasan" rows="6" required
+                              placeholder="Tulis penjelasan lengkap tentang kaidah ini..."><?= esc(old('penjelasan')) ?></textarea>
+                    <div class="invalid-feedback">
+                        Penjelasan kaidah wajib diisi
+                    </div>
+                    <!-- Arabic Preview -->
+                    <div class="mt-2">
+                        <label class="form-label text-muted small">Preview Teks Arab:</label>
                         <div class="preview-box" id="arabicPreview">
                             <span class="text-muted">Preview teks Arab akan muncul di sini...</span>
                         </div>
@@ -132,192 +157,181 @@
                 </div>
             </div>
 
-            <!-- Contoh -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-white border-0">
-                    <h6 class="mb-0 fw-bold">
-                        <i class="bi bi-lightbulb me-2 text-primary"></i>Contoh
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label for="contoh" class="form-label">Contoh Penggunaan</label>
-                        <textarea class="form-control" id="contoh" name="contoh" rows="4"
-                                  placeholder="Berikan contoh-contoh penggunaan kaidah ini..."><?= esc(old('contoh')) ?></textarea>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Sidebar -->
-        <div class="col-lg-4">
-            <!-- Pengaturan -->
-            <div class="card border-0 shadow-sm mb-4">
-                <div class="card-header bg-white border-0">
-                    <h6 class="mb-0 fw-bold">
-                        <i class="bi bi-gear me-2 text-primary"></i>Pengaturan
-                    </h6>
-                </div>
-                <div class="card-body">
-                    <div class="mb-4">
-                        <label class="form-label">Tingkat Kesulitan <span class="text-danger">*</span></label>
-                        <div class="row g-2">
-                            <div class="col-4">
-                                <div class="card difficulty-option text-center p-3" data-difficulty="mudah">
-                                    <i class="bi bi-emoji-smile fs-3 text-success mb-2"></i>
-                                    <div class="fw-500">Mudah</div>
-                                    <small class="text-muted">Pemula</small>
-                                </div>
-                                <input type="radio" name="tingkat_kesulitan" value="mudah" class="d-none"
-                                       <?= old('tingkat_kesulitan') === 'mudah' ? 'checked' : '' ?> required>
-                            </div>
-                            <div class="col-4">
-                                <div class="card difficulty-option text-center p-3" data-difficulty="sedang">
-                                    <i class="bi bi-emoji-neutral fs-3 text-warning mb-2"></i>
-                                    <div class="fw-500">Sedang</div>
-                                    <small class="text-muted">Menengah</small>
-                                </div>
-                                <input type="radio" name="tingkat_kesulitan" value="sedang" class="d-none"
-                                       <?= old('tingkat_kesulitan') === 'sedang' ? 'checked' : '' ?>>
-                            </div>
-                            <div class="col-4">
-                                <div class="card difficulty-option text-center p-3" data-difficulty="sulit">
-                                    <i class="bi bi-emoji-frown fs-3 text-danger mb-2"></i>
-                                    <div class="fw-500">Sulit</div>
-                                    <small class="text-muted">Lanjutan</small>
-                                </div>
-                                <input type="radio" name="tingkat_kesulitan" value="sulit" class="d-none"
-                                       <?= old('tingkat_kesulitan') === 'sulit' ? 'checked' : '' ?>>
-                            </div>
-                        </div>
-                        <?php if (isset($validation) && $validation->hasError('tingkat_kesulitan')): ?>
-                            <div class="text-danger small mt-1"><?= $validation->getError('tingkat_kesulitan') ?></div>
-                        <?php endif; ?>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="urutan" class="form-label">Urutan</label>
-                        <input type="number" class="form-control" id="urutan" name="urutan"
-                               value="<?= esc(old('urutan') ?? 1) ?>" min="1">
-                        <div class="form-text">Urutan tampilan dalam daftar kaidah</div>
-                    </div>
-
-                    <div class="mb-4">
-                        <label for="status" class="form-label">Status</label>
-                        <select class="form-select" id="status" name="status">
-                            <option value="aktif" <?= old('status') === 'aktif' ? 'selected' : '' ?>>Aktif</option>
-                            <option value="nonaktif" <?= old('status') === 'nonaktif' ? 'selected' : '' ?>>Nonaktif</option>
-                        </select>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <label for="contoh" class="form-label">Contoh Penggunaan</label>
+                    <textarea class="form-control" id="contoh" name="contoh" rows="4"
+                              placeholder="Berikan contoh-contoh penggunaan kaidah ini..."><?= esc(old('contoh')) ?></textarea>
+                    <div class="form-text">
+                        Opsional: Berikan contoh untuk memperjelas pemahaman siswa
                     </div>
                 </div>
             </div>
 
-            <!-- Actions -->
-            <div class="card border-0 shadow-sm">
-                <div class="card-body">
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-check-circle me-2"></i>Simpan Kaidah
-                        </button>
-                        <button type="button" class="btn btn-outline-secondary" onclick="window.history.back()">
-                            <i class="bi bi-x-circle me-2"></i>Batal
-                        </button>
-                    </div>
+            <div class="alert alert-info d-flex align-items-center" role="alert">
+                <i class="ti ti-info-circle me-2"></i>
+                <div>
+                    <strong>Tips:</strong>
+                    <ul class="mb-0 mt-1">
+                        <li>Gunakan bahasa yang jelas dan mudah dipahami siswa</li>
+                        <li>Sertakan contoh yang relevan dengan kehidupan sehari-hari</li>
+                        <li>Untuk teks Arab, gunakan format RTL (Right-to-Left)</li>
+                        <li>Urutan akan menentukan posisi materi di daftar kaidah</li>
+                    </ul>
                 </div>
             </div>
-        </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    <i class="ti ti-device-floppy me-2"></i>Simpan
+                </button>
+                <a href="<?= site_url('kaidah') ?>" class="btn btn-danger">
+                    <i class="ti ti-circle-x me-2"></i>Batal
+                </a>
+            </div>
+        </form>
     </div>
-</form>
+</div>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
 <script>
-// Character counter
-const deskripsi = document.getElementById('deskripsi');
-const deskripsiCount = document.getElementById('deskripsiCount');
+// Form validation
+document.addEventListener('DOMContentLoaded', function() {
+    const forms = document.querySelectorAll('.needs-validation');
 
-deskripsi.addEventListener('input', function() {
-    const count = this.value.length;
-    deskripsiCount.textContent = count;
-    if (count > 500) {
-        this.value = this.value.substring(0, 500);
-        deskripsiCount.textContent = 500;
-    }
-});
+    Array.from(forms).forEach(function(form) {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
 
-// Difficulty selection
-document.querySelectorAll('.difficulty-option').forEach(option => {
-    option.addEventListener('click', function() {
-        document.querySelectorAll('.difficulty-option').forEach(opt => opt.classList.remove('selected'));
-        this.classList.add('selected');
-        const difficulty = this.dataset.difficulty;
-        document.querySelector(`input[name="tingkat_kesulitan"][value="${difficulty}"]`).checked = true;
+            form.classList.add('was-validated');
+        }, false);
     });
 });
 
-// Initialize selected difficulty
-const selectedDifficulty = document.querySelector('input[name="tingkat_kesulitan"]:checked');
-if (selectedDifficulty) {
-    document.querySelector(`[data-difficulty="${selectedDifficulty.value}"]`).classList.add('selected');
+// Character counter for deskripsi
+const deskripsi = document.getElementById('deskripsi');
+const deskripsiCount = document.getElementById('deskripsiCount');
+
+if (deskripsi && deskripsiCount) {
+    deskripsi.addEventListener('input', function() {
+        const count = this.value.length;
+        deskripsiCount.textContent = count;
+        if (count > 500) {
+            this.value = this.value.substring(0, 500);
+            deskripsiCount.textContent = 500;
+        }
+    });
+
+    // Initialize counter
+    deskripsiCount.textContent = deskripsi.value.length;
 }
 
-// Arabic preview
+// Arabic preview for penjelasan
 const penjelasan = document.getElementById('penjelasan');
 const arabicPreview = document.getElementById('arabicPreview');
 
-penjelasan.addEventListener('input', function() {
-    const arabicText = this.value;
-    if (arabicText.trim()) {
-        arabicPreview.innerHTML = `<div style="font-size: 1.1rem; line-height: 1.8;">${arabicText}</div>`;
-    } else {
-        arabicPreview.innerHTML = '<span class="text-muted">Preview teks Arab akan muncul di sini...</span>';
+if (penjelasan && arabicPreview) {
+    // Function to detect Arabic text
+    function hasArabic(text) {
+        const arabicRegex = /[\u0600-\u06FF]/;
+        return arabicRegex.test(text);
     }
-});
 
-// Arabic keyboard toggle (simplified version)
+    // Function to extract Arabic text from mixed content
+    function extractArabicText(text) {
+        if (hasArabic(text)) {
+            // If the text contains Arabic characters, show them with proper styling
+            const lines = text.split('\n');
+            return lines.map(line => {
+                if (hasArabic(line)) {
+                    return `<div style="font-family: 'Amiri', 'Traditional Arabic', serif; font-size: 1.1rem; line-height: 1.8; direction: rtl; text-align: right; margin-bottom: 8px;">${line}</div>`;
+                }
+                return `<div style="font-size: 0.9rem; color: #666; margin-bottom: 8px;">${line}</div>`;
+            }).join('');
+        }
+        return null;
+    }
+
+    penjelasan.addEventListener('input', function() {
+        const text = this.value.trim();
+        const arabicHtml = extractArabicText(text);
+
+        if (arabicHtml) {
+            arabicPreview.innerHTML = arabicHtml;
+        } else if (text) {
+            arabicPreview.innerHTML = `<span class="text-muted">Tidak ada teks Arab terdeteksi dalam penjelasan.</span>`;
+        } else {
+            arabicPreview.innerHTML = '<span class="text-muted">Preview teks Arab akan muncul di sini...</span>';
+        }
+    });
+
+    // Initialize preview
+    penjelasan.dispatchEvent(new Event('input'));
+}
+
+// Arabic keyboard helper
 document.getElementById('toggleArabicKeyboard').addEventListener('click', function() {
-    alert('Keyboard Arab akan segera tersedia.\n\nUntuk sementara, gunakan keyboard Arab dari sistem operasi Anda atau copy-paste dari sumber lain.');
+    // Create a simple Arabic keyboard helper
+    const arabicKeyboard = `
+        <div class="alert alert-info mt-2">
+            <h6><i class="ti ti-keyboard me-2"></i>Petik Keyboard Arab:</h6>
+            <div class="row g-2">
+                <div class="col-6">
+                    <small class="d-block">ا ب ت ث ج ح خ د ذ ر ز س ش ص ض ط ظ ع غ ف ق ك ل م ن ه و ي</small>
+                </div>
+                <div class="col-6">
+                    <small class="d-block">َ ُ ِ ْ ّ ً ٌ ٍ ًّ ُّ ِّ</small>
+                    <small class="d-block text-muted">(Fatha, Damma, Kasra, Sukun, Tanwin)</small>
+                </div>
+            </div>
+            <hr>
+            <small class="text-muted">
+                <strong>Tips:</strong> Gunakan keyboard Arab dari sistem operasi atau copy-paste dari sumber lain.
+                Untuk Windows: Win + Space, untuk Mac: Cmd + Space.
+            </small>
+        </div>
+    `;
+
+    // Toggle keyboard helper
+    const helperDiv = document.getElementById('arabicKeyboardHelper');
+    if (helperDiv) {
+        helperDiv.remove();
+    } else {
+        const div = document.createElement('div');
+        div.id = 'arabicKeyboardHelper';
+        div.innerHTML = arabicKeyboard;
+        this.closest('.input-group').parentNode.insertBefore(div, this.closest('.input-group').nextSibling);
+    }
 });
 
-// Form validation
-document.getElementById('kaidahForm').addEventListener('submit', function(e) {
-    const judulKaidah = document.getElementById('judul_kaidah').value.trim();
-    const deskripsi = document.getElementById('deskripsi').value.trim();
-    const tingkatKesulitan = document.querySelector('input[name="tingkat_kesulitan"]:checked');
-
-    if (!judulKaidah) {
-        e.preventDefault();
-        alert('Judul kaidah harus diisi!');
-        document.getElementById('judul_kaidah').focus();
-        return;
-    }
-
-    if (!deskripsi) {
-        e.preventDefault();
-        alert('Deskripsi harus diisi!');
-        document.getElementById('deskripsi').focus();
-        return;
-    }
-
-    if (!tingkatKesulitan) {
-        e.preventDefault();
-        alert('Tingkat kesulitan harus dipilih!');
-        return;
+// Auto-focus on first field
+document.addEventListener('DOMContentLoaded', function() {
+    const firstInput = document.querySelector('input:not([type="hidden"]):not([readonly])');
+    if (firstInput && !firstInput.value) {
+        firstInput.focus();
     }
 });
 
-// Auto-save draft (optional)
+// Auto-save draft functionality (optional - for future implementation)
 let autoSaveTimer;
 function autoSaveDraft() {
     clearTimeout(autoSaveTimer);
     autoSaveTimer = setTimeout(function() {
-        const formData = new FormData(document.getElementById('kaidahForm'));
-        // Implement auto-save logic here if needed
-        console.log('Auto-saving draft...');
+        const form = document.getElementById('kaidahForm');
+        if (form) {
+            const formData = new FormData(form);
+            // Future: Implement auto-save to localStorage or server
+            console.log('Auto-saving draft...');
+            // localStorage.setItem('kaidahDraft', JSON.stringify(Object.fromEntries(formData)));
+        }
     }, 30000); // Auto-save after 30 seconds of inactivity
 }
 
-// Listen for form changes
+// Listen for form changes to trigger auto-save
 document.querySelectorAll('#kaidahForm input, #kaidahForm textarea, #kaidahForm select').forEach(element => {
     element.addEventListener('input', autoSaveDraft);
     element.addEventListener('change', autoSaveDraft);

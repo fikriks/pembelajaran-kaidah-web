@@ -3,243 +3,407 @@
 namespace App\Controllers\API;
 
 use App\Controllers\BaseController;
-use App\Models\MateriKaidahModel;
-use App\Models\RiwayatBelajarModel;
+use App\Models\KaidahModel;
+use App\Models\SoalModel;
+use App\Models\SesiModel;
+use CodeIgniter\API\ResponseTrait;
 
 class KaidahController extends BaseController
 {
+    use ResponseTrait;
+
     protected $kaidahModel;
-    protected $riwayatBelajarModel;
+    protected $soalModel;
+    protected $sesiModel;
 
     public function __construct()
     {
-        $this->kaidahModel = new MateriKaidahModel();
-        $this->riwayatBelajarModel = new RiwayatBelajarModel();
+        $this->kaidahModel = new KaidahModel();
+        $this->soalModel = new SoalModel();
+        $this->sesiModel = new SesiModel();
     }
 
     /**
-     * Get all materi kaidah
+     * Get all kaidah for mobile
      * GET /api/kaidah
      */
     public function index()
     {
-        $userId = $this->getUserIdFromToken();
-
-        if (!$userId) {
-            return $this->respondWithError('Token tidak valid', 401);
+        $authHeader = $this->request->getHeader('Authorization');
+        if (!$authHeader) {
+            return $this->fail('Token diperlukan', 401);
         }
 
-        $filters = $this->request->getGet();
-        $kaidahList = $this->kaidahModel->getAllWithProgress($userId, $filters);
+        $token = str_replace('Bearer ', '', $authHeader->getValue());
+        $userId = $this->extractUserIdFromToken($token);
 
-        return $this->respondWithSuccess($kaidahList, 'Daftar kaidah berhasil diambil');
+        if (!$userId) {
+            return $this->fail('Token tidak valid', 401);
+        }
+
+        // Get query parameters
+        $search = $this->request->getVar('search');
+        $difficulty = $this->request->getVar('difficulty');
+        $page = $this->request->getVar('page') ?? 1;
+        $limit = $this->request->getVar('limit') ?? 20;
+
+        // Get kaidah with progress info
+        $kaidahList = $this->kaidahModel->getKaidahWithProgress($userId, $search, $difficulty, $limit, $page);
+
+        $response = [
+            'status' => 'success',
+            'message' => 'Daftar kaidah berhasil diambil',
+            'data' => [
+                'kaidah' => $kaidahList['data'],
+                'pagination' => [
+                    'current_page' => $kaidahList['current_page'],
+                    'per_page' => $kaidahList['per_page'],
+                    'total' => $kaidahList['total'],
+                    'total_pages' => ceil($kaidahList['total'] / $kaidahList['per_page'])
+                ]
+            ]
+        ];
+
+        return $this->respond($response, 200);
     }
 
     /**
-     * Get detail materi kaidah
-     * GET /api/kaidah/{id}
+     * Get detail kaidah
+     * GET /api/kaidah/:id
      */
     public function show($id)
     {
-        $userId = $this->getUserIdFromToken();
+        $authHeader = $this->request->getHeader('Authorization');
+        if (!$authHeader) {
+            return $this->fail('Token diperlukan', 401);
+        }
+
+        $token = str_replace('Bearer ', '', $authHeader->getValue());
+        $userId = $this->extractUserIdFromToken($token);
 
         if (!$userId) {
-            return $this->respondWithError('Token tidak valid', 401);
+            return $this->fail('Token tidak valid', 401);
         }
 
-        $kaidah = $this->kaidahModel->getWithDetails($id);
-
+        $kaidah = $this->kaidahModel->find($id);
         if (!$kaidah) {
-            return $this->respondWithError('Kaidah tidak ditemukan', 404);
+            return $this->fail('Kaidah tidak ditemukan', 404);
         }
+
+        // Get total soal for this kaidah
+        $totalSoal = $this->soalModel->where('id_materi', $id)->countAllResults();
 
         // Get user progress for this kaidah
-        $progress = $this->riwayatBelajarModel
-            ->where('id_siswa', $userId)
-            ->where('id_materi', $id)
-            ->first();
+        $progress = $this->getUserKaidahProgress($userId, $id);
 
-        $kaidah['user_progress'] = $progress ? [
-            'status' => $progress['status'],
-            'persentase' => floatval($progress['persentase_penguasaan']),
-            'waktu_akses_terakhir' => $progress['waktu_akses_terakhir']
-        ] : [
-            'status' => 'belum_dimulai',
-            'persentase' => 0,
-            'waktu_akses_terakhir' => null
+        $response = [
+            'status' => 'success',
+            'message' => 'Detail kaidah berhasil diambil',
+            'data' => [
+                'kaidah' => [
+                    'id_materi' => $kaidah['id_materi'],
+                    'judul_kaidah' => $kaidah['judul_kaidah'],
+                    'deskripsi' => $kaidah['deskripsi'],
+                    'penjelasan' => $kaidah['penjelasan'],
+                    'contoh' => $kaidah['contoh'],
+                    'tingkat_kesulitan' => $kaidah['tingkat_kesulitan'],
+                    'urutan' => $kaidah['urutan'],
+                    'total_soal' => $totalSoal,
+                    'waktu_dibuat' => $kaidah['waktu_dibuat']
+                ],
+                'user_progress' => $progress
+            ]
         ];
 
-        return $this->respondWithSuccess($kaidah, 'Detail kaidah berhasil diambil');
+        return $this->respond($response, 200);
     }
 
     /**
-     * Get progress belajar untuk kaidah tertentu
-     * GET /api/kaidah/{id}/progress
+     * Get progress for specific kaidah
+     * GET /api/kaidah/:id/progress
      */
     public function progress($id)
     {
-        $userId = $this->getUserIdFromToken();
+        $authHeader = $this->request->getHeader('Authorization');
+        if (!$authHeader) {
+            return $this->fail('Token diperlukan', 401);
+        }
+
+        $token = str_replace('Bearer ', '', $authHeader->getValue());
+        $userId = $this->extractUserIdFromToken($token);
 
         if (!$userId) {
-            return $this->respondWithError('Token tidak valid', 401);
+            return $this->fail('Token tidak valid', 401);
         }
 
         // Check if kaidah exists
         $kaidah = $this->kaidahModel->find($id);
-
         if (!$kaidah) {
-            return $this->respondWithError('Kaidah tidak ditemukan', 404);
+            return $this->fail('Kaidah tidak ditemukan', 404);
         }
 
-        $progress = $this->riwayatBelajarModel
-            ->where('id_siswa', $userId)
-            ->where('id_materi', $id)
-            ->first();
+        // Get detailed progress
+        $progress = $this->getUserKaidahProgress($userId, $id, true);
 
-        if (!$progress) {
-            return $this->respondWithSuccess([
-                'status' => 'belum_dimulai',
-                'persentase' => 0,
-                'waktu_akses_terakhir' => null
-            ], 'Progress berhasil diambil');
-        }
+        $response = [
+            'status' => 'success',
+            'message' => 'Progress kaidah berhasil diambil',
+            'data' => [
+                'kaidah_id' => $id,
+                'judul_kaidah' => $kaidah['judul_kaidah'],
+                'progress' => $progress
+            ]
+        ];
 
-        return $this->respondWithSuccess([
-            'status' => $progress['status'],
-            'persentase' => floatval($progress['persentase_penguasaan']),
-            'waktu_akses_terakhir' => $progress['waktu_akses_terakhir']
-        ], 'Progress berhasil diambil');
+        return $this->respond($response, 200);
     }
 
     /**
-     * Start learning kaidah (update riwayat belajar)
-     * POST /api/kaidah/{id}/start
+     * Start learning kaidah
+     * POST /api/kaidah/:id/start
      */
     public function start($id)
     {
-        $userId = $this->getUserIdFromToken();
+        $authHeader = $this->request->getHeader('Authorization');
+        if (!$authHeader) {
+            return $this->fail('Token diperlukan', 401);
+        }
+
+        $token = str_replace('Bearer ', '', $authHeader->getValue());
+        $userId = $this->extractUserIdFromToken($token);
 
         if (!$userId) {
-            return $this->respondWithError('Token tidak valid', 401);
+            return $this->fail('Token tidak valid', 401);
         }
 
         // Check if kaidah exists
         $kaidah = $this->kaidahModel->find($id);
-
         if (!$kaidah) {
-            return $this->respondWithError('Kaidah tidak ditemukan', 404);
+            return $this->fail('Kaidah tidak ditemukan', 404);
         }
 
-        // Check if there are questions for this kaidah
-        $soalCount = $this->kaidahModel->countSoal($id);
-
-        if ($soalCount === 0) {
-            return $this->respondWithError('Belum ada soal untuk kaidah ini', 400);
+        // Check if user has active session
+        if ($this->sesiModel->hasSesiAktif($userId)) {
+            return $this->fail('Anda masih memiliki sesi pembelajaran yang aktif', 400);
         }
 
-        // Update or create riwayat belajar
-        $existingProgress = $this->riwayatBelajarModel
-            ->where('id_siswa', $userId)
-            ->where('id_materi', $id)
-            ->first();
+        // Get number of questions (default 20)
+        $jumlahSoal = $this->request->getVar('jumlah_soal') ?? 20;
 
-        $data = [
-            'id_siswa' => $userId,
-            'id_materi' => $id,
-            'status' => 'sedang_belajar',
-            'waktu_akses_terakhir' => date('Y-m-d H:i:s'),
-            'waktu_diubah' => date('Y-m-d H:i:s')
+        // Check if there are enough questions
+        $totalSoal = $this->soalModel->where('id_materi', $id)->countAllResults();
+        if ($totalSoal == 0) {
+            return $this->fail('Belum ada soal untuk kaidah ini', 400);
+        }
+
+        if ($jumlahSoal > $totalSoal) {
+            $jumlahSoal = $totalSoal;
+        }
+
+        // Create new session
+        $idSesi = $this->sesiModel->createSesi($userId, $id, $jumlahSoal);
+        if (!$idSesi) {
+            return $this->fail('Gagal memulai sesi pembelajaran', 500);
+        }
+
+        $response = [
+            'status' => 'success',
+            'message' => 'Sesi pembelajaran berhasil dimulai',
+            'data' => [
+                'sesi_id' => $idSesi,
+                'kaidah' => [
+                    'id_materi' => $kaidah['id_materi'],
+                    'judul_kaidah' => $kaidah['judul_kaidah'],
+                    'tingkat_kesulitan' => $kaidah['tingkat_kesulitan']
+                ],
+                'jumlah_soal' => $jumlahSoal,
+                'waktu_mulai' => date('Y-m-d H:i:s')
+            ]
         ];
 
-        if ($existingProgress) {
-            // Update existing
-            $this->riwayatBelajarModel->update($existingProgress['id_riwayat'], $data);
-            $riwayatId = $existingProgress['id_riwayat'];
-        } else {
-            // Create new
-            $data['persentase_penguasaan'] = 0;
-            $data['waktu_dibuat'] = date('Y-m-d H:i:s');
-            $riwayatId = $this->riwayatBelajarModel->insert($data);
-        }
-
-        return $this->respondWithSuccess([
-            'riwayat_id' => $riwayatId,
-            'kaidah' => $kaidah,
-            'total_soal' => $soalCount
-        ], 'Pembelajaran dimulai');
+        return $this->respond($response, 201);
     }
 
     /**
-     * Search kaidah by keyword
-     * GET /api/kaidah/search?q={keyword}
+     * Search kaidah
+     * GET /api/kaidah/search
      */
     public function search()
     {
-        $userId = $this->getUserIdFromToken();
+        $authHeader = $this->request->getHeader('Authorization');
+        if (!$authHeader) {
+            return $this->fail('Token diperlukan', 401);
+        }
+
+        $token = str_replace('Bearer ', '', $authHeader->getValue());
+        $userId = $this->extractUserIdFromToken($token);
 
         if (!$userId) {
-            return $this->respondWithError('Token tidak valid', 401);
+            return $this->fail('Token tidak valid', 401);
         }
 
-        $keyword = $this->request->getGet('q');
-
-        if (empty($keyword)) {
-            return $this->respondWithError('Keyword pencarian harus diisi', 400);
+        $keyword = $this->request->getVar('q');
+        if (!$keyword) {
+            return $this->fail('Keyword pencarian diperlukan', 400);
         }
 
-        $results = $this->kaidahModel->searchWithProgress($userId, $keyword);
+        $page = $this->request->getVar('page') ?? 1;
+        $limit = $this->request->getVar('limit') ?? 10;
 
-        return $this->respondWithSuccess($results, 'Hasil pencarian berhasil diambil');
+        $results = $this->kaidahModel->searchKaidah($keyword, $userId, $limit, $page);
+
+        $response = [
+            'status' => 'success',
+            'message' => 'Hasil pencarian kaidah',
+            'data' => [
+                'keyword' => $keyword,
+                'results' => $results['data'],
+                'pagination' => [
+                    'current_page' => $results['current_page'],
+                    'per_page' => $results['per_page'],
+                    'total' => $results['total'],
+                    'total_pages' => ceil($results['total'] / $results['per_page'])
+                ]
+            ]
+        ];
+
+        return $this->respond($response, 200);
     }
 
     /**
-     * Get filter options
+     * Get available filters
      * GET /api/kaidah/filters
      */
     public function filters()
     {
-        $userId = $this->getUserIdFromToken();
-
-        if (!$userId) {
-            return $this->respondWithError('Token tidak valid', 401);
+        $authHeader = $this->request->getHeader('Authorization');
+        if (!$authHeader) {
+            return $this->fail('Token diperlukan', 401);
         }
 
-        $tingkatKesulitan = $this->kaidahModel->getTingkatKesulitanOptions();
-        $statusOptions = [
+        $token = str_replace('Bearer ', '', $authHeader->getValue());
+        $userId = $this->extractUserIdFromToken($token);
+
+        if (!$userId) {
+            return $this->fail('Token tidak valid', 401);
+        }
+
+        // Get difficulty levels
+        $difficultyLevels = [
+            ['value' => 'mudah', 'label' => 'Mudah', 'count' => $this->kaidahModel->countByDifficulty('mudah')],
+            ['value' => 'sedang', 'label' => 'Sedang', 'count' => $this->kaidahModel->countByDifficulty('sedang')],
+            ['value' => 'sulit', 'label' => 'Sulit', 'count' => $this->kaidahModel->countByDifficulty('sulit')]
+        ];
+
+        // Get progress status options
+        $progressOptions = [
             ['value' => 'belum_dimulai', 'label' => 'Belum Dimulai'],
             ['value' => 'sedang_belajar', 'label' => 'Sedang Belajar'],
             ['value' => 'selesai', 'label' => 'Selesai']
         ];
 
-        return $this->respondWithSuccess([
-            'tingkat_kesulitan' => $tingkatKesulitan,
-            'status' => $statusOptions
-        ], 'Filter options berhasil diambil');
+        $response = [
+            'status' => 'success',
+            'message' => 'Filter options berhasil diambil',
+            'data' => [
+                'difficulty_levels' => $difficultyLevels,
+                'progress_options' => $progressOptions,
+                'sort_options' => [
+                    ['value' => 'urutan', 'label' => 'Urutan'],
+                    ['value' => 'judul', 'label' => 'Judul A-Z'],
+                    ['value' => 'created', 'label' => 'Terbaru'],
+                    ['value' => 'difficulty', 'label' => 'Tingkat Kesulitan']
+                ]
+            ]
+        ];
+
+        return $this->respond($response, 200);
     }
 
     /**
-     * Helper method to get user ID from token
+     * Get user progress for specific kaidah
      */
-    private function getUserIdFromToken()
+    private function getUserKaidahProgress($userId, $kaidahId, $detailed = false)
     {
-        $authorization = $this->request->getHeaderLine('Authorization');
+        $db = \Config\Database::connect();
 
-        if (empty($authorization) || !preg_match('/Bearer\s+(.*)$/i', $authorization, $matches)) {
+        // Get completed sessions for this kaidah
+        $completedSessions = $db->table('sesi_pembelajaran')
+            ->where('id_siswa', $userId)
+            ->where('id_materi', $kaidahId)
+            ->where('status', 'selesai')
+            ->orderBy('waktu_selesai', 'DESC')
+            ->get()
+            ->getResultArray();
+
+        if (empty($completedSessions)) {
+            return [
+                'status' => 'belum_dimulai',
+                'total_sessions' => 0,
+                'average_score' => 0,
+                'best_score' => 0,
+                'last_attempt' => null,
+                'completed_questions' => 0
+            ];
+        }
+
+        $totalSessions = count($completedSessions);
+        $averageScore = array_sum(array_column($completedSessions, 'skor')) / $totalSessions;
+        $bestScore = max(array_column($completedSessions, 'skor'));
+        $lastAttempt = $completedSessions[0]['waktu_selesai'];
+        $totalQuestions = array_sum(array_column($completedSessions, 'soal_benar'));
+
+        // Determine status based on average score
+        $status = 'sedang_belajar';
+        if ($averageScore >= 80) {
+            $status = 'selesai';
+        }
+
+        $progress = [
+            'status' => $status,
+            'total_sessions' => $totalSessions,
+            'average_score' => round($averageScore, 2),
+            'best_score' => round($bestScore, 2),
+            'last_attempt' => $lastAttempt,
+            'completed_questions' => $totalQuestions
+        ];
+
+        if ($detailed) {
+            // Get session history
+            $progress['session_history'] = array_map(function($session) {
+                return [
+                    'session_id' => $session['id_sesi'],
+                    'score' => round($session['skor'], 2),
+                    'correct_answers' => $session['soal_benar'],
+                    'total_questions' => $session['total_soal'],
+                    'duration_minutes' => round($session['durasi_detik'] / 60, 1),
+                    'completed_at' => $session['waktu_selesai']
+                ];
+            }, $completedSessions);
+        }
+
+        return $progress;
+    }
+
+    /**
+     * Extract user ID dari simple token
+     */
+    private function extractUserIdFromToken($token)
+    {
+        try {
+            $decoded = base64_decode($token);
+            if ($decoded && strpos($decoded, ':') !== false) {
+                list($userId, $timestamp) = explode(':', $decoded);
+
+                // Check if token is not too old (24 hours)
+                if (time() - $timestamp < 86400) {
+                    return (int)$userId;
+                }
+            }
+        } catch (\Exception $e) {
             return null;
         }
 
-        $token = $matches[1];
-        $payload = json_decode(base64_decode($token), true);
-
-        if (!$payload || !isset($payload['user_id']) || !isset($payload['exp'])) {
-            return null;
-        }
-
-        // Check if token expired
-        if ($payload['exp'] < time()) {
-            return null;
-        }
-
-        return $payload['user_id'];
+        return null;
     }
 }

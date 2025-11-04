@@ -4,63 +4,57 @@ namespace App\Controllers\API;
 
 use App\Controllers\BaseController;
 use App\Models\SiswaModel;
-use CodeIgniter\HTTP\ResponseInterface;
+use CodeIgniter\API\ResponseTrait;
 
 class SiswaAuthController extends BaseController
 {
+    use ResponseTrait;
+
     protected $siswaModel;
 
     public function __construct()
     {
         $this->siswaModel = new SiswaModel();
-        header('Access-Control-Allow-Origin: *');
-        header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
-        header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
     }
 
+    /**
+     * API Login untuk Siswa (Mobile App)
+     * POST /api/siswa/login
+     */
     public function login()
     {
-        // Handle preflight OPTIONS request
-        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-            return $this->response->setStatusCode(200);
+        $rules = [
+            'nis' => 'required|min_length[3]|max_length[20]',
+            'password' => 'required|min_length[6]'
+        ];
+
+        if (!$this->validate($rules)) {
+            return $this->fail($this->validator->getErrors(), 400);
         }
 
-        $json = $this->request->getJSON();
+        $nis = $this->request->getVar('nis');
+        $password = $this->request->getVar('password');
 
-        if (!$json) {
-            return $this->respondWithError('Invalid JSON format', 400);
-        }
-
-        $nis = $json->nis ?? null;
-        $password = $json->password ?? null;
-        $deviceInfo = $json->device_info ?? null;
-
-        // Validation
-        if (!$nis || !$password) {
-            return $this->respondWithError('NIS dan password wajib diisi', 400);
-        }
-
-        // Find siswa by NIS
-        $siswa = $this->siswaModel->getSiswaByNis($nis);
+        // Cari siswa berdasarkan NIS
+        $siswa = $this->siswaModel->where('nis', $nis)
+                                  ->where('status', 'AKTIF')
+                                  ->first();
 
         if (!$siswa) {
-            return $this->respondWithError('NIS atau password salah', 401);
+            return $this->fail('NIS atau password salah', 401);
         }
 
-        // Verify password
-        if (!$this->siswaModel->verifyPassword($nis, $password)) {
-            return $this->respondWithError('NIS atau password salah', 401);
+        // Verifikasi password
+        if (!password_verify($password, $siswa['kata_sandi'])) {
+            return $this->fail('NIS atau password salah', 401);
         }
 
-        // Check if siswa is active
-        if ($siswa['status'] !== 'AKTIF') {
-            return $this->respondWithError('Akun siswa tidak aktif', 403);
-        }
+        // Simpan login history
+        $this->saveLoginHistory($siswa['id'], $nis);
 
-        // Record login history
-        $this->recordLoginHistory($siswa['nis'], $deviceInfo);
+        // Generate simple token (base64 encoded user_id + timestamp)
+        $token = base64_encode($siswa['id'] . ':' . time());
 
-        // Success response
         $response = [
             'status' => 'success',
             'message' => 'Login berhasil',
@@ -73,48 +67,41 @@ class SiswaAuthController extends BaseController
                     'kelas' => $siswa['kelas'],
                     'status' => $siswa['status']
                 ],
-                'token' => $this->generateSimpleToken($siswa),
+                'token' => $token,
                 'login_time' => date('Y-m-d H:i:s')
             ]
         ];
 
-        return $this->response->setJSON($response, 200);
+        return $this->respond($response, 200);
     }
 
+    /**
+     * Get Profile Siswa
+     * GET /api/siswa/profile
+     */
     public function profile()
     {
-        // Handle preflight OPTIONS request
-        if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
-            return $this->response->setStatusCode(200);
+        // Ambil token dari header
+        $authHeader = $this->request->getHeader('Authorization');
+        if (!$authHeader) {
+            return $this->fail('Token diperlukan', 401);
         }
 
-        // Get token from Authorization header
-        $token = $this->request->getHeaderLine('Authorization');
+        $token = str_replace('Bearer ', '', $authHeader->getValue());
+        $userId = $this->extractUserIdFromToken($token);
 
-        // Remove "Bearer " prefix if present
-        if (strpos($token, 'Bearer ') === 0) {
-            $token = substr($token, 7);
+        if (!$userId) {
+            return $this->fail('Token tidak valid', 401);
         }
 
-        if (!$token) {
-            return $this->respondWithError('Token tidak ditemukan', 401);
-        }
-
-        // Validate simple token (basic approach for skripsi)
-        $siswaData = $this->validateSimpleToken($token);
-
-        if (!$siswaData) {
-            return $this->respondWithError('Token tidak valid', 401);
-        }
-
-        // Get fresh siswa data
-        $siswa = $this->siswaModel->find($siswaData['id']);
-
+        $siswa = $this->siswaModel->find($userId);
         if (!$siswa) {
-            return $this->respondWithError('Data siswa tidak ditemukan', 404);
+            return $this->fail('Siswa tidak ditemukan', 404);
         }
 
-        // Response
+        // Get login history terakhir
+        $loginHistory = $this->getLatestLoginHistory($siswa['nis']);
+
         $response = [
             'status' => 'success',
             'message' => 'Profile berhasil diambil',
@@ -127,102 +114,162 @@ class SiswaAuthController extends BaseController
                     'kelas' => $siswa['kelas'],
                     'status' => $siswa['status'],
                     'waktu_dibuat' => $siswa['waktu_dibuat']
-                ]
+                ],
+                'login_history' => $loginHistory
             ]
         ];
 
-        return $this->response->setJSON($response, 200);
+        return $this->respond($response, 200);
     }
 
-    private function recordLoginHistory($nis, $deviceInfo = null)
+    /**
+     * Update Profile Siswa
+     * PUT /api/siswa/profile
+     */
+    public function updateProfile()
+    {
+        $authHeader = $this->request->getHeader('Authorization');
+        if (!$authHeader) {
+            return $this->fail('Token diperlukan', 401);
+        }
+
+        $token = str_replace('Bearer ', '', $authHeader->getValue());
+        $userId = $this->extractUserIdFromToken($token);
+
+        if (!$userId) {
+            return $this->fail('Token tidak valid', 401);
+        }
+
+        $rules = [
+            'nama_lengkap' => 'required|min_length[3]|max_length[100]',
+            'jenis_kelamin' => 'required|in_list[L,P]',
+            'kelas' => 'required|max_length[20]'
+        ];
+
+        if (!$this->validate($rules)) {
+            return $this->fail($this->validator->getErrors(), 400);
+        }
+
+        $siswa = $this->siswaModel->find($userId);
+        if (!$siswa) {
+            return $this->fail('Siswa tidak ditemukan', 404);
+        }
+
+        $data = [
+            'nama_lengkap' => $this->request->getVar('nama_lengkap'),
+            'jenis_kelamin' => $this->request->getVar('jenis_kelamin'),
+            'kelas' => $this->request->getVar('kelas'),
+            'waktu_diubah' => date('Y-m-d H:i:s')
+        ];
+
+        if ($this->siswaModel->update($userId, $data)) {
+            $response = [
+                'status' => 'success',
+                'message' => 'Profile berhasil diperbarui',
+                'data' => [
+                    'siswa' => array_merge($siswa, $data)
+                ]
+            ];
+            return $this->respond($response, 200);
+        } else {
+            return $this->fail('Gagal memperbarui profile', 500);
+        }
+    }
+
+    /**
+     * Logout Siswa
+     * POST /api/siswa/logout
+     */
+    public function logout()
+    {
+        $authHeader = $this->request->getHeader('Authorization');
+        if (!$authHeader) {
+            return $this->fail('Token diperlukan', 401);
+        }
+
+        // Untuk sederhananya, kita tidak perlu blacklist token
+        // Client hanya perlu menghapus token locally
+
+        $response = [
+            'status' => 'success',
+            'message' => 'Logout berhasil',
+            'data' => null
+        ];
+
+        return $this->respond($response, 200);
+    }
+
+    /**
+     * OPTIONS method untuk CORS
+     */
+    public function options()
+    {
+        return $this->respond(null, 200);
+    }
+
+    /**
+     * Simpan login history
+     */
+    private function saveLoginHistory($userId, $nis)
     {
         $db = \Config\Database::connect();
 
         $data = [
             'nis' => $nis,
             'login_time' => date('Y-m-d H:i:s'),
-            'device_info' => $deviceInfo ?: 'Unknown Device',
+            'device_info' => $this->request->getUserAgent() ?: 'Unknown',
             'ip_address' => $this->request->getIPAddress(),
             'waktu_dibuat' => date('Y-m-d H:i:s')
         ];
 
         $db->table('siswa_login_history')->insert($data);
+
+        // Keep only last 50 login records
+        $subquery = $db->table('siswa_login_history')
+                       ->select('id')
+                       ->where('nis', $nis)
+                       ->orderBy('login_time', 'DESC')
+                       ->limit(50, 50);
+
+        $db->table('siswa_login_history')
+           ->whereIn('id', $subquery)
+           ->delete();
     }
 
-    private function generateSimpleToken($siswa)
+    /**
+     * Get login history terakhir
+     */
+    private function getLatestLoginHistory($nis, $limit = 5)
     {
-        // Simple token generation for skripsi purposes
-        // Format: base64_encode(id:nis:timestamp:hash)
-        $timestamp = time();
-        $payload = $siswa['id'] . ':' . $siswa['nis'] . ':' . $timestamp;
-        $hash = hash('sha256', $payload . 'secret_key_skripsi');
-        $token = base64_encode($payload . ':' . $hash);
+        $db = \Config\Database::connect();
 
-        return $token;
+        return $db->table('siswa_login_history')
+            ->where('nis', $nis)
+            ->orderBy('login_time', 'DESC')
+            ->limit($limit)
+            ->get()
+            ->getResultArray();
     }
 
-    private function validateSimpleToken($token)
+    /**
+     * Extract user ID dari simple token
+     */
+    private function extractUserIdFromToken($token)
     {
         try {
             $decoded = base64_decode($token);
-            if (!$decoded) {
-                return false;
+            if ($decoded && strpos($decoded, ':') !== false) {
+                list($userId, $timestamp) = explode(':', $decoded);
+
+                // Check if token is not too old (24 hours)
+                if (time() - $timestamp < 86400) {
+                    return (int)$userId;
+                }
             }
-
-            $parts = explode(':', $decoded);
-            if (count($parts) !== 4) {
-                return false;
-            }
-
-            $id = $parts[0];
-            $nis = $parts[1];
-            $timestamp = $parts[2];
-            $hash = $parts[3];
-
-            // Check if token is not too old (24 hours)
-            if (time() - $timestamp > 86400) {
-                return false;
-            }
-
-            // Verify hash
-            $payload = $id . ':' . $nis . ':' . $timestamp;
-            $expectedHash = hash('sha256', $payload . 'secret_key_skripsi');
-
-            if ($hash !== $expectedHash) {
-                return false;
-            }
-
-            // Verify siswa exists and matches
-            $siswa = $this->siswaModel->find($id);
-            if (!$siswa || $siswa['nis'] !== $nis) {
-                return false;
-            }
-
-            return [
-                'id' => $id,
-                'nis' => $nis,
-                'timestamp' => $timestamp
-            ];
-
         } catch (\Exception $e) {
-            return false;
+            return null;
         }
-    }
 
-    private function respondWithError($message, $code = 400)
-    {
-        $response = [
-            'status' => 'error',
-            'message' => $message,
-            'data' => null
-        ];
-
-        return $this->response->setJSON($response, $code);
-    }
-
-    public function options()
-    {
-        // Handle CORS preflight
-        return $this->response->setStatusCode(200);
+        return null;
     }
 }

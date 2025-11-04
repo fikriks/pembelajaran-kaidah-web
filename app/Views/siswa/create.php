@@ -103,7 +103,7 @@
                     <i class="ti ti-device-floppy me-2"></i>Simpan
                 </button>
                 <a href="<?= site_url('siswa') ?>" class="btn btn-danger">
-                    <i class="ti ti-x-circle me-2"></i>Batal
+                    <i class="ti ti-circle-x me-2"></i>Batal
                 </a>
             </div>
         </form>

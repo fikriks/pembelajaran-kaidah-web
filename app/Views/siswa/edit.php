@@ -151,37 +151,10 @@
                     <i class="ti ti-key me-2"></i>Reset Password
                 </a>
                 <a href="<?= site_url('siswa') ?>" class="btn btn-danger">
-                    <i class="ti ti-x-circle me-2"></i>Batal
+                    <i class="ti ti-circle-x me-2"></i>Batal
                 </a>
             </div>
         </form>
-    </div>
-</div>
-
-<!-- Quick Actions -->
-<div class="card border-0 shadow-sm mt-4">
-    <div class="card-body">
-        <h6 class="card-title mb-3">Quick Actions</h6>
-        <div class="row">
-            <div class="col-md-4 mb-2">
-                <a href="<?= site_url('siswa/' . $siswa['id'] . '/login-history') ?>"
-                   class="btn btn-info w-100">
-                    <i class="ti ti-clock-history me-2"></i>Lihat Login History
-                </a>
-            </div>
-            <div class="col-md-4 mb-2">
-                <button type="button" class="btn btn-success w-100" onclick="window.print()">
-                    <i class="ti ti-printer me-2"></i>Cetak Data
-                </button>
-            </div>
-            <div class="col-md-4 mb-2">
-                <button type="button"
-                        class="btn btn-danger w-100"
-                        onclick="confirmDelete(<?= $siswa['id'] ?>)">
-                    <i class="ti ti-trash me-2"></i>Hapus Data
-                </button>
-            </div>
-        </div>
     </div>
 </div>
 <?= $this->endSection() ?>

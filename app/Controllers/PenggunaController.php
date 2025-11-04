@@ -20,40 +20,23 @@ class PenggunaController extends BaseController
     {
         $this->requireRole('ADMIN');
 
-        $perPage = $this->request->getGet('per_page') ?? 10;
-        $search = $this->request->getGet('search');
-        $role = $this->request->getGet('role');
-        $status = $this->request->getGet('status');
+        // Get all data for client-side DataTables
+        $users = $this->penggunaModel->findAll();
 
-        $builder = $this->penggunaModel;
+        // Calculate statistics
+        $stats = [
+            'total' => $this->penggunaModel->countAll(),
+            'aktif' => $this->penggunaModel->where('status', 'AKTIF')->countAll(),
+            'nonaktif' => $this->penggunaModel->where('status', 'NONAKTIF')->countAll(),
+            'admin' => $this->penggunaModel->where('hak_akses', 'ADMIN')->countAll()
+        ];
 
-        // Apply filters
-        if ($search) {
-            $builder = $builder->like('nama_lengkap', $search)
-                             ->orLike('nama_pengguna', $search);
-        }
-
-        if ($role && in_array($role, ['ADMIN', 'GURU'])) {
-            $builder = $builder->where('hak_akses', $role);
-        }
-
-        if ($status && in_array($status, ['AKTIF', 'NONAKTIF'])) {
-            $builder = $builder->where('status', $status);
-        }
-
-        $users = $builder->paginate($perPage);
-
-        $this->data = array_merge($this->data, [
-            'page_title' => 'Manajemen Pengguna',
+        $data = [
             'users' => $users,
-            'pager' => $this->penggunaModel->pager,
-            'search' => $search,
-            'role' => $role,
-            'status' => $status,
-            'per_page' => $perPage
-        ]);
+            'stats' => $stats
+        ];
 
-        return view('pengguna/index', $this->data);
+        return view('pengguna/index', $data);
     }
 
     /**
@@ -103,7 +86,7 @@ class PenggunaController extends BaseController
         ];
 
         if ($this->penggunaModel->insert($data)) {
-            return redirect()->to(site_url('users'))
+            return redirect()->to(site_url('pengguna'))
                            ->with('success', 'Pengguna baru berhasil ditambahkan.');
         }
 
@@ -122,7 +105,7 @@ class PenggunaController extends BaseController
         $user = $this->penggunaModel->find($id);
 
         if (!$user) {
-            return redirect()->to(site_url('users'))
+            return redirect()->to(site_url('pengguna'))
                            ->with('error', 'Pengguna tidak ditemukan.');
         }
 
@@ -144,7 +127,7 @@ class PenggunaController extends BaseController
         $user = $this->penggunaModel->find($id);
 
         if (!$user) {
-            return redirect()->to(site_url('users'))
+            return redirect()->to(site_url('pengguna'))
                            ->with('error', 'Pengguna tidak ditemukan.');
         }
 
@@ -167,7 +150,7 @@ class PenggunaController extends BaseController
         $user = $this->penggunaModel->find($id);
 
         if (!$user) {
-            return redirect()->to(site_url('users'))
+            return redirect()->to(site_url('pengguna'))
                            ->with('error', 'Pengguna tidak ditemukan.');
         }
 
@@ -205,7 +188,7 @@ class PenggunaController extends BaseController
         }
 
         if ($this->penggunaModel->update($id, $data)) {
-            return redirect()->to(site_url('users'))
+            return redirect()->to(site_url('pengguna'))
                            ->with('success', 'Data pengguna berhasil diperbarui.');
         }
 
@@ -224,22 +207,22 @@ class PenggunaController extends BaseController
         $user = $this->penggunaModel->find($id);
 
         if (!$user) {
-            return redirect()->to(site_url('users'))
+            return redirect()->to(site_url('pengguna'))
                            ->with('error', 'Pengguna tidak ditemukan.');
         }
 
         // Prevent deletion of current user
         if ($this->currentUser['id_pengguna'] == $id) {
-            return redirect()->to(site_url('users'))
+            return redirect()->to(site_url('pengguna'))
                            ->with('error', 'Tidak dapat menghapus akun yang sedang digunakan.');
         }
 
         if ($this->penggunaModel->delete($id)) {
-            return redirect()->to(site_url('users'))
+            return redirect()->to(site_url('pengguna'))
                            ->with('success', 'Pengguna berhasil dihapus.');
         }
 
-        return redirect()->to(site_url('users'))
+        return redirect()->to(site_url('pengguna'))
                        ->with('error', 'Gagal menghapus pengguna. Silakan coba lagi.');
     }
 
@@ -271,6 +254,35 @@ class PenggunaController extends BaseController
         }
 
         return $this->jsonError('Gagal memperbarui status pengguna.');
+    }
+
+    /**
+     * Check username availability
+     */
+    public function checkUsername()
+    {
+        $this->requireRole('ADMIN');
+
+        $json = $this->request->getJSON(true);
+        $username = $json['username'] ?? '';
+        $excludeId = $json['exclude_id'] ?? null;
+
+        if (empty($username)) {
+            return $this->jsonError('Username diperlukan');
+        }
+
+        $query = $this->penggunaModel->where('nama_pengguna', $username);
+
+        if ($excludeId) {
+            $query->where('id_pengguna !=', $excludeId);
+        }
+
+        $exists = $query->countAllResults() > 0;
+
+        return $this->jsonResponse([
+            'exists' => $exists,
+            'message' => $exists ? 'Username sudah digunakan' : 'Username tersedia'
+        ]);
     }
 
     /**

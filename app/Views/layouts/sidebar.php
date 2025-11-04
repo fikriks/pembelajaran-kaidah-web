@@ -79,7 +79,7 @@
           <span class="hide-menu">Pengaturan</span>
         </li>
         <li class="sidebar-item">
-          <a class="sidebar-link <?= (strpos(current_url(), site_url('users')) !== false) ? 'active' : '' ?>" href="<?= site_url('users') ?>" aria-expanded="false">
+          <a class="sidebar-link <?= (strpos(current_url(), site_url('pengguna')) !== false) ? 'active' : '' ?>" href="<?= site_url('pengguna') ?>" aria-expanded="false">
             <span>
               <i class="ti ti-user"></i>
             </span>

@@ -118,7 +118,7 @@ class Filters extends BaseFilters
                 'api/auth/logout'
             ]
         ],
-        'auth' => [
+      'auth' => [
             'before' => [
                 'dashboard*',
                 'users*',

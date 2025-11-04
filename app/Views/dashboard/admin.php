@@ -160,10 +160,10 @@
                     <div class="position-relative d-inline-block">
                         <div class="progress-circle" style="width: 120px; height: 120px;">
                             <svg class="progress-ring" width="120" height="120">
-                                <circle class="progress-ring-circle" stroke="#e9ecef" stroke-width="8" fill="transparent" r="52" cx="60" cy="60"/>
+                                <circle class="progress-ring-circle" stroke="#e9ecef" stroke-width="8" fill="transparent" r="52" cx="60" cy="60" />
                                 <circle class="progress-ring-circle" stroke="#4CAF50" stroke-width="8" fill="transparent" r="52" cx="60" cy="60"
-                                        stroke-dasharray="326.73" stroke-dashoffset="81.68" stroke-linecap="round"
-                                        style="transform: rotate(-90deg); transform-origin: 50% 50%;"/>
+                                    stroke-dasharray="326.73" stroke-dashoffset="81.68" stroke-linecap="round"
+                                    style="transform: rotate(-90deg); transform-origin: 50% 50%;" />
                             </svg>
                             <div class="progress-text">
                                 <h4 class="mb-0 fw-bold">75%</h4>
@@ -436,4 +436,9 @@
         </div>
     </div>
 </div>
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
+<script src="<?= base_url('assets/libs/apexcharts/dist/apexcharts.min.js') ?>"></script>
+<script src="<?= base_url('assets/js/dashboard.js') ?>"></script>
 <?= $this->endSection() ?>

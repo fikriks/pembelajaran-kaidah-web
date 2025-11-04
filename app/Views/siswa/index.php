@@ -2,9 +2,6 @@
 
 <?= $this->section('title') ?>Manajemen Siswa - <?= $this->endSection() ?>
 
-<?= $this->section('styles') ?>
-<?= $this->endSection() ?>
-
 <?= $this->section('content') ?>
 <!-- Page Header -->
 <div class="mb-4">
@@ -249,12 +246,6 @@
 $(document).ready(function() {
     // Get DataTable instance
     const table = $('#siswaTable').DataTable();
-
-    // Row click handler (excluding action buttons)
-    DataTableHelper.addRowClickHandler('#siswaTable', function(row, e) {
-        // Optional: Add row click functionality
-        console.log('Row clicked:', row);
-    });
 });
 
 function confirmDelete(id) {

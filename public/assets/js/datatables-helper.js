@@ -23,20 +23,11 @@ window.DataTableHelper = {
             "sProcessing": "Memproses...",
             "sSearch": "Cari:",
             "sZeroRecords": "Tidak ditemukan data yang cocok",
-            "oPaginate": {
-                "sFirst": "Pertama",
-                "sLast": "Terakhir",
-                "sNext": "Selanjutnya",
-                "sPrevious": "Sebelumnya"
-            },
             "oAria": {
                 "sSortAscending": ": aktifkan untuk mengurutkan kolom secara ascending",
                 "sSortDescending": ": aktifkan untuk mengurutkan kolom secara descending"
             }
         },
-        dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
-             '<"row"<"col-sm-12"tr>>' +
-             '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
         initComplete: function() {
             // Add custom styling to DataTables elements
             var api = this.api();
