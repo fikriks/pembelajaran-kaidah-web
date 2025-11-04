@@ -233,14 +233,31 @@
                             </td>
                             <td>
                                 <div>
-                                    <?php if (isset($item['pilihan_jawaban']) && is_array($item['pilihan_jawaban'])): ?>
-                                        <?php $correctCount = 0; ?>
-                                        <?php foreach ($item['pilihan_jawaban'] as $jawaban): ?>
-                                            <?php if (!empty($jawaban['is_benar'])) $correctCount++; ?>
-                                        <?php endforeach; ?>
+                                    <?php if (isset($item['pilihan_jawaban']) && is_array($item['pilihan_jawaban']) && !empty($item['pilihan_jawaban'])): ?>
+                                        <?php
+                                        $correctCount = 0;
+                                        $correctAnswer = '';
+                                        $fullCorrectAnswer = '';
+                                        foreach ($item['pilihan_jawaban'] as $jawaban):
+                                            if ($jawaban['is_benar'] == 1) {
+                                                $correctCount++;
+                                                $correctAnswer = substr($jawaban['teks_jawaban'], 0, 30);
+                                                $fullCorrectAnswer = $jawaban['teks_jawaban'];
+                                                if (strlen($jawaban['teks_jawaban']) > 30) {
+                                                    $correctAnswer .= '...';
+                                                }
+                                            }
+                                        endforeach;
+                                        ?>
                                         <small class="text-muted"><?= count($item['pilihan_jawaban']) ?> opsi</small>
                                         <br>
                                         <span class="badge bg-success rounded-3"><?= $correctCount ?> benar</span>
+                                        <?php if (!empty($correctAnswer)): ?>
+                                            <br>
+                                            <small class="text-muted" title="<?= esc($fullCorrectAnswer) ?>">
+                                                Jawaban: <?= esc($correctAnswer) ?>
+                                            </small>
+                                        <?php endif; ?>
                                     <?php else: ?>
                                         <small class="text-muted">Tidak ada jawaban</small>
                                     <?php endif; ?>

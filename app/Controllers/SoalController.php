@@ -29,6 +29,7 @@ class SoalController extends BaseController
     {
         $this->soalModel = new SoalModel();
         $this->kaidahModel = new KaidahModel();
+        $this->pilihanJawabanModel = new \App\Models\PilihanJawabanModel();
         $this->lcm = new LCMAlgorithm();
     }
 
@@ -49,6 +50,27 @@ class SoalController extends BaseController
         ->orderBy('soal.id_materi', 'ASC')
         ->orderBy('soal.id_soal', 'DESC')
         ->findAll();
+
+        // Get pilihan jawaban for each soal
+        if (!empty($soal)) {
+            $soalIds = array_column($soal, 'id_soal');
+
+            $pilihanJawaban = $this->pilihanJawabanModel->whereIn('id_soal', $soalIds)
+                ->orderBy('id_soal', 'ASC')
+                ->orderBy('urutan', 'ASC')
+                ->findAll();
+
+            // Group pilihan jawaban by soal ID
+            $jawabanBySoal = [];
+            foreach ($pilihanJawaban as $jawaban) {
+                $jawabanBySoal[$jawaban['id_soal']][] = $jawaban;
+            }
+
+            // Attach pilihan jawaban to each soal
+            foreach ($soal as &$item) {
+                $item['pilihan_jawaban'] = $jawabanBySoal[$item['id_soal']] ?? [];
+            }
+        }
 
         // Get statistics
         $stats = $this->soalModel->getSoalStatistics();
