@@ -225,9 +225,13 @@ class SoalModel extends Model
         $sulit = $this->where('tingkat_kesulitan', 'sulit')->countAllResults();
 
         // Average points
-        $avgPoints = $this->selectAvg('poin')->first();
-        $maxPoints = $this->selectMax('poin')->first();
-        $minPoints = $this->selectMin('poin')->first();
+        $avgResult = $this->selectAvg('poin')->first();
+        $maxResult = $this->selectMax('poin')->first();
+        $minResult = $this->selectMin('poin')->first();
+
+        $avgPoints = $avgResult ? $avgResult['poin'] : 0;
+        $maxPoints = $maxResult ? $maxResult['poin'] : 0;
+        $minPoints = $minResult ? $minResult['poin'] : 0;
 
         return [
             'total' => $total,
@@ -235,8 +239,8 @@ class SoalModel extends Model
             'sedang' => $sedang,
             'sulit' => $sulit,
             'rata_rata_poin' => $avgPoints ? round($avgPoints, 2) : 0,
-            'poin_tertinggi' => $maxPoints ?: 0,
-            'poin_terendah' => $minPoints ?: 0
+            'poin_tertinggi' => $maxPoints,
+            'poin_terendah' => $minPoints
         ];
     }
 

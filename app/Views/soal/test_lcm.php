@@ -5,21 +5,24 @@
 <?= $this->section('styles') ?>
 <style>
     .lcm-header {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+        background: white;
+        color: #212121;
         padding: 2rem;
         border-radius: 0.5rem;
         margin-bottom: 2rem;
+        border: 1px solid #e9ecef;
     }
 
     .lcm-formula {
         font-family: 'Courier New', monospace;
-        background: rgba(0,0,0,0.2);
+        background: #f8f9fa;
         padding: 1rem;
         border-radius: 0.25rem;
         font-size: 1.2rem;
         text-align: center;
         margin: 1rem 0;
+        color: #495057;
+        border: 1px solid #e9ecef;
     }
 
     .lcm-params {
@@ -77,13 +80,13 @@
     }
 
     .chi-square-success {
-        background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
+        background: #d4edda;
         border: 1px solid #c3e6cb;
         color: #155724;
     }
 
     .chi-square-fail {
-        background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
+        background: #f8d7da;
         border: 1px solid #f5c6cb;
         color: #721c24;
     }
@@ -99,7 +102,7 @@
 
     .distribution-fill {
         height: 100%;
-        background: linear-gradient(90deg, #4CAF50, #8BC34A);
+        background: #4CAF50;
         transition: width 0.5s ease;
         display: flex;
         align-items: center;
@@ -153,18 +156,18 @@
     }
 
     .alert-info {
-        background: linear-gradient(135deg, #d1ecf1 0%, #bee5eb 100%);
+        background: #d1ecf1;
         border-color: #bee5eb;
     }
 
     .btn-test {
-        background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+        background: #007bff;
         border: none;
         color: white;
     }
 
     .btn-test:hover {
-        background: linear-gradient(135deg, #0056b3 0%, #004085 100%);
+        background: #0056b3;
         transform: translateY(-1px);
     }
 </style>

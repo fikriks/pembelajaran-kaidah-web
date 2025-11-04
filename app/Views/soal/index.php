@@ -26,18 +26,18 @@
     }
 
     .badge-mudah {
-        background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
-        color: #1a5f3f;
+        background-color: #4CAF50;
+        color: white;
     }
 
     .badge-sedang {
-        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-        color: #8b4513;
+        background-color: #FF9800;
+        color: white;
     }
 
     .badge-sulit {
-        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-        color: #8b0000;
+        background-color: #F44336;
+        color: white;
     }
 
     .soal-card {
@@ -161,64 +161,21 @@
     </div>
 </div>
 
-<!-- Search and Filter -->
-<div class="card border-0 shadow-sm mb-4">
-    <div class="card-body p-3">
-        <form method="GET" action="<?= site_url('soal') ?>" class="row g-3">
-            <div class="col-md-4">
-                <div class="input-group">
-                    <span class="input-group-text">
-                        <i class="ti ti-search"></i>
-                    </span>
-                    <input type="text" class="form-control" name="search" placeholder="Cari pertanyaan..." value="<?= esc($search ?? '') ?>">
-                </div>
-            </div>
-            <div class="col-md-3">
-                <select class="form-select" name="materi">
-                    <option value="">Semua Materi</option>
-                    <?php foreach ($allMateri as $materi): ?>
-                        <option value="<?= $materi['id_materi'] ?>" <?= ($materiFilter ?? '') == $materi['id_materi'] ? 'selected' : '' ?>>
-                            <?= esc($materi['judul_kaidah']) ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <select class="form-select" name="difficulty">
-                    <option value="">Semua Tingkat</option>
-                    <option value="mudah" <?= ($difficultyFilter ?? '') === 'mudah' ? 'selected' : '' ?>>Mudah</option>
-                    <option value="sedang" <?= ($difficultyFilter ?? '') === 'sedang' ? 'selected' : '' ?>>Sedang</option>
-                    <option value="sulit" <?= ($difficultyFilter ?? '') === 'sulit' ? 'selected' : '' ?>>Sulit</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="ti ti-search me-1"></i>Cari
-                </button>
-            </div>
-            <div class="col-md-1">
-                <a href="<?= site_url('soal') ?>" class="btn btn-secondary w-100">
-                    <i class="ti ti-refresh me-1"></i>Reset
-                </a>
-            </div>
-        </form>
-    </div>
-</div>
 
 <!-- Data Table -->
 <div class="card border-0 shadow-sm dataTables-card">
     <div class="card-body">
         <div class="table-responsive">
-            <table id="soalTable" class="table text-nowrap mb-0 align-middle datatable" data-type="soal">
+            <table id="soalTable" class="table table-bordered text-nowrap mb-0 align-middle datatable" data-type="basic">
                 <thead class="text-dark">
                     <tr>
-                        <th class="border-bottom-0">No</th>
-                        <th class="border-bottom-0">Pertanyaan</th>
-                        <th class="border-bottom-0">Materi</th>
-                        <th class="border-bottom-0">Tingkat</th>
-                        <th class="border-bottom-0">Poin</th>
-                        <th class="border-bottom-0">Jawaban</th>
-                        <th class="border-bottom-0 text-center">Aksi</th>
+                        <th>ID</th>
+                        <th>Pertanyaan</th>
+                        <th>Materi</th>
+                        <th>Tingkat</th>
+                        <th>Poin</th>
+                        <th>Jawaban</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -234,10 +191,9 @@
                         </td>
                     </tr>
                     <?php else: ?>
-                        <?php $no = ($currentPage - 1) * $perPage + 1; ?>
                         <?php foreach ($soal as $item): ?>
                         <tr class="soal-card <?= $item['tingkat_kesulitan'] ?>">
-                            <td><?= $no++ ?></td>
+                            <td><?= $item['id_soal'] ?></td>
                             <td>
                                 <div class="d-flex align-items-start">
                                     <div>
@@ -296,21 +252,21 @@
                                     <button type="button" class="btn btn-sm btn-info me-1"
                                             onclick="previewSoal(<?= $item['id_soal'] ?>)"
                                             title="Preview Soal">
-                                        <i class="ti ti-eye"></i>
+                                        <i class="ti ti-eye me-1"></i>Preview
                                     </button>
 
                                     <!-- Edit -->
                                     <a href="<?= site_url('soal/' . $item['id_soal'] . '/edit') ?>"
                                        class="btn btn-sm btn-warning me-1"
                                        title="Edit">
-                                        <i class="ti ti-edit"></i>
+                                        <i class="ti ti-edit me-1"></i>Edit
                                     </a>
 
                                     <!-- LCM Test -->
                                     <button type="button" class="btn btn-sm btn-secondary me-1"
                                             onclick="testLCMForMateri(<?= $item['id_materi'] ?>)"
                                             title="Test LCM">
-                                        <i class="ti ti-test-pipe"></i>
+                                        <i class="ti ti-test-pipe me-1"></i>Test
                                     </button>
 
                                     <!-- Delete -->
@@ -318,7 +274,7 @@
                                             class="btn btn-sm btn-danger"
                                             onclick="confirmDelete(<?= $item['id_soal'] ?>, '<?= esc(addslashes(substr($item['pertanyaan'], 0, 30))) ?>')"
                                             title="Hapus">
-                                        <i class="ti ti-trash"></i>
+                                        <i class="ti ti-trash me-1"></i>Hapus
                                     </button>
                                 </div>
                             </td>
@@ -328,16 +284,6 @@
                 </tbody>
             </table>
         </div>
-
-        <!-- Pagination -->
-        <?php if (isset($pager)): ?>
-            <div class="d-flex justify-content-between align-items-center mt-3">
-                <small class="text-muted">
-                    Menampilkan <?= count($soal) ?> dari <?= $total ?> data
-                </small>
-                <?= $pager->links('default', 'custom_pagination') ?>
-            </div>
-        <?php endif; ?>
     </div>
 </div>
 
@@ -406,27 +352,9 @@ function testLCMForMateri(materiId) {
     window.open(`<?= site_url('soal/preview-randomization') ?>/${materiId}`, '_blank');
 }
 
-// Initialize DataTable if needed
-$(document).ready(function() {
-    if ($.fn.DataTable) {
-        $('#soalTable').DataTable({
-            responsive: true,
-            pageLength: 10,
-            ordering: true,
-            searching: false, // We use custom search
-            paging: false, // We use custom pagination
-            info: false,
-            language: {
-                "emptyTable": "Tidak ada data soal",
-                "zeroRecords": "Tidak ditemukan data yang cocok",
-                "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-                "infoEmpty": "Menampilkan 0 sampai 0 dari 0 data",
-                "infoFiltered": "(difilter dari _MAX_ total data)"
-            }
-        });
-    }
+// DataTables will be auto-initialized by datatables-helper.js
 
-    // Auto-refresh statistics every 30 seconds
+// Auto-refresh statistics every 30 seconds
     setInterval(function() {
         fetch('<?= site_url('soal/statistics') ?>')
             .then(response => response.json())

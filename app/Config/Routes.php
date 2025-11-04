@@ -94,6 +94,7 @@ $routes->group('kaidah', function($routes) {
     $routes->get('create', 'KaidahController::create');
     $routes->post('/', 'KaidahController::store');
     $routes->get('(:num)', 'KaidahController::show/$1');
+    $routes->get('(:num)/show', 'KaidahController::show/$1');
     $routes->get('(:num)/edit', 'KaidahController::edit/$1');
     $routes->put('(:num)', 'KaidahController::update/$1');
     $routes->delete('(:num)', 'KaidahController::delete/$1');
@@ -164,13 +165,7 @@ $routes->group('api', ['namespace' => 'App\Controllers\API'], function($routes) 
     $routes->options('siswa/profile', 'SiswaAuthController::options');
 
     // Kaidah routes
-    $routes->get('kaidah', 'KaidahController::index');
-    $routes->get('kaidah/(:num)', 'KaidahController::show/$1');
-    $routes->get('kaidah/(:num)/progress', 'KaidahController::progress/$1');
-    $routes->post('kaidah/(:num)/start', 'KaidahController::start/$1');
-    $routes->get('kaidah/search', 'KaidahController::search');
-    $routes->get('kaidah/filters', 'KaidahController::filters');
-
+    
     // Sesi/Learning routes
     $routes->post('sesi/start', 'SesiController::start');
     $routes->get('sesi/active', 'SesiController::active');

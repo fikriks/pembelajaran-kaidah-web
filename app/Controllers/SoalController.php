@@ -33,41 +33,22 @@ class SoalController extends BaseController
     }
 
     /**
-     * Display list of soal dengan filter dan pencarian
+     * Display list of soal dengan DataTables
      */
     public function index()
     {
-        $search = $this->request->getGet('search');
-        $materiFilter = $this->request->getGet('materi');
-        $difficultyFilter = $this->request->getGet('difficulty');
-        $page = $this->request->getGet('page') ?? 1;
-        $perPage = 10;
-
-        // Build query
-        $builder = $this->soalModel->select('
+        // Get all data for client-side DataTables
+        $soal = $this->soalModel->select('
             soal.*,
             materi_kaidah.judul_kaidah,
             materi_kaidah.tingkat_kesulitan as tingkat_kesulitan_materi,
             pengguna.nama_lengkap as nama_pembuat
         ')
         ->join('materi_kaidah', 'materi_kaidah.id_materi = soal.id_materi')
-        ->join('pengguna', 'pengguna.id_pengguna = soal.dibuat_oleh');
-
-        // Apply filters
-        if ($search) {
-            $builder->like('soal.pertanyaan', $search);
-        }
-        if ($materiFilter) {
-            $builder->where('soal.id_materi', $materiFilter);
-        }
-        if ($difficultyFilter) {
-            $builder->where('soal.tingkat_kesulitan', $difficultyFilter);
-        }
-
-        // Get filtered data with pagination
-        $soal = $builder->orderBy('soal.id_materi', 'ASC')
-                       ->orderBy('soal.id_soal', 'DESC')
-                       ->paginate($perPage, 'default', $page);
+        ->join('pengguna', 'pengguna.id_pengguna = soal.dibuat_oleh')
+        ->orderBy('soal.id_materi', 'ASC')
+        ->orderBy('soal.id_soal', 'DESC')
+        ->findAll();
 
         // Get statistics
         $stats = $this->soalModel->getSoalStatistics();
@@ -79,13 +60,6 @@ class SoalController extends BaseController
         $data = [
             'title' => 'Manajemen Soal',
             'soal' => $soal,
-            'pager' => $this->soalModel->pager,
-            'total' => count($soal),
-            'perPage' => $perPage,
-            'currentPage' => $page,
-            'search' => $search,
-            'materiFilter' => $materiFilter,
-            'difficultyFilter' => $difficultyFilter,
             'stats' => $stats,
             'allMateri' => $allMateri,
             'user' => session()->get('user')

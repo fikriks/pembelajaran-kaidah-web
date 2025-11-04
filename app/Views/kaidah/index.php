@@ -206,19 +206,19 @@
                                 <small class="text-muted"><?= esc($item['nama_pembuat'] ?? 'Unknown') ?></small>
                             </td>
                             <td class="text-center">
-                                <div class="table-actions justify-content-center">
+                                <div class="table-actions">
                                     <!-- View -->
-                                    <a href="<?= site_url('kaidah/' . $item['id_materi']) ?>"
+                                    <a href="<?= site_url('kaidah/' . $item['id_materi'] . '/show') ?>"
                                        class="btn btn-sm btn-info me-1"
                                        title="Lihat Detail">
-                                        <i class="ti ti-eye"></i>
+                                        <i class="ti ti-eye me-1"></i>Detail
                                     </a>
 
                                     <!-- Edit -->
                                     <a href="<?= site_url('kaidah/' . $item['id_materi'] . '/edit') ?>"
                                        class="btn btn-sm btn-warning me-1"
                                        title="Edit">
-                                        <i class="ti ti-edit"></i>
+                                        <i class="ti ti-edit me-1"></i>Edit
                                     </a>
 
                                     <!-- Delete -->
@@ -226,7 +226,7 @@
                                             class="btn btn-sm btn-danger"
                                             onclick="confirmDelete(<?= $item['id_materi'] ?>, '<?= esc(addslashes($item['judul_kaidah'])) ?>')"
                                             title="Hapus">
-                                        <i class="ti ti-trash"></i>
+                                        <i class="ti ti-trash me-1"></i>Hapus
                                     </button>
                                 </div>
                             </td>
