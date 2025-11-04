@@ -38,33 +38,17 @@
             <span class="hide-menu">Materi Kaidah</span>
           </a>
         </li>
-        <li class="sidebar-item">
-          <a class="sidebar-link" href="<?= site_url('kaidah/create') ?>" aria-expanded="false">
-            <span>
-              <i class="ti ti-plus"></i>
-            </span>
-            <span class="hide-menu">Tambah Kaidah</span>
-          </a>
-        </li>
 
         <li class="nav-small-cap">
           <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
           <span class="hide-menu">Manajemen Soal</span>
         </li>
         <li class="sidebar-item">
-          <a class="sidebar-link" href="<?= site_url('soal') ?>" aria-expanded="false">
+          <a class="sidebar-link <?= (strpos(current_url(), site_url('soal')) !== false) ? 'active' : '' ?>" href="<?= site_url('soal') ?>" aria-expanded="false">
             <span>
               <i class="ti ti-file-text"></i>
             </span>
             <span class="hide-menu">Bank Soal</span>
-          </a>
-        </li>
-        <li class="sidebar-item">
-          <a class="sidebar-link" href="<?= site_url('soal/create') ?>" aria-expanded="false">
-            <span>
-              <i class="ti ti-plus"></i>
-            </span>
-            <span class="hide-menu">Tambah Soal</span>
           </a>
         </li>
 
