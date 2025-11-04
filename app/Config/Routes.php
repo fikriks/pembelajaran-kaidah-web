@@ -106,7 +106,7 @@ $routes->group('soal', function($routes) {
     $routes->get('/', 'SoalController::index');
     $routes->get('create', 'SoalController::create');
     $routes->post('/', 'SoalController::store');
-    $routes->get('(:num)', 'SoalController::show/$1');
+    $routes->get('(:num)/show', 'SoalController::show/$1');
     $routes->get('(:num)/edit', 'SoalController::edit/$1');
     $routes->put('(:num)', 'SoalController::update/$1');
     $routes->delete('(:num)', 'SoalController::delete/$1');

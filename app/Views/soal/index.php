@@ -266,7 +266,7 @@
                             <td class="text-center">
                                 <div class="table-actions justify-content-center">
                                     <!-- Preview -->
-                                    <a href="<?= site_url('soal/' . $item['id_soal']) ?>"
+                                    <a href="<?= site_url('soal/' . $item['id_soal'] . '/show') ?>"
                                        class="btn btn-sm btn-info me-1"
                                        title="Lihat Detail Soal">
                                         <i class="ti ti-eye me-1"></i>Preview

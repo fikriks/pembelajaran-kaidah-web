@@ -142,7 +142,7 @@
             <div class="col-md-8">
                 <div class="meta-item">
                     <i class="ti ti-book"></i>
-                    <span><strong>Materi:</strong> <?= esc($soal['materi']['judul_kaidah']) ?></span>
+                    <span><strong>Materi:</strong> <?= esc($soal['judul_kaidah']) ?></span>
                 </div>
                 <div class="meta-item">
                     <i class="ti ti-hash"></i>
@@ -150,7 +150,7 @@
                 </div>
                 <div class="meta-item">
                     <i class="ti ti-user"></i>
-                    <span><strong>Dibuat oleh:</strong> <?= esc($soal['pembuat']['nama_lengkap']) ?></span>
+                    <span><strong>Dibuat oleh:</strong> <?= esc($soal['nama_pembuat']) ?></span>
                 </div>
             </div>
             <div class="col-md-4 text-md-end">
