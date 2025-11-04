@@ -27,8 +27,7 @@ class PenggunaController extends BaseController
         $stats = [
             'total' => $this->penggunaModel->countAll(),
             'aktif' => $this->penggunaModel->where('status', 'AKTIF')->countAll(),
-            'nonaktif' => $this->penggunaModel->where('status', 'NONAKTIF')->countAll(),
-            'admin' => $this->penggunaModel->where('hak_akses', 'ADMIN')->countAll()
+            'nonaktif' => $this->penggunaModel->where('status', 'NONAKTIF')->countAll()
         ];
 
         $data = [

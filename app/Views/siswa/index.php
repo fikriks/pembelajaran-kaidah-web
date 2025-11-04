@@ -15,72 +15,38 @@
 </div>
 
 <!-- Statistics Cards -->
-<div class="row mb-4">
-    <div class="col-md-3">
-        <div class="card stats-card stats-card-primary border-0 d-print-none">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="stats-icon">
-                        <i class="ti ti-users text-white"></i>
-                    </div>
-                    <div class="ms-3">
-                        <h6 class="mb-0">Total Siswa</h6>
-                        <h2 class="mb-0 fw-bold"><?= $stats['total'] ?? 0 ?></h2>
-                        <small>Terdaftar</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card stats-card stats-card-success border-0 d-print-none">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="stats-icon">
-                        <i class="ti ti-circle-check text-white"></i>
-                    </div>
-                    <div class="ms-3">
-                        <h6 class="mb-0">Aktif</h6>
-                        <h2 class="mb-0 fw-bold"><?= $stats['aktif'] ?? 0 ?></h2>
-                        <small>Siswa</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card stats-card stats-card-warning border-0 d-print-none">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="stats-icon">
-                        <i class="ti ti-circle-x text-white"></i>
-                    </div>
-                    <div class="ms-3">
-                        <h6 class="mb-0">Nonaktif</h6>
-                        <h2 class="mb-0 fw-bold"><?= $stats['nonaktif'] ?? 0 ?></h2>
-                        <small>Siswa</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card stats-card stats-card-info border-0 d-print-none">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="stats-icon">
-                        <i class="ti ti-building text-white"></i>
-                    </div>
-                    <div class="ms-3">
-                        <h6 class="mb-0">Total Kelas</h6>
-                        <h2 class="mb-0 fw-bold"><?= count($kelasOptions) ?></h2>
-                        <small>Kelas</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<?= view('partials/stats_row', [
+    'stats' => [
+        [
+            'title' => 'Total Siswa',
+            'value' => $stats['total'] ?? 0,
+            'subtitle' => 'Terdaftar',
+            'icon' => 'users',
+            'variant' => 'primary'
+        ],
+        [
+            'title' => 'Aktif',
+            'value' => $stats['aktif'] ?? 0,
+            'subtitle' => 'Siswa',
+            'icon' => 'circle-check',
+            'variant' => 'success'
+        ],
+        [
+            'title' => 'Nonaktif',
+            'value' => $stats['nonaktif'] ?? 0,
+            'subtitle' => 'Siswa',
+            'icon' => 'circle-x',
+            'variant' => 'warning'
+        ],
+        [
+            'title' => 'Total Kelas',
+            'value' => count($kelasOptions),
+            'subtitle' => 'Kelas',
+            'icon' => 'building',
+            'variant' => 'info'
+        ]
+    ]
+]) ?>
 
 <!-- Action Buttons -->
 <div class="d-flex justify-content-between align-items-center mb-4">

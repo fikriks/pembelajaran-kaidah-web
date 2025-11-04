@@ -85,72 +85,38 @@
 </div>
 
 <!-- Statistics Cards -->
-<div class="row mb-4">
-    <div class="col-md-3">
-        <div class="card stats-card stats-card-primary border-0 d-print-none">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="stats-icon">
-                        <i class="ti ti-book text-white"></i>
-                    </div>
-                    <div class="ms-3">
-                        <h6 class="mb-0">Total Materi</h6>
-                        <h2 class="mb-0 fw-bold"><?= $stats['total'] ?? 0 ?></h2>
-                        <small>Kaidah</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card stats-card stats-card-success border-0 d-print-none">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="stats-icon">
-                        <i class="ti ti-trophy text-white"></i>
-                    </div>
-                    <div class="ms-3">
-                        <h6 class="mb-0">Mudah</h6>
-                        <h2 class="mb-0 fw-bold"><?= $stats['mudah'] ?? 0 ?></h2>
-                        <small>Materi</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card stats-card stats-card-warning border-0 d-print-none">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="stats-icon">
-                        <i class="ti ti-battery-2 text-white"></i>
-                    </div>
-                    <div class="ms-3">
-                        <h6 class="mb-0">Sedang</h6>
-                        <h2 class="mb-0 fw-bold"><?= $stats['sedang'] ?? 0 ?></h2>
-                        <small>Materi</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card stats-card stats-card-danger border-0 d-print-none">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="stats-icon">
-                        <i class="ti ti-battery-1 text-white"></i>
-                    </div>
-                    <div class="ms-3">
-                        <h6 class="mb-0">Sulit</h6>
-                        <h2 class="mb-0 fw-bold"><?= $stats['sulit'] ?? 0 ?></h2>
-                        <small>Materi</small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<?= view('partials/stats_row', [
+    'stats' => [
+        [
+            'title' => 'Total Materi',
+            'value' => $stats['total'] ?? 0,
+            'subtitle' => 'Kaidah',
+            'icon' => 'book',
+            'variant' => 'primary'
+        ],
+        [
+            'title' => 'Mudah',
+            'value' => $stats['mudah'] ?? 0,
+            'subtitle' => 'Materi',
+            'icon' => 'trophy',
+            'variant' => 'success'
+        ],
+        [
+            'title' => 'Sedang',
+            'value' => $stats['sedang'] ?? 0,
+            'subtitle' => 'Materi',
+            'icon' => 'battery-2',
+            'variant' => 'warning'
+        ],
+        [
+            'title' => 'Sulit',
+            'value' => $stats['sulit'] ?? 0,
+            'subtitle' => 'Materi',
+            'icon' => 'battery-1',
+            'variant' => 'danger'
+        ]
+    ]
+]) ?>
 
 <!-- Action Section -->
 <div class="d-flex justify-content-between align-items-center mb-4">
