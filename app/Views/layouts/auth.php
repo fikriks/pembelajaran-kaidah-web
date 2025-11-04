@@ -19,13 +19,20 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 
     <!-- Custom App CSS -->
-    <link rel="stylesheet" href="<?= base_url('dist/css/app.css') ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/css/styles.css') ?>">
 
     <!-- Additional Auth Styles -->
     <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+
         .auth-container {
-            min-height: 100vh;
+            height: 100vh;
             background: linear-gradient(135deg, var(--primary-50), white);
+            overflow: hidden;
         }
 
         .auth-left {
@@ -37,6 +44,8 @@
             align-items: center;
             padding: 3rem;
             text-align: center;
+            height: 100vh;
+            min-height: 100%;
         }
 
         .auth-right {
@@ -45,6 +54,9 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+            height: 100vh;
+            min-height: 100%;
+            overflow-y: auto;
         }
 
         .auth-title {
@@ -94,6 +106,31 @@
             box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
         }
 
+        .auth-form .toggle-password {
+            border: 2px solid var(--neutral-200);
+            border-left: none;
+            background: var(--neutral-50);
+            transition: all 0.3s ease;
+            border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+        }
+
+        .auth-form .toggle-password:hover {
+            background: var(--primary-50);
+            border-color: var(--primary-300);
+            color: var(--primary-600);
+        }
+
+        .auth-form .toggle-password:focus {
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(76, 175, 80, 0.25);
+            border-color: var(--primary-500);
+        }
+
+        .auth-form .toggle-password i {
+            font-size: 1.1rem;
+            transition: none;
+        }
+
         .auth-btn {
             padding: 1rem 2rem;
             font-weight: 600;
@@ -128,7 +165,7 @@
     <?= $this->renderSection('styles') ?>
 </head>
 <body class="auth-container">
-    <div class="row g-0 h-100">
+    <div class="row g-0 h-100" style="height: 100%; min-height: 100vh;">
         <!-- Left Side - Branding -->
         <div class="col-md-6 auth-left">
             <div class="auth-logo">
