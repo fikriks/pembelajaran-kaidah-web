@@ -4,7 +4,7 @@ namespace App\Database\Seeds;
 
 use CodeIgniter\Database\Seeder;
 
-class SoalSeeder extends Seeder
+class SoalSeederOptimized extends Seeder
 {
     public function run()
     {

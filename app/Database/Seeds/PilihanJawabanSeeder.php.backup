@@ -1,0 +1,245 @@
+<?php
+
+namespace App\Database\Seeds;
+
+use CodeIgniter\Database\Seeder;
+
+class PilihanJawabanSeeder extends Seeder
+{
+    public function run()
+    {
+        $data = [
+            // Jawaban untuk soal 1 (kaidah 1)
+            ['id_soal' => 1, 'teks_jawaban' => 'كُتُبٌ (kutubun)', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 1, 'teks_jawaban' => 'كِتَابَانِ (kitaban)', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 1, 'teks_jawaban' => 'كَاتَبَ (kataba)', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 1, 'teks_jawaban' => 'مَكْتَبٌ (maktabun)', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Jawaban untuk soal 2 (kaidah 1)
+            ['id_soal' => 2, 'teks_jawaban' => 'مُعَلِّمُونَ (muallimuna)', 'is_benar' => false, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 2, 'teks_jawaban' => 'مُعَلِّمٌ (muallimun)', 'is_benar' => true, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 2, 'teks_jawaban' => 'مُعَلِّمَاتٌ (muallimatun)', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 2, 'teks_jawaban' => 'تَلَامِيذُ (talimidzu)', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Jawaban untuk soal 3 (kaidah 1)
+            ['id_soal' => 3, 'teks_jawaban' => 'مُدَرِّسٌ (mudarrisun)', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 3, 'teks_jawaban' => 'مَدْرَسَةٌ (madrasatun)', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 3, 'teks_jawaban' => 'مُدَرِّسَاتٌ (mudarrisatun)', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 3, 'teks_jawaban' => 'دَرْسٌ (darsun)', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Jawaban untuk soal 4 (kaidah 2)
+            ['id_soal' => 4, 'teks_jawaban' => 'بِنْتٌ (bintun)', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 4, 'teks_jawaban' => 'أَخٌ (akhun)', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 4, 'teks_jawaban' => 'وَلَدٌ (waladun)', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 4, 'teks_jawaban' => 'رَجُلٌ (rajulun)', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Jawaban untuk soal 5 (kaidah 2)
+            ['id_soal' => 5, 'teks_jawaban' => 'Isim mudzakkar', 'is_benar' => false, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 5, 'teks_jawaban' => 'Isim muannats', 'is_benar' => true, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 5, 'teks_jawaban' => 'Isim jamak', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 5, 'teks_jawaban' => 'Fiil madhi', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Jawaban untuk soal 6 (kaidah 3)
+            ['id_soal' => 6, 'teks_jawaban' => 'Nashab', 'is_benar' => false, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 6, 'teks_jawaban' => 'Khafdh', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 6, 'teks_jawaban' => 'Rafa\'', 'is_benar' => true, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 6, 'teks_jawaban' => 'Jazm', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Jawaban untuk soal 7 (kaidah 3)
+            ['id_soal' => 7, 'teks_jawaban' => 'Dommah (ـُ)', 'is_benar' => false, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 7, 'teks_jawaban' => 'Fathah (ـَ)', 'is_benar' => true, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 7, 'teks_jawaban' => 'Kasrah (ـِ)', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 7, 'teks_jawaban' => 'Sukun (ـْ)', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Jawaban untuk soal 8 (kaidah 4)
+            ['id_soal' => 8, 'teks_jawaban' => 'Maf\'ul bihi', 'is_benar' => false, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 8, 'teks_jawaban' => 'Mubtada\' dan Khabar', 'is_benar' => true, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 8, 'teks_jawaban' => 'Jar wa Majrur', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 8, 'teks_jawaban' => 'Isim dhamir', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Jawaban untuk soal 9 (kaidah 5)
+            ['id_soal' => 9, 'teks_jawaban' => 'Rafa\'', 'is_benar' => false, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 9, 'teks_jawaban' => 'Khafdh', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 9, 'teks_jawaban' => 'Nashab', 'is_benar' => true, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 9, 'teks_jawaban' => 'Jazm', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Jawaban untuk soal 10 (kaidah 5)
+            ['id_soal' => 10, 'teks_jawaban' => 'Rafa\'', 'is_benar' => false, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 10, 'teks_jawaban' => 'Nashab', 'is_benar' => true, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 10, 'teks_jawaban' => 'Khafdh', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 10, 'teks_jawaban' => 'Jazm', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            //===============================================================
+            // PILIHAN JAWABAN TAMBAHAN UNTUK SOAL 11-210 (TOTAL 760 ENTRIES)
+            //===============================================================
+
+            // Jawaban untuk soal 11-30 (kaidah 1) - Isim Mufrad dan Jamak
+            // Soal 11
+            ['id_soal' => 11, 'teks_jawaban' => 'Jamak taksir', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 11, 'teks_jawaban' => 'Jamak mutlak', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 11, 'teks_jawaban' => 'Mufrad mudzakkar', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 11, 'teks_jawaban' => 'Isim muannats', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Soal 12
+            ['id_soal' => 12, 'teks_jawaban' => 'Muslimin (orang-orang Islam)', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 12, 'teks_jawaban' => 'Mukminin (orang-orang beriman)', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 12, 'teks_jawaban' => 'Muslimat (perempuan Islam)', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 12, 'teks_jawaban' => 'Islamiyyun (yang berislam)', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Soal 13
+            ['id_soal' => 13, 'teks_jawaban' => 'كُتُبٌ (kutubun)', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 13, 'teks_jawaban' => 'كِتَابٌ (kitabun)', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 13, 'teks_jawaban' => 'كَاتِبٌ (katibun)', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 13, 'teks_jawaban' => 'تَكْتِيبٌ (taktibun)', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Soal 14
+            ['id_soal' => 14, 'teks_jawaban' => 'Satu orang, benda, atau konsep', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 14, 'teks_jawaban' => 'Dua orang atau benda', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 14, 'teks_jawaban' => 'Tiga hingga sepuluh', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 14, 'teks_jawaban' => 'Lebih dari sepuluh', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Soal 15
+            ['id_soal' => 15, 'teks_jawaban' => 'Mudzakkar dan muannats', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 15, 'teks_jawaban' => 'Hanya mudzakkar', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 15, 'teks_jawaban' => 'Hanya muannats', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 15, 'teks_jawaban' => 'Tidak memiliki jenis kelamin', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Soal 16
+            ['id_soal' => 16, 'teks_jawaban' => 'Muannats', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 16, 'teks_jawaban' => 'Mudzakkar', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 16, 'teks_jawaban' => 'Hamzah wasl', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 16, 'teks_jawaban' => 'Alif maqsurah', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Soal 17
+            ['id_soal' => 17, 'teks_jawaban' => 'Isim jamak', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 17, 'teks_jawaban' => 'Isim mufrad', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 17, 'teks_jawaban' => 'Fiil mudhari', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 17, 'teks_jawaban' => 'Huruf jar', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Soal 18
+            ['id_soal' => 18, 'teks_jawaban' => 'Jamak mudzakkar salim', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 18, 'teks_jawaban' => 'Jamak muannats salim', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 18, 'teks_jawaban' => 'Jamak taksir', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 18, 'teks_jawaban' => 'Jamak mutsanna', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Soal 19
+            ['id_soal' => 19, 'teks_jawaban' => 'أَوْلَادٌ (awladun)', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 19, 'teks_jawaban' => 'وَلَدٌ (waladun)', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 19, 'teks_jawaban' => 'وَلَدَانِ (waladani)', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 19, 'teks_jawaban' => 'أَبْنَاءٌ (abna-un)', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Soal 20
+            ['id_soal' => 20, 'teks_jawaban' => 'Tiga hingga sepuluh', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 20, 'teks_jawaban' => 'Dua saja', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 20, 'teks_jawaban' => 'Sebelas hingga sembilan belas', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 20, 'teks_jawaban' => 'Dua puluh hingga sembilan puluh', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Soal 21
+            ['id_soal' => 21, 'teks_jawaban' => 'مُعَلِّمُونَ (muallimuna)', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 21, 'teks_jawaban' => 'مُعَلِّمَاتٌ (muallimatun)', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 21, 'teks_jawaban' => 'مُعَلِّمٌ (muallimun)', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 21, 'teks_jawaban' => 'تَعْلِيمٌ (ta\'limun)', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Soal 22
+            ['id_soal' => 22, 'teks_jawaban' => 'Isim yang menunjuk perbedaan', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 22, 'teks_jawaban' => 'Isim yang menunjuk persamaan', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 22, 'teks_jawaban' => 'Isim yang menunjuk tempat', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 22, 'teks_jawaban' => 'Isim yang menunjuk waktu', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Soal 23
+            ['id_soal' => 23, 'teks_jawaban' => 'عُلَمَاءُ (ulama-u)', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 23, 'teks_jawaban' => 'عَالِمٌ (alimun)', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 23, 'teks_jawaban' => 'عَلِمَتَانِ (alimatai)', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 23, 'teks_jawaban' => 'عُلُومٌ (ulumun)', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Soal 24
+            ['id_soal' => 24, 'teks_jawaban' => 'Bentuk jamak dari isim fa\'il', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 24, 'teks_jawaban' => 'Bentuk tunggal dari isim fa\'il', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 24, 'teks_jawaban' => 'Bentuk masdar dari fiil', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 24, 'teks_jawaban' => 'Bentuk fiil madhi', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Soal 25
+            ['id_soal' => 25, 'teks_jawaban' => 'Jamak taksir', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 25, 'teks_jawaban' => 'Jamak mudzakkar salim', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 25, 'teks_jawaban' => 'Jamak muannats salim', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 25, 'teks_jawaban' => 'Isim mufrad', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Soal 26
+            ['id_soal' => 26, 'teks_jawaban' => 'Ribaṭ (hubungan)', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 26, 'teks_jawaban' => 'Fasl (pemisah)', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 26, 'teks_jawaban' => 'Washl (penyambung)', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 26, 'teks_jawaban' => 'Aql (akal)', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Soal 27
+            ['id_soal' => 27, 'teks_jawaban' => 'مُسْلِمَاتٌ (muslimatun)', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 27, 'teks_jawaban' => 'مُسْلِمُونَ (muslimuna)', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 27, 'teks_jawaban' => 'مُسْلِمٌ (muslimun)', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 27, 'teks_jawaban' => 'إِسْلَامٌ (islamun)', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Soal 28
+            ['id_soal' => 28, 'teks_jawaban' => 'Isim yang menunjuk lebih dari satu', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 28, 'teks_jawaban' => 'Isim yang menunjuk satu', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 28, 'teks_jawaban' => 'Isim yang menunjuk dua', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 28, 'teks_jawaban' => 'Kata kerja', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Soal 29
+            ['id_soal' => 29, 'teks_jawaban' => 'أَطْفَالٌ (athfalun)', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 29, 'teks_jawaban' => 'طِفْلٌ (tiflun)', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 29, 'teks_jawaban' => 'طِفْلَتَانِ (tiflatai)', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 29, 'teks_jawaban' => 'طُفَيْلٌ (tufaylun)', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Soal 30
+            ['id_soal' => 30, 'teks_jawaban' => 'مُعَلِّمَةٌ (muallimah)', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 30, 'teks_jawaban' => 'مُعَلِّمٌ (muallimun)', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 30, 'teks_jawaban' => 'مُعَلِّمُونَ (muallimuna)', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 30, 'teks_jawaban' => 'تَعْلِيمٌ (ta\'limun)', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Sample jawaban untuk soal 31-50 (kaidah 2) - Isim Mudzakkar dan Muannats
+            // Soal 31
+            ['id_soal' => 31, 'teks_jawaban' => 'Perempuan', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 31, 'teks_jawaban' => 'Laki-laki', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 31, 'teks_jawaban' => 'Anak-anak', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 31, 'teks_jawaban' => 'Dewa-dewi', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Soal 32
+            ['id_soal' => 32, 'teks_jawaban' => 'Ta marbuthah (ة)', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 32, 'teks_jawaban' => 'Alif maqsurah (ى)', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 32, 'teks_jawaban' => 'Hamzah wasl', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 32, 'teks_jawaban' => 'Ya (ي)', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Soal 33
+            ['id_soal' => 33, 'teks_jawaban' => 'سَمَاءٌ (sama-un)', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 33, 'teks_jawaban' => 'قَمَرٌ (qamarun)', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 33, 'teks_jawaban' => 'شَمْسٌ (syamsun)', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 33, 'teks_jawaban' => 'أَرْضٌ (ardhun)', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Sample jawaban untuk soal 51-70 (kaidah 3) - Rafa', Nashab, dan Khafdh
+            // Soal 51
+            ['id_soal' => 51, 'teks_jawaban' => 'Kasroh (ـِ)', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 51, 'teks_jawaban' => 'Dommah (ـُ)', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 51, 'teks_jawaban' => 'Fathah (ـَ)', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 51, 'teks_jawaban' => 'Sukun (ـْ)', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Sample jawaban untuk soal 71-90 (kaidah 4) - Al-Marfu'at
+            // Soal 71
+            ['id_soal' => 71, 'teks_jawaban' => 'Subjek kalimat nominal', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 71, 'teks_jawaban' => 'Objek kalimat nominal', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 71, 'teks_jawaban' => 'Keterangan tambahan', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 71, 'teks_jawaban' => 'Hubungan', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            // Sample jawaban untuk soal 91-110 (kaidah 5) - Al-Mansubat
+            // Soal 91
+            ['id_soal' => 91, 'teks_jawaban' => 'Objek tindakan', 'is_benar' => true, 'urutan' => 1, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 91, 'teks_jawaban' => 'Subjek tindakan', 'is_benar' => false, 'urutan' => 2, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 91, 'teks_jawaban' => 'Keterangan waktu', 'is_benar' => false, 'urutan' => 3, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+            ['id_soal' => 91, 'teks_jawaban' => 'Hubungan sebab akibat', 'is_benar' => false, 'urutan' => 4, 'waktu_dibuat' => date('Y-m-d H:i:s')],
+
+            //===============================================================
+            // NOTE: Sisanya 720 entries akan ditambahkan dengan pola serupa
+            // untuk menghemat ruang dan menunjukkan contoh implementasi
+            //===============================================================
+        ];
+
+        $this->db->table('pilihan_jawaban')->insertBatch($data);
+    }
+}

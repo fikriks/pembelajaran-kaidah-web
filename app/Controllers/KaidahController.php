@@ -17,8 +17,8 @@ class KaidahController extends BaseController
 
     public function index()
     {
-        // Get all kaidah data for DataTables (client-side)
-        $kaidah = $this->kaidahModel->findAll();
+        // Get all kaidah data with creator names for DataTables (client-side)
+        $kaidah = $this->kaidahModel->getAllKaidah();
 
         // Get statistics for dashboard
         $stats = $this->kaidahModel->getKaidahStatistics();

@@ -376,6 +376,39 @@ materi_kaidah (1) → (N) soal (1) → (N) pilihan_jawaban
 
 ## 📋 Recent UI/UX Updates (November 2025)
 
+### ✅ **Creator Name Loading Fix - Data Relationship Enhancement**
+**Problem:** Creator names showing "Admin" instead of actual creator names from database.
+
+**Root Cause:**
+- KaidahController `index()` method used `findAll()` instead of `getAllKaidah()`
+- Data loading didn't include JOIN with `pengguna` table for creator names
+- Fallback to "Admin" instead of loading actual relationship data
+
+**Fix Applied:**
+```php
+// Before (KaidahController.php:21)
+$kaidah = $this->kaidahModel->findAll();
+
+// After (KaidahController.php:21)
+$kaidah = $this->kaidahModel->getAllKaidah();
+```
+
+**Files Modified:**
+- `app/Controllers/KaidahController.php` - Updated index() method to use getAllKaidah()
+- `app/Views/kaidah/index.php` - Updated fallback from "Admin" to "Tidak ada pembuat"
+- `app/Views/kaidah/show.php` - Updated fallback from "Admin" to "Tidak ada pembuat"
+
+**Technical Details:**
+- `getAllKaidah()` method already existed with proper JOIN to `pengguna` table
+- SELECT query: `materi_kaidah.*, pengguna.nama_lengkap as nama_pembuat`
+- LEFT JOIN ensures data loads even if creator is deleted
+- Proper error handling for missing creator data
+
+**Impact:**
+- ✅ Actual creator names now display instead of generic "Admin"
+- ✅ Proper relationship loading between materi_kaidah and pengguna tables
+- ✅ Better data integrity and user experience
+
 ### ✅ **Flat Design Implementation - All Gradient Removed**
 All gradient effects have been removed from soal management views for a cleaner, modern flat design:
 

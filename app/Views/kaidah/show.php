@@ -106,7 +106,7 @@
                     <div class="text-end">
                         <small class="text-muted d-block">
                             <i class="ti ti-user me-1"></i>
-                            <?= esc($kaidah['nama_pembuat'] ?? 'Unknown') ?>
+                            <?= esc($kaidah['nama_pembuat'] ?? 'Tidak ada pembuat') ?>
                         </small>
                         <small class="text-muted d-block">
                             <i class="ti ti-calendar me-1"></i>
@@ -185,7 +185,7 @@
                 </div>
                 <div class="mb-3">
                     <label class="text-muted small">Dibuat Oleh</label>
-                    <div class="fw-semibold"><?= esc($kaidah['nama_pembuat'] ?? 'Unknown') ?></div>
+                    <div class="fw-semibold"><?= esc($kaidah['nama_pembuat'] ?? 'Tidak ada pembuat') ?></div>
                 </div>
                 <div class="mb-3">
                     <label class="text-muted small">Tanggal Dibuat</label>
@@ -194,35 +194,7 @@
             </div>
         </div>
 
-        <!-- Related Actions -->
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-body">
-                <h6 class="text-muted mb-3">Aksi Cepat</h6>
-                <div class="d-grid gap-2">
-                    <a href="<?= site_url('kaidah/' . $kaidah['id_materi'] . '/edit') ?>" class="btn btn-warning">
-                        <i class="ti ti-edit me-2"></i>Edit Materi
-                    </a>
-                    <button type="button" class="btn btn-info" onclick="window.print()">
-                        <i class="ti ti-printer me-2"></i>Cetak
-                    </button>
-                    <button type="button" class="btn btn-danger"
-                            onclick="confirmDelete(<?= $kaidah['id_materi'] ?>, '<?= esc(addslashes($kaidah['judul_kaidah'])) ?>')">
-                        <i class="ti ti-trash me-2"></i>Hapus Materi
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Navigation -->
-        <div class="card border-0 shadow-sm">
-            <div class="card-body">
-                <h6 class="text-muted mb-3">Navigasi</h6>
-                <a href="<?= site_url('kaidah') ?>" class="btn btn-outline-secondary w-100">
-                    <i class="ti ti-arrow-left me-2"></i>Kembali ke Daftar
-                </a>
-            </div>
-        </div>
-    </div>
+      </div>
 </div>
 
 <!-- Hidden form for delete -->

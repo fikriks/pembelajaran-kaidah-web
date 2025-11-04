@@ -203,7 +203,7 @@
                                 </div>
                             </td>
                             <td>
-                                <small class="text-muted"><?= esc($item['nama_pembuat'] ?? 'Unknown') ?></small>
+                                <small class="text-muted"><?= esc($item['nama_pembuat'] ?? 'Tidak ada pembuat') ?></small>
                             </td>
                             <td class="text-center">
                                 <div class="table-actions">
