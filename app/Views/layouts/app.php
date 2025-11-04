@@ -7,6 +7,9 @@
   <title><?= $this->renderSection('title') ?>Pembelajaran Kaidah Bahasa Arab</title>
   <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
   <link rel="stylesheet" href="../assets/css/styles.css" />
+
+  <!-- Additional Page-specific CSS -->
+  <?= $this->renderSection('styles') ?>
 </head>
 
 <body>
@@ -34,9 +37,6 @@
   <script src="../assets/libs/apexcharts/dist/apexcharts.min.js"></script>
   <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
   <script src="../assets/js/dashboard.js"></script>
-
-  <!-- Additional Page-specific CSS -->
-  <?= $this->renderSection('styles') ?>
 
   <!-- Additional Page-specific JavaScript -->
   <?= $this->renderSection('scripts') ?>
