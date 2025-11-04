@@ -17,43 +17,16 @@ class KaidahController extends BaseController
 
     public function index()
     {
-        $search = $this->request->getGet('search');
-        $difficulty = $this->request->getGet('difficulty');
-        $page = $this->request->getGet('page') ?? 1;
-        $perPage = 10;
-
-        if ($search) {
-            $kaidah = $this->kaidahModel->searchKaidah($search);
-            $paginationData = [
-                'data' => $kaidah,
-                'total' => count($kaidah),
-                'perPage' => $perPage,
-                'currentPage' => $page
-            ];
-        } elseif ($difficulty) {
-            $kaidah = $this->kaidahModel->getKaidahByDifficulty($difficulty);
-            $paginationData = [
-                'data' => $kaidah,
-                'total' => count($kaidah),
-                'perPage' => $perPage,
-                'currentPage' => $page
-            ];
-        } else {
-            $paginationData = $this->kaidahModel->getKaidahWithPagination($perPage, $page);
-        }
+        // Get all kaidah data for DataTables (client-side)
+        $kaidah = $this->kaidahModel->findAll();
 
         // Get statistics for dashboard
         $stats = $this->kaidahModel->getKaidahStatistics();
 
-        // Prepare data for view with proper structure
+        // Prepare data for view
         $data = [
             'title' => 'Manajemen Materi Kaidah',
-            'kaidah' => $paginationData['data'],
-            'total' => $paginationData['total'],
-            'perPage' => $paginationData['perPage'],
-            'currentPage' => $paginationData['currentPage'],
-            'search' => $search,
-            'selectedDifficulty' => $difficulty,
+            'kaidah' => $kaidah,
             'stats' => $stats,
             'user' => session()->get('user') // untuk info pembuat
         ];

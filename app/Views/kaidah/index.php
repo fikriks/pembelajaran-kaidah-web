@@ -23,18 +23,18 @@
 
     /* Difficulty badges */
     .badge-mudah {
-        background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
-        color: #1a5f3f;
+        background-color: #4CAF50;
+        color: white;
     }
 
     .badge-sedang {
-        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
-        color: #8b4513;
+        background-color: #FF9800;
+        color: white;
     }
 
     .badge-sulit {
-        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-        color: #8b0000;
+        background-color: #F44336;
+        color: white;
     }
 
     /* Kaidah card hover */
@@ -131,54 +131,21 @@
     </div>
 </div>
 
-<!-- Search and Filter -->
-<div class="card border-0 shadow-sm mb-4">
-    <div class="card-body p-3">
-        <form method="GET" action="<?= site_url('kaidah') ?>" class="row g-3">
-            <div class="col-md-5">
-                <div class="input-group">
-                    <span class="input-group-text">
-                        <i class="ti ti-search"></i>
-                    </span>
-                    <input type="text" class="form-control" name="search" placeholder="Cari judul atau deskripsi..." value="<?= esc($search ?? '') ?>">
-                </div>
-            </div>
-            <div class="col-md-3">
-                <select class="form-select" name="difficulty">
-                    <option value="">Semua Tingkat</option>
-                    <option value="mudah" <?= ($selectedDifficulty ?? '') === 'mudah' ? 'selected' : '' ?>>Mudah</option>
-                    <option value="sedang" <?= ($selectedDifficulty ?? '') === 'sedang' ? 'selected' : '' ?>>Sedang</option>
-                    <option value="sulit" <?= ($selectedDifficulty ?? '') === 'sulit' ? 'selected' : '' ?>>Sulit</option>
-                </select>
-            </div>
-            <div class="col-md-2">
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="ti ti-search me-1"></i>Cari
-                </button>
-            </div>
-            <div class="col-md-2">
-                <a href="<?= site_url('kaidah') ?>" class="btn btn-secondary w-100">
-                    <i class="ti ti-refresh me-1"></i>Reset
-                </a>
-            </div>
-        </form>
-    </div>
-</div>
 
 <!-- Data Table -->
 <div class="card border-0 shadow-sm dataTables-card">
     <div class="card-body">
         <div class="table-responsive">
-            <table id="kaidahTable" class="table text-nowrap mb-0 align-middle datatable" data-type="kaidah">
+            <table id="kaidahTable" class="table table-bordered text-nowrap mb-0 align-middle datatable" data-type="basic">
                 <thead class="text-dark">
                     <tr>
-                        <th class="border-bottom-0">No</th>
-                        <th class="border-bottom-0">Judul Kaidah</th>
-                        <th class="border-bottom-0">Deskripsi</th>
-                        <th class="border-bottom-0">Tingkat</th>
-                        <th class="border-bottom-0">Urutan</th>
-                        <th class="border-bottom-0">Dibuat Oleh</th>
-                        <th class="border-bottom-0 text-center">Aksi</th>
+                        <th>No</th>
+                        <th>Judul Kaidah</th>
+                        <th>Deskripsi</th>
+                        <th>Tingkat</th>
+                        <th>Urutan</th>
+                        <th>Dibuat Oleh</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -194,10 +161,9 @@
                         </td>
                     </tr>
                     <?php else: ?>
-                        <?php $no = ($currentPage - 1) * $perPage + 1; ?>
                         <?php foreach ($kaidah as $item): ?>
                         <tr>
-                            <td><?= $no++ ?></td>
+                            <td><?= $item['id_materi'] ?></td>
                             <td>
                                 <div class="d-flex align-items-start">
                                     <div>
@@ -208,7 +174,6 @@
                                                 <?= esc($item['judul_kaidah']) ?>
                                             <?php endif; ?>
                                         </h6>
-                                        <small class="text-muted">ID: <?= $item['id_materi'] ?></small>
                                     </div>
                                 </div>
                             </td>
@@ -271,16 +236,6 @@
                 </tbody>
             </table>
         </div>
-
-        <!-- Pagination (if using manual pagination) -->
-        <?php if (isset($pager)): ?>
-            <div class="d-flex justify-content-between align-items-center mt-3">
-                <small class="text-muted">
-                    Menampilkan <?= $total ?> data
-                </small>
-                <?= $pager->links('default', 'custom_pagination') ?>
-            </div>
-        <?php endif; ?>
     </div>
 </div>
 
@@ -302,26 +257,7 @@ function confirmDelete(id, title) {
     }
 }
 
-// Initialize DataTable if needed
-$(document).ready(function() {
-    if ($.fn.DataTable) {
-        $('#kaidahTable').DataTable({
-            responsive: true,
-            pageLength: 10,
-            ordering: true,
-            searching: false, // We use custom search
-            paging: false, // We use custom pagination
-            info: false,
-            language: {
-                "emptyTable": "Tidak ada data materi kaidah",
-                "zeroRecords": "Tidak ditemukan data yang cocok",
-                "info": "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
-                "infoEmpty": "Menampilkan 0 sampai 0 dari 0 data",
-                "infoFiltered": "(difilter dari _MAX_ total data)"
-            }
-        });
-    }
-});
+// DataTables will be auto-initialized by datatables-helper.js
 
 // Auto-refresh statistics every 30 seconds
 setInterval(function() {
