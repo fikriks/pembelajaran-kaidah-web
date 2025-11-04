@@ -95,14 +95,7 @@
 
                     <!-- Kolom Kanan -->
                     <div class="col-md-6">
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" name="email"
-                                   value="<?= old('email') ?>" maxlength="100"
-                                   placeholder="contoh: email@example.com">
-                            <div class="form-text">Opsional, digunakan untuk notifikasi sistem</div>
-                        </div>
-
+   
                         <div class="mb-3">
                             <label for="hak_akses" class="form-label">Hak Akses *</label>
                             <select class="form-select" id="hak_akses" name="hak_akses" required>

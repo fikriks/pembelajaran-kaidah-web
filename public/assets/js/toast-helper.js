@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 background: '#F44336',
                 className: 'notyf__toast--error',
                 icon: {
-                    className: 'ti ti-x-circle',
+                    className: 'ti ti-circle-x',
                     tagName: 'i',
                     text: '',
                     color: 'white'

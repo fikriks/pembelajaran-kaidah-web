@@ -106,7 +106,7 @@
                                             title="Detail">
                                             <i class="ti ti-eye me-1"></i>Detail
                                         </a>
-                                        <a href="<?= site_url('pengguna/edit/' . $item['id_pengguna']) ?>"
+                                        <a href="<?= site_url('pengguna/' . $item['id_pengguna'] . '/edit') ?>"
                                             class="btn btn-sm btn-warning me-1"
                                             title="Edit">
                                             <i class="ti ti-edit me-1"></i>Edit

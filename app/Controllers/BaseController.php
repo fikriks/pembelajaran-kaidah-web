@@ -59,10 +59,16 @@ abstract class BaseController extends Controller
     protected $data = [];
 
     /**
+     * Session instance
+     *
+     * @var \CodeIgniter\Session\Session
+     */
+    protected $session;
+
+    /**
      * Be sure to declare properties for any property fetch you initialized.
      * The creation of dynamic property is deprecated in PHP 8.2.
      */
-    // protected $session;
 
     /**
      * @return void

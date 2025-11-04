@@ -61,11 +61,45 @@ class PenggunaController extends BaseController
         $this->requireRole('ADMIN');
 
         $rules = [
-            'nama_pengguna' => 'required|min_length[3]|max_length[50]|alpha_numeric_space|is_unique[pengguna.nama_pengguna]',
-            'kata_sandi'    => 'required|min_length[6]',
-                        'nama_lengkap'  => 'required|min_length[3]|max_length[100]',
-            'hak_akses'     => 'required|in_list[ADMIN,GURU]',
-            'status'        => 'required|in_list[AKTIF,NONAKTIF]'
+            'nama_pengguna' => [
+                'rules' => 'required|min_length[3]|max_length[50]|alpha_numeric_space|is_unique[pengguna.nama_pengguna]',
+                'errors' => [
+                    'required' => 'Username wajib diisi',
+                    'min_length' => 'Username minimal 3 karakter',
+                    'max_length' => 'Username maksimal 50 karakter',
+                    'alpha_numeric_space' => 'Username hanya boleh mengandung huruf, angka, dan spasi',
+                    'is_unique' => 'Username sudah digunakan, silakan pilih username lain'
+                ]
+            ],
+            'kata_sandi' => [
+                'rules' => 'required|min_length[6]',
+                'errors' => [
+                    'required' => 'Password wajib diisi',
+                    'min_length' => 'Password minimal 6 karakter'
+                ]
+            ],
+            'nama_lengkap' => [
+                'rules' => 'required|min_length[3]|max_length[100]',
+                'errors' => [
+                    'required' => 'Nama lengkap wajib diisi',
+                    'min_length' => 'Nama lengkap minimal 3 karakter',
+                    'max_length' => 'Nama lengkap maksimal 100 karakter'
+                ]
+            ],
+            'hak_akses' => [
+                'rules' => 'required|in_list[ADMIN,GURU]',
+                'errors' => [
+                    'required' => 'Hak akses wajib dipilih',
+                    'in_list' => 'Hak akses harus Admin atau Guru'
+                ]
+            ],
+            'status' => [
+                'rules' => 'required|in_list[AKTIF,NONAKTIF]',
+                'errors' => [
+                    'required' => 'Status wajib dipilih',
+                    'in_list' => 'Status harus Aktif atau Nonaktif'
+                ]
+            ]
         ];
 
         if (!$this->validate($rules)) {
@@ -77,21 +111,37 @@ class PenggunaController extends BaseController
 
         $data = [
             'nama_pengguna' => $this->request->getPost('nama_pengguna'),
-            'email'         => $this->request->getPost('email'),
             'nama_lengkap'  => $this->request->getPost('nama_lengkap'),
             'hak_akses'     => $this->request->getPost('hak_akses'),
             'status'        => $this->request->getPost('status'),
             'kata_sandi'    => $this->request->getPost('kata_sandi')
         ];
 
-        if ($this->penggunaModel->insert($data)) {
-            return redirect()->to(site_url('pengguna'))
-                           ->with('success', 'Pengguna baru berhasil ditambahkan.');
-        }
+        try {
+            if ($this->penggunaModel->insert($data)) {
+                return redirect()->to(site_url('pengguna'))
+                               ->with('success', 'Pengguna baru berhasil ditambahkan.');
+            }
 
-        return redirect()->back()
-                       ->withInput()
-                       ->with('error', 'Gagal menambahkan pengguna. Silakan coba lagi.');
+            // Log error untuk debugging
+            log_message('error', 'Gagal insert pengguna, Data: {data}', [
+                'data' => json_encode($data)
+            ]);
+
+            return redirect()->back()
+                           ->withInput()
+                           ->with('error', 'Gagal menambahkan pengguna. Pastikan semua data terisi dengan benar.');
+
+        } catch (\Exception $e) {
+            // Log exception untuk debugging
+            log_message('error', 'Exception saat insert pengguna: {message}', [
+                'message' => $e->getMessage()
+            ]);
+
+            return redirect()->back()
+                           ->withInput()
+                           ->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -154,16 +204,49 @@ class PenggunaController extends BaseController
         }
 
         $rules = [
-            'nama_pengguna' => "required|min_length[3]|max_length[50]|alpha_numeric_space|is_unique[pengguna.nama_pengguna,id_pengguna,{$id}]",
-                        'nama_lengkap'  => 'required|min_length[3]|max_length[100]',
-            'hak_akses'     => 'required|in_list[ADMIN,GURU]',
-            'status'        => 'required|in_list[AKTIF,NONAKTIF]'
+            'nama_pengguna' => [
+                'rules' => "required|min_length[3]|max_length[50]|alpha_numeric_space|is_unique[pengguna.nama_pengguna,id_pengguna,{$id}]",
+                'errors' => [
+                    'required' => 'Username wajib diisi',
+                    'min_length' => 'Username minimal 3 karakter',
+                    'max_length' => 'Username maksimal 50 karakter',
+                    'alpha_numeric_space' => 'Username hanya boleh mengandung huruf, angka, dan spasi',
+                    'is_unique' => 'Username sudah digunakan oleh pengguna lain'
+                ]
+            ],
+            'nama_lengkap' => [
+                'rules' => 'required|min_length[3]|max_length[100]',
+                'errors' => [
+                    'required' => 'Nama lengkap wajib diisi',
+                    'min_length' => 'Nama lengkap minimal 3 karakter',
+                    'max_length' => 'Nama lengkap maksimal 100 karakter'
+                ]
+            ],
+            'hak_akses' => [
+                'rules' => 'required|in_list[ADMIN,GURU]',
+                'errors' => [
+                    'required' => 'Hak akses wajib dipilih',
+                    'in_list' => 'Hak akses harus Admin atau Guru'
+                ]
+            ],
+            'status' => [
+                'rules' => 'required|in_list[AKTIF,NONAKTIF]',
+                'errors' => [
+                    'required' => 'Status wajib dipilih',
+                    'in_list' => 'Status harus Aktif atau Nonaktif'
+                ]
+            ]
         ];
 
         // Add password validation if password is provided
         $password = $this->request->getPost('kata_sandi');
         if (!empty($password)) {
-            $rules['kata_sandi'] = 'min_length[6]';
+            $rules['kata_sandi'] = [
+                'rules' => 'min_length[6]',
+                'errors' => [
+                    'min_length' => 'Password minimal 6 karakter jika diubah'
+                ]
+            ];
         }
 
         if (!$this->validate($rules)) {
@@ -175,7 +258,6 @@ class PenggunaController extends BaseController
 
         $data = [
             'nama_pengguna' => $this->request->getPost('nama_pengguna'),
-            'email'         => $this->request->getPost('email'),
             'nama_lengkap'  => $this->request->getPost('nama_lengkap'),
             'hak_akses'     => $this->request->getPost('hak_akses'),
             'status'        => $this->request->getPost('status')
@@ -186,14 +268,58 @@ class PenggunaController extends BaseController
             $data['kata_sandi'] = $password;
         }
 
-        if ($this->penggunaModel->update($id, $data)) {
-            return redirect()->to(site_url('pengguna'))
-                           ->with('success', 'Data pengguna berhasil diperbarui.');
-        }
+        try {
+            // Cek apakah ada perubahan data
+            $existingUser = $this->penggunaModel->find($id);
+            if (!$existingUser) {
+                return redirect()->back()
+                               ->withInput()
+                               ->with('error', 'Pengguna tidak ditemukan.');
+            }
 
-        return redirect()->back()
-                       ->withInput()
-                       ->with('error', 'Gagal memperbarui pengguna. Silakan coba lagi.');
+            // Bandingkan data untuk mendeteksi perubahan
+            $hasChanges = false;
+            $updateData = [];
+
+            foreach ($data as $key => $value) {
+                if (isset($existingUser[$key]) && $existingUser[$key] !== $value) {
+                    $hasChanges = true;
+                    $updateData[$key] = $value;
+                }
+            }
+
+            // Jika tidak ada perubahan, anggap sebagai sukses
+            if (!$hasChanges) {
+                return redirect()->to(site_url('pengguna'))
+                               ->with('success', 'Data pengguna berhasil diperbarui.');
+            }
+
+            // Lakukan update dengan data yang berubah saja
+            if ($this->penggunaModel->update($id, $updateData)) {
+                return redirect()->to(site_url('pengguna'))
+                               ->with('success', 'Data pengguna berhasil diperbarui.');
+            }
+
+            // Log error untuk debugging
+            log_message('error', 'Gagal update pengguna ID: {id}, Data: {data}', [
+                'id' => $id,
+                'data' => json_encode($updateData)
+            ]);
+
+            return redirect()->back()
+                           ->withInput()
+                           ->with('error', 'Gagal memperbarui data pengguna. Pastikan semua data terisi dengan benar.');
+
+        } catch (\Exception $e) {
+            // Log exception untuk debugging
+            log_message('error', 'Exception saat update pengguna: {message}', [
+                'message' => $e->getMessage()
+            ]);
+
+            return redirect()->back()
+                           ->withInput()
+                           ->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -216,13 +342,29 @@ class PenggunaController extends BaseController
                            ->with('error', 'Tidak dapat menghapus akun yang sedang digunakan.');
         }
 
-        if ($this->penggunaModel->delete($id)) {
-            return redirect()->to(site_url('pengguna'))
-                           ->with('success', 'Pengguna berhasil dihapus.');
-        }
+        try {
+            if ($this->penggunaModel->delete($id)) {
+                return redirect()->to(site_url('pengguna'))
+                               ->with('success', 'Pengguna berhasil dihapus.');
+            }
 
-        return redirect()->to(site_url('pengguna'))
-                       ->with('error', 'Gagal menghapus pengguna. Silakan coba lagi.');
+            // Log error untuk debugging
+            log_message('error', 'Gagal delete pengguna ID: {id}', [
+                'id' => $id
+            ]);
+
+            return redirect()->to(site_url('pengguna'))
+                           ->with('error', 'Gagal menghapus pengguna. Pengguna mungkin sedang digunakan oleh sistem.');
+
+        } catch (\Exception $e) {
+            // Log exception untuk debugging
+            log_message('error', 'Exception saat delete pengguna: {message}', [
+                'message' => $e->getMessage()
+            ]);
+
+            return redirect()->to(site_url('pengguna'))
+                           ->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+        }
     }
 
     /**
