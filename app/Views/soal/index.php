@@ -266,11 +266,11 @@
                             <td class="text-center">
                                 <div class="table-actions justify-content-center">
                                     <!-- Preview -->
-                                    <button type="button" class="btn btn-sm btn-info me-1"
-                                            onclick="previewSoal(<?= $item['id_soal'] ?>)"
-                                            title="Preview Soal">
+                                    <a href="<?= site_url('soal/' . $item['id_soal']) ?>"
+                                       class="btn btn-sm btn-info me-1"
+                                       title="Lihat Detail Soal">
                                         <i class="ti ti-eye me-1"></i>Preview
-                                    </button>
+                                    </a>
 
                                     <!-- Edit -->
                                     <a href="<?= site_url('soal/' . $item['id_soal'] . '/edit') ?>"
