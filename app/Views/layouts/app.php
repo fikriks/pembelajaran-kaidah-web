@@ -5,8 +5,13 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><?= $this->renderSection('title') ?>Pembelajaran Kaidah Bahasa Arab</title>
-  <link rel="shortcut icon" type="image/png" href="../assets/images/logos/favicon.png" />
-  <link rel="stylesheet" href="../assets/css/styles.css" />
+  <link rel="shortcut icon" type="image/png" href="<?= base_url('assets/images/logos/favicon.png') ?>" />
+  <link rel="stylesheet" href="<?= base_url('assets/css/styles.css') ?>" />
+  <link rel="stylesheet" href="<?= base_url('assets/css/custom.css') ?>" />
+
+  <!-- DataTables CSS -->
+  <link rel="stylesheet" href="<?= base_url('assets/libs/datatables/dataTables.bootstrap5.css') ?>" />
+  <link rel="stylesheet" href="<?= base_url('assets/libs/datatables/dataTables.min.css') ?>" />
 
   <!-- Additional Page-specific CSS -->
   <?= $this->renderSection('styles') ?>
@@ -30,13 +35,18 @@
       </div>
     </div>
   </div>
-  <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
-  <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-  <script src="../assets/js/sidebarmenu.js"></script>
-  <script src="../assets/js/app.min.js"></script>
-  <script src="../assets/libs/apexcharts/dist/apexcharts.min.js"></script>
-  <script src="../assets/libs/simplebar/dist/simplebar.js"></script>
-  <script src="../assets/js/dashboard.js"></script>
+  <script src="<?= base_url('assets/libs/jquery/dist/jquery.min.js') ?>"></script>
+  <script src="<?= base_url('assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js') ?>"></script>
+  <script src="<?= base_url('assets/js/sidebarmenu.js') ?>"></script>
+  <script src="<?= base_url('assets/js/app.min.js') ?>"></script>
+  <script src="<?= base_url('assets/libs/apexcharts/dist/apexcharts.min.js') ?>"></script>
+  <script src="<?= base_url('assets/libs/simplebar/dist/simplebar.js') ?>"></script>
+  <script src="<?= base_url('assets/js/dashboard.js') ?>"></script>
+
+  <!-- DataTables JavaScript -->
+  <script src="<?= base_url('assets/libs/datatables/dataTables.min.js') ?>"></script>
+  <script src="<?= base_url('assets/libs/datatables/dataTables.bootstrap5.js') ?>"></script>
+  <script src="<?= base_url('assets/js/datatables-helper.js') ?>"></script>
 
   <!-- Additional Page-specific JavaScript -->
   <?= $this->renderSection('scripts') ?>

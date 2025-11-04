@@ -3,76 +3,24 @@
 <?= $this->section('title') ?>Manajemen Siswa - <?= $this->endSection() ?>
 
 <?= $this->section('styles') ?>
-<style>
-    .stats-card {
-        background: linear-gradient(135deg, var(--bs-primary), var(--bs-secondary));
-        color: white;
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        overflow: hidden;
-    }
-    .stats-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
-    }
-    .stats-card .card-body {
-        position: relative;
-        z-index: 1;
-    }
-    .stats-card .stats-icon {
-        width: 60px;
-        height: 60px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 12px;
-        background: rgba(255,255,255,0.2);
-        backdrop-filter: blur(10px);
-        font-size: 1.5rem;
-    }
-    .stats-card::before {
-        content: '';
-        position: absolute;
-        top: -50%;
-        right: -50%;
-        width: 100%;
-        height: 100%;
-        background: rgba(255,255,255,0.1);
-        border-radius: 50%;
-        z-index: 0;
-    }
-    .action-buttons .btn {
-        padding: 0.25rem 0.5rem;
-        font-size: 0.875rem;
-    }
-    .table-actions {
-        white-space: nowrap;
-    }
-</style>
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
 <!-- Page Header -->
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h4 class="fw-bold text-dark">Manajemen Siswa</h4>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item"><a href="<?= site_url('dashboard') ?>" class="text-muted">Dashboard</a></li>
-                <li class="breadcrumb-item active">Manajemen Siswa</li>
-            </ol>
-        </nav>
-    </div>
-    <div>
-        <a href="<?= site_url('siswa/create') ?>" class="btn btn-primary">
-            <i class="ti ti-circle-plus me-2"></i>Tambah Siswa
-        </a>
-    </div>
+<div class="mb-4">
+    <h4 class="fw-bold text-dark">Manajemen Siswa</h4>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb mb-0">
+            <li class="breadcrumb-item"><a href="<?= site_url('dashboard') ?>" class="text-muted">Dashboard</a></li>
+            <li class="breadcrumb-item active">Manajemen Siswa</li>
+        </ol>
+    </nav>
 </div>
 
 <!-- Statistics Cards -->
 <div class="row mb-4">
     <div class="col-md-3">
-        <div class="card stats-card border-0">
+        <div class="card stats-card stats-card-primary border-0 d-print-none">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="stats-icon">
@@ -88,7 +36,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card stats-card border-0" style="background: linear-gradient(135deg, #26A69A, #00897B);">
+        <div class="card stats-card stats-card-success border-0 d-print-none">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="stats-icon">
@@ -104,7 +52,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card stats-card border-0" style="background: linear-gradient(135deg, #FFA726, #FF9800);">
+        <div class="card stats-card stats-card-warning border-0 d-print-none">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="stats-icon">
@@ -120,7 +68,7 @@
         </div>
     </div>
     <div class="col-md-3">
-        <div class="card stats-card border-0" style="background: linear-gradient(135deg, #42A5F5, #2196F3);">
+        <div class="card stats-card stats-card-info border-0 d-print-none">
             <div class="card-body">
                 <div class="d-flex align-items-center">
                     <div class="stats-icon">
@@ -137,52 +85,24 @@
     </div>
 </div>
 
-<!-- Search and Filter -->
-<div class="card border-0 shadow-sm mb-4">
-    <div class="card-body">
-        <form method="GET" action="<?= site_url('siswa') ?>">
-            <div class="row g-3">
-                <div class="col-md-4">
-                    <div class="input-group">
-                        <span class="input-group-text">
-                            <i class="ti ti-search"></i>
-                        </span>
-                        <input type="text" class="form-control" name="search"
-                               placeholder="Cari nama atau NIS..."
-                               value="<?= esc($search ?? '') ?>">
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <select class="form-select" name="kelas">
-                        <option value="">Semua Kelas</option>
-                        <?php foreach ($kelasOptions as $kelas): ?>
-                            <option value="<?= esc($kelas) ?>"
-                                    <?= ($selectedKelas === $kelas) ? 'selected' : '' ?>>
-                                <?= esc($kelas) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="col-md-3">
-                    <div class="d-flex gap-2">
-                        <button type="submit" class="btn btn-outline-primary flex-fill">
-                            <i class="ti ti-filter"></i>
-                        </button>
-                        <a href="<?= site_url('siswa') ?>" class="btn btn-outline-secondary">
-                            <i class="ti ti-refresh"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </form>
+<!-- Action Buttons -->
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h4 class="fw-bold text-dark">Data Siswa</h4>
+        <small class="text-muted">Gunakan search bar di bawah untuk mencari data</small>
+    </div>
+    <div>
+        <a href="<?= site_url('siswa/create') ?>" class="btn btn-primary">
+            <i class="ti ti-circle-plus me-2"></i>Tambah Siswa
+        </a>
     </div>
 </div>
 
 <!-- Siswa List -->
-<div class="card border-0 shadow-sm">
+<div class="card border-0 shadow-sm dataTables-card">
     <div class="card-body">
         <div class="table-responsive">
-            <table class="table text-nowrap mb-0 align-middle">
+            <table id="siswaTable" class="table text-nowrap mb-0 align-middle datatable" data-type="students">
                 <thead class="text-dark">
                     <tr>
                         <th class="border-bottom-0">NIS</th>
@@ -253,7 +173,7 @@
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="7" class="text-center py-5">
+                            <td colspan="6" class="text-center py-5">
                                 <i class="ti ti-inbox fs-1 text-muted mb-3"></i>
                                 <h5 class="text-muted">Belum ada data siswa</h5>
                                 <p class="text-muted">Mulai dengan menambahkan siswa pertama</p>
@@ -266,54 +186,6 @@
                 </tbody>
             </table>
         </div>
-
-        <!-- Pagination -->
-        <?php if ($total > $perPage): ?>
-            <div class="d-flex justify-content-between align-items-center mt-4">
-                <div class="text-muted small">
-                    Menampilkan <?= count($siswa) ?> dari <?= $total ?> data
-                </div>
-                <div>
-                    <nav>
-                        <ul class="pagination mb-0">
-                            <?php
-                            $totalPages = ceil($total / $perPage);
-
-                            // Previous button
-                            if ($currentPage > 1): ?>
-                                <li class="page-item">
-                                    <a class="page-link" href="<?= site_url('siswa?page=' . ($currentPage - 1) . '&search=' . urlencode($search ?? '') . '&kelas=' . urlencode($selectedKelas ?? '')) ?>">
-                                        <i class="ti ti-chevron-left"></i>
-                                    </a>
-                                </li>
-                            <?php endif; ?>
-
-                            <!-- Page numbers -->
-                            <?php
-                            $startPage = max(1, $currentPage - 2);
-                            $endPage = min($totalPages, $currentPage + 2);
-
-                            for ($i = $startPage; $i <= $endPage; $i++): ?>
-                                <li class="page-item <?= ($i == $currentPage) ? 'active' : '' ?>">
-                                    <a class="page-link" href="<?= site_url('siswa?page=' . $i . '&search=' . urlencode($search ?? '') . '&kelas=' . urlencode($selectedKelas ?? '')) ?>">
-                                        <?= $i ?>
-                                    </a>
-                                </li>
-                            <?php endfor; ?>
-
-                            <!-- Next button -->
-                            <?php if ($currentPage < $totalPages): ?>
-                                <li class="page-item">
-                                    <a class="page-link" href="<?= site_url('siswa?page=' . ($currentPage + 1) . '&search=' . urlencode($search ?? '') . '&kelas=' . urlencode($selectedKelas ?? '')) ?>">
-                                        <i class="ti ti-chevron-right"></i>
-                                    </a>
-                                </li>
-                            <?php endif; ?>
-                        </ul>
-                    </nav>
-                </div>
-            </div>
-        <?php endif; ?>
     </div>
 </div>
 
@@ -372,6 +244,19 @@
 
 <?= $this->section('scripts') ?>
 <script>
+// DataTables will be auto-initialized by datatables-helper.js
+
+$(document).ready(function() {
+    // Get DataTable instance
+    const table = $('#siswaTable').DataTable();
+
+    // Row click handler (excluding action buttons)
+    DataTableHelper.addRowClickHandler('#siswaTable', function(row, e) {
+        // Optional: Add row click functionality
+        console.log('Row clicked:', row);
+    });
+});
+
 function confirmDelete(id) {
     if (confirm('Apakah Anda yakin ingin menghapus siswa ini?')) {
         const form = document.getElementById('deleteForm');
