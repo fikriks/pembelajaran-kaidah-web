@@ -169,7 +169,6 @@
             <table id="soalTable" class="table table-bordered text-nowrap mb-0 align-middle datatable" data-type="basic">
                 <thead class="text-dark">
                     <tr>
-                        <th>ID</th>
                         <th>Pertanyaan</th>
                         <th>Materi</th>
                         <th>Tingkat</th>
@@ -181,7 +180,7 @@
                 <tbody>
                     <?php if (empty($soal)): ?>
                     <tr>
-                        <td colspan="7" class="text-center py-5">
+                        <td colspan="6" class="text-center py-5">
                             <i class="ti ti-inbox fs-1 text-muted mb-3"></i>
                             <h5 class="text-muted">Belum ada soal</h5>
                             <p class="text-muted">Mulai tambahkan soal untuk pembelajaran kaidah bahasa Arab</p>
@@ -193,7 +192,6 @@
                     <?php else: ?>
                         <?php foreach ($soal as $item): ?>
                         <tr class="soal-card <?= $item['tingkat_kesulitan'] ?>">
-                            <td><?= $item['id_soal'] ?></td>
                             <td>
                                 <div class="d-flex align-items-start">
                                     <div>
@@ -210,7 +208,7 @@
                                                 ?>
                                             <?php endif; ?>
                                         </h6>
-                                        <small class="text-muted">ID: <?= $item['id_soal'] ?> • Pembuat: <?= esc($item['nama_pembuat'] ?? 'Unknown') ?></small>
+                                        <small class="text-muted">Pembuat: <?= esc($item['nama_pembuat'] ?? 'Unknown') ?></small>
                                     </div>
                                 </div>
                             </td>
