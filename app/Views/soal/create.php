@@ -103,23 +103,24 @@
     }
 
     .lcm-info {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
+        background: #ffffff;
+        color: #333333;
         padding: 1rem;
         border-radius: 0.5rem;
         margin-bottom: 1rem;
+        border: 1px solid #e9ecef;
     }
 
     .lcm-params {
         font-family: 'Courier New', monospace;
-        background: rgba(0,0,0,0.2);
+        background: rgba(0,0,0,0.05);
         padding: 0.5rem;
         border-radius: 0.25rem;
         margin-top: 0.5rem;
     }
 
     .alert-warning {
-        background: linear-gradient(135deg, #fff3cd 0%, #fef5e7 100%);
+        background: #fff3cd;
         border-color: #ffeaa7;
     }
 

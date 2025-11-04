@@ -37,7 +37,7 @@
 
     .jawaban-correct {
         border-left: 4px solid #4CAF50;
-        background: linear-gradient(90deg, rgba(76, 175, 80, 0.05) 0%, rgba(76, 175, 80, 0.02) 100%);
+        background: rgba(76, 175, 80, 0.05);
     }
 
     .jawaban-incorrect {
@@ -52,11 +52,12 @@
     }
 
     .meta-info {
-        background: #667eea;
-        color: white;
+        background: #ffffff;
+        color: #333333;
         padding: 1.5rem;
         border-radius: 12px;
         margin-bottom: 2rem;
+        border: 1px solid #e9ecef;
     }
 
     .meta-item {
@@ -108,18 +109,21 @@
     }
 
     .difficulty-mudah {
-        background: linear-gradient(135deg, #84fab0 0%, #8fd3f4 100%);
+        background: #d4edda;
         color: #0f5132;
+        border: 1px solid #c3e6cb;
     }
 
     .difficulty-sedang {
-        background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+        background: #fff3cd;
         color: #664d03;
+        border: 1px solid #ffeaa7;
     }
 
     .difficulty-sulit {
-        background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+        background: #f8d7da;
         color: #842029;
+        border: 1px solid #f5c6cb;
     }
 </style>
 <?= $this->endSection() ?>
@@ -139,9 +143,8 @@
             <h4 class="fw-bold text-dark mb-0">Detail Soal</h4>
         </div>
         <div>
-            <a href="<?= site_url('soal') ?>" class="btn-back">
-                <i class="ti ti-arrow-left me-2"></i>
-                Kembali ke Daftar Soal
+            <a href="<?= site_url('soal') ?>" class="btn btn-secondary me-2">
+                <i class="ti ti-arrow-left me-2"></i>Kembali
             </a>
         </div>
     </div>
@@ -154,11 +157,7 @@
                     <i class="ti ti-book"></i>
                     <span><strong>Materi:</strong> <?= esc($soal['judul_kaidah']) ?></span>
                 </div>
-                <div class="meta-item">
-                    <i class="ti ti-hash"></i>
-                    <span><strong>ID Soal:</strong> <?= $soal['id_soal'] ?></span>
-                </div>
-                <div class="meta-item">
+                  <div class="meta-item">
                     <i class="ti ti-user"></i>
                     <span><strong>Dibuat oleh:</strong> <?= esc($soal['nama_pembuat']) ?></span>
                 </div>
@@ -182,9 +181,9 @@
 
     <!-- Question Card -->
     <div class="card detail-card mb-4">
-        <div class="card-header bg-primary text-white">
+        <div class="card-header bg-white text-dark border-bottom">
             <h5 class="mb-0">
-                <i class="ti ti-help-circle me-2"></i>
+                <i class="ti ti-question-mark me-2"></i>
                 Pertanyaan
             </h5>
         </div>
@@ -197,9 +196,9 @@
 
     <!-- Answers Section -->
     <div class="card detail-card">
-        <div class="card-header bg-success text-white">
+        <div class="card-header bg-white text-dark border-bottom">
             <h5 class="mb-0">
-                <i class="ti ti-list-check me-2"></i>
+                <i class="ti ti-checkbox me-2"></i>
                 Pilihan Jawaban
             </h5>
         </div>

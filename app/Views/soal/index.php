@@ -319,22 +319,40 @@
     </div>
 </div>
 
-<!-- Hidden form for delete -->
-<form id="deleteForm" method="POST" action="">
-    <?= csrf_field() ?>
-    <input type="hidden" name="_method" value="DELETE">
-</div>
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
 <script>
-// Delete confirmation function
+// Confirm delete
 function confirmDelete(id, title) {
-    if (confirm(`Apakah Anda yakin ingin menghapus soal "${title}..."?\n\nData yang dihapus tidak dapat dikembalikan.`)) {
-        const form = document.getElementById('deleteForm');
-        form.action = '<?= site_url('soal') ?>/' + id;
-        form.submit();
-    }
+    toast.confirm(
+        `Apakah Anda yakin ingin menghapus soal "${title}..."? Data yang dihapus tidak dapat dikembalikan.`,
+        function() {
+            // Show loading
+            const loading = toast.loading('Menghapus soal...');
+
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = `<?= site_url('soal/delete/') ?>${id}`;
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]');
+            if (csrfToken) {
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = '<?= csrf_token() ?>';
+                csrfInput.value = '<?= csrf_hash() ?>';
+                form.appendChild(csrfInput);
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+
+            // Dismiss loading after a delay (in case redirect takes time)
+            setTimeout(() => {
+                loading.dismiss();
+            }, 3000);
+        }
+    );
 }
 
 // Preview soal function
@@ -366,27 +384,26 @@ function previewSoal(id) {
 
 // Test LCM for materi
 function testLCMForMateri(materiId) {
-    window.open(`<?= site_url('soal/preview-randomization') ?>/${materiId}`, '_blank');
+    window.open(`<?= site_url('soal') ?>/${materiId}/preview-randomization`, '_blank');
 }
 
 // DataTables will be auto-initialized by datatables-helper.js
 
 // Auto-refresh statistics every 30 seconds
-    setInterval(function() {
-        fetch('<?= site_url('soal/statistics') ?>')
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    const stats = data.data;
-                    // Update stats cards
-                    document.querySelector('.stats-card-primary h2').textContent = stats.total || 0;
-                    document.querySelector('.stats-card-success h2').textContent = stats.mudah || 0;
-                    document.querySelector('.stats-card-warning h2').textContent = stats.sedang || 0;
-                    document.querySelector('.stats-card-danger h2').textContent = stats.sulit || 0;
-                }
-            })
-            .catch(error => console.error('Error fetching statistics:', error));
-    }, 30000);
-});
+setInterval(function() {
+    fetch('<?= site_url('soal/statistics') ?>')
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                const stats = data.data;
+                // Update stats cards
+                document.querySelector('.stats-card-primary h2').textContent = stats.total || 0;
+                document.querySelector('.stats-card-success h2').textContent = stats.mudah || 0;
+                document.querySelector('.stats-card-warning h2').textContent = stats.sedang || 0;
+                document.querySelector('.stats-card-danger h2').textContent = stats.sulit || 0;
+            }
+        })
+        .catch(error => console.error('Error fetching statistics:', error));
+}, 30000);
 </script>
 <?= $this->endSection() ?>

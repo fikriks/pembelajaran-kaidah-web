@@ -116,7 +116,7 @@ $routes->group('soal', function($routes) {
     $routes->get('test-lcm', 'SoalController::testLCM');
     $routes->post('api/random-soal', 'SoalController::apiGetRandomSoal');
     $routes->get('statistics', 'SoalController::statistics');
-    $routes->get('preview-randomization/(:num)', 'SoalController::previewRandomization/$1');
+    $routes->get('(:num)/preview-randomization', 'SoalController::previewRandomization/$1');
 });
 
 // Sesi Pembelajaran Management
