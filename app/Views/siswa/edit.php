@@ -145,11 +145,9 @@
                 <button type="submit" class="btn btn-primary">
                     <i class="ti ti-device-floppy me-2"></i>Update Data
                 </button>
-                <a href="<?= site_url('siswa/' . $siswa['id'] . '/reset-password') ?>"
-                   class="btn btn-warning"
-                   onclick="return confirm('Apakah Anda yakin ingin reset password siswa ini?')">
+                <button type="button" class="btn btn-warning" onclick="confirmResetPassword()">
                     <i class="ti ti-key me-2"></i>Reset Password
-                </a>
+                </button>
                 <a href="<?= site_url('siswa') ?>" class="btn btn-danger">
                     <i class="ti ti-circle-x me-2"></i>Batal
                 </a>
@@ -179,28 +177,65 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Delete confirmation
 function confirmDelete(id) {
-    if (confirm('Apakah Anda yakin ingin menghapus siswa ini? Data yang dihapus tidak dapat dikembalikan.')) {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = '<?= site_url('siswa') ?>/' + id;
+    toast.confirm(
+        'Apakah Anda yakin ingin menghapus siswa ini? Data yang dihapus tidak dapat dikembalikan.',
+        function() {
+            // Show loading
+            const loading = toast.loading('Menghapus siswa...');
 
-        // Add CSRF token
-        const csrfInput = document.createElement('input');
-        csrfInput.type = 'hidden';
-        csrfInput.name = '<?= csrf_token() ?>';
-        csrfInput.value = '<?= csrf_hash() ?>';
-        form.appendChild(csrfInput);
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '<?= site_url('siswa') ?>/' + id;
 
-        // Add method override for DELETE
-        const methodInput = document.createElement('input');
-        methodInput.type = 'hidden';
-        methodInput.name = '_method';
-        methodInput.value = 'DELETE';
-        form.appendChild(methodInput);
+            // Add CSRF token
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '<?= csrf_token() ?>';
+            csrfInput.value = '<?= csrf_hash() ?>';
+            form.appendChild(csrfInput);
 
-        document.body.appendChild(form);
-        form.submit();
-    }
+            // Add method override for DELETE
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            form.appendChild(methodInput);
+
+            document.body.appendChild(form);
+            form.submit();
+
+            // Dismiss loading after a delay (in case redirect takes time)
+            setTimeout(() => loading.dismiss(), 2000);
+        },
+        null,
+        {
+            title: 'Hapus Siswa',
+            confirmText: 'Hapus',
+            confirmClass: 'btn-danger'
+        }
+    );
+}
+
+// Reset password confirmation
+function confirmResetPassword() {
+    toast.confirm(
+        'Apakah Anda yakin ingin reset password siswa ini? Password baru akan digenerate secara otomatis.',
+        function() {
+            // Show loading
+            const loading = toast.loading('Reset password...');
+
+            window.location.href = '<?= site_url('siswa/' . $siswa['id'] . '/reset-password') ?>';
+
+            // Dismiss loading after a delay (in case redirect takes time)
+            setTimeout(() => loading.dismiss(), 1000);
+        },
+        null,
+        {
+            title: 'Reset Password',
+            confirmText: 'Reset',
+            confirmClass: 'btn-warning'
+        }
+    );
 }
 </script>
 <?= $this->endSection() ?>

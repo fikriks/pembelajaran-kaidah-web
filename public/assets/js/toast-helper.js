@@ -148,6 +148,101 @@ document.addEventListener('DOMContentLoaded', function() {
          */
         dismissAll: function() {
             window.notyf.dismissAll();
+        },
+
+        /**
+         * Show confirmation dialog
+         * @param {string} message - Confirmation message
+         * @param {Function} onConfirm - Callback when confirmed
+         * @param {Function} onCancel - Callback when cancelled (optional)
+         * @param {Object} options - Additional options
+         */
+        confirm: function(message, onConfirm, onCancel = null, options = {}) {
+            const defaults = {
+                title: 'Konfirmasi',
+                confirmText: 'Ya',
+                cancelText: 'Batal',
+                confirmClass: 'btn-success',
+                cancelClass: 'btn-secondary'
+            };
+
+            const config = Object.assign(defaults, options);
+
+            // Create modal overlay
+            const modalOverlay = document.createElement('div');
+            modalOverlay.className = 'modal fade show';
+            modalOverlay.style.cssText = 'display: block; background-color: rgba(0,0,0,0.5);';
+            modalOverlay.setAttribute('tabindex', '-1');
+
+            // Create modal dialog
+            const modalDialog = document.createElement('div');
+            modalDialog.className = 'modal-dialog modal-dialog-centered';
+            modalDialog.style.cssText = 'max-width: 400px;';
+
+            // Create modal content
+            const modalContent = document.createElement('div');
+            modalContent.className = 'modal-content';
+            modalContent.innerHTML = `
+                <div class="modal-header border-0">
+                    <h5 class="modal-title">
+                        <i class="ti ti-help-circle me-2 text-primary"></i>
+                        ${config.title}
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="mb-0">${message}</p>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn ${config.cancelClass} btn-cancel">
+                        <i class="ti ti-x me-1"></i>${config.cancelText}
+                    </button>
+                    <button type="button" class="btn ${config.confirmClass} btn-confirm">
+                        <i class="ti ti-check me-1"></i>${config.confirmText}
+                    </button>
+                </div>
+            `;
+
+            modalDialog.appendChild(modalContent);
+            modalOverlay.appendChild(modalDialog);
+            document.body.appendChild(modalOverlay);
+
+            // Add event listeners
+            const confirmBtn = modalContent.querySelector('.btn-confirm');
+            const cancelBtn = modalContent.querySelector('.btn-cancel');
+            const closeBtn = modalContent.querySelector('.btn-close');
+
+            const closeModal = () => {
+                document.body.removeChild(modalOverlay);
+                if (onCancel) onCancel();
+            };
+
+            confirmBtn.addEventListener('click', () => {
+                document.body.removeChild(modalOverlay);
+                if (onConfirm) onConfirm();
+            });
+
+            cancelBtn.addEventListener('click', closeModal);
+            closeBtn.addEventListener('click', closeModal);
+
+            // Close on backdrop click
+            modalOverlay.addEventListener('click', (e) => {
+                if (e.target === modalOverlay) {
+                    closeModal();
+                }
+            });
+
+            // Close on ESC key
+            const handleEsc = (e) => {
+                if (e.key === 'Escape') {
+                    closeModal();
+                    document.removeEventListener('keydown', handleEsc);
+                }
+            };
+            document.addEventListener('keydown', handleEsc);
+
+            // Focus confirm button
+            confirmBtn.focus();
         }
     };
 

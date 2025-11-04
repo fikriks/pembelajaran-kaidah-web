@@ -58,24 +58,24 @@
 <div class="card border-0 shadow-sm dataTables-card">
     <div class="card-body">
         <div class="table-responsive">
-            <table id="guruTable" class="table text-nowrap mb-0 align-middle datatable" data-type="basic">
+            <table id="guruTable" class="table table-bordered text-nowrap mb-0 align-middle datatable" data-type="basic">
                 <thead class="text-dark">
                     <tr>
-                        <th class="border-bottom-0">ID</th>
-                        <th class="border-bottom-0">Username</th>
-                        <th class="border-bottom-0">Nama Lengkap</th>
-                        <th class="border-bottom-0">Status</th>
-                        <th class="border-bottom-0">Aksi</th>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>Nama Lengkap</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (!empty($gurus)): ?>
                         <?php foreach ($gurus as $item): ?>
                             <tr>
-                                <td class="border-bottom-0">
+                                <td>
                                     <span class="fw-semibold"><?= esc($item['id_pengguna']) ?></span>
                                 </td>
-                                <td class="border-bottom-0">
+                                <td>
                                     <div class="d-flex align-items-center">
                                         <div class="rounded-circle bg-primary bg-opacity-10 p-2 me-2">
                                             <i class="ti ti-school text-primary fs-4"></i>
@@ -85,17 +85,17 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="border-bottom-0">
+                                <td>
                                     <span class="fw-semibold"><?= esc($item['nama_lengkap']) ?></span>
                                 </td>
-                                <td class="border-bottom-0">
+                                <td>
                                     <span class="badge bg-<?= ($item['status'] === 'AKTIF') ? 'success' : 'secondary' ?> rounded-3">
                                         <?= esc($item['status']) ?>
                                     </span>
                                 </td>
-                                <td class="border-bottom-0">
+                                <td>
                                     <div class="table-actions">
-                                        <a href="<?= site_url('guru/show/' . $item['id_pengguna']) ?>"
+                                        <a href="<?= site_url('guru/' . $item['id_pengguna'] . '/show') ?>"
                                             class="btn btn-sm btn-info me-1"
                                             title="Detail">
                                             <i class="ti ti-eye me-1"></i>Detail
@@ -107,6 +107,7 @@
                                         </a>
                                         <button type="button" class="btn btn-sm btn-success me-1"
                                             onclick="toggleStatus(<?= $item['id_pengguna'] ?>)"
+                                            data-status="<?= $item['status'] ?>"
                                             title="Ubah Status">
                                             <i class="ti ti-toggle-<?= $item['status'] === 'AKTIF' ? 'left' : 'right' ?> me-1"></i>Status
                                         </button>
@@ -148,46 +149,77 @@
 
     // Toggle status
     function toggleStatus(id) {
-        fetch(`<?= site_url('guru/') ?>${id}/toggleStatus`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.status === 'success') {
-                    location.reload();
-                } else {
-                    alert(data.message || 'Gagal mengubah status');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Terjadi kesalahan saat mengubah status');
-            });
+        const currentStatus = document.querySelector(`button[onclick="toggleStatus(${id})"]`).getAttribute('data-status');
+        const actionText = currentStatus === 'AKTIF' ? 'menonaktifkan' : 'mengaktifkan';
+
+        toast.confirm(
+            `Apakah Anda yakin ingin ${actionText} guru ini?`,
+            function() {
+                // Show loading
+                const loading = toast.loading('Mengubah status...');
+
+                fetch(`<?= site_url('guru/') ?>${id}/toggleStatus`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        toast.success('Status guru berhasil diperbarui!');
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        toast.error(data.message || 'Gagal mengubah status');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    toast.error('Terjadi kesalahan saat mengubah status');
+                })
+                .finally(() => {
+                    // Dismiss loading
+                    loading.dismiss();
+                });
+            }
+        );
     }
 
     // Confirm delete
     function confirmDelete(id) {
-        if (confirm('Apakah Anda yakin ingin menghapus guru ini?')) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = `<?= site_url('guru/delete/') ?>${id}`;
+        toast.confirm(
+            'Apakah Anda yakin ingin menghapus guru ini? Data yang dihapus tidak dapat dikembalikan.',
+            function() {
+                // Show loading
+                const loading = toast.loading('Menghapus guru...');
 
-            const csrfToken = document.querySelector('meta[name="csrf-token"]');
-            if (csrfToken) {
-                const csrfInput = document.createElement('input');
-                csrfInput.type = 'hidden';
-                csrfInput.name = '<?= csrf_token() ?>';
-                csrfInput.value = '<?= csrf_hash() ?>';
-                form.appendChild(csrfInput);
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = `<?= site_url('guru/delete/') ?>${id}`;
+
+                const csrfToken = document.querySelector('meta[name="csrf-token"]');
+                if (csrfToken) {
+                    const csrfInput = document.createElement('input');
+                    csrfInput.type = 'hidden';
+                    csrfInput.name = '<?= csrf_token() ?>';
+                    csrfInput.value = '<?= csrf_hash() ?>';
+                    form.appendChild(csrfInput);
+                }
+
+                document.body.appendChild(form);
+                form.submit();
+
+                // Dismiss loading after a delay (in case redirect takes time)
+                setTimeout(() => loading.dismiss(), 2000);
+            },
+            null,
+            {
+                title: 'Hapus Guru',
+                confirmText: 'Hapus',
+                confirmClass: 'btn-danger'
             }
-
-            document.body.appendChild(form);
-            form.submit();
-        }
+        );
     }
 
     // DataTables is auto-initialized by datatables-helper.js

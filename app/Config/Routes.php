@@ -52,6 +52,7 @@ $routes->group('pengguna', function($routes) {
     $routes->get('create', 'PenggunaController::create');
     $routes->post('/', 'PenggunaController::store');
     $routes->get('(:num)', 'PenggunaController::show/$1');
+    $routes->get('(:num)/show', 'PenggunaController::show/$1');
     $routes->get('(:num)/edit', 'PenggunaController::edit/$1');
     $routes->put('(:num)', 'PenggunaController::update/$1');
     $routes->delete('(:num)', 'PenggunaController::delete/$1');
@@ -65,7 +66,7 @@ $routes->group('guru', function($routes) {
     $routes->get('/', 'GuruController::index');
     $routes->get('create', 'GuruController::create');
     $routes->post('/', 'GuruController::store');
-    $routes->get('(:num)', 'GuruController::show/$1');
+    $routes->get('(:num)/show', 'GuruController::show/$1');
     $routes->get('(:num)/edit', 'GuruController::edit/$1');
     $routes->put('(:num)', 'GuruController::update/$1');
     $routes->delete('(:num)', 'GuruController::delete/$1');
@@ -79,6 +80,7 @@ $routes->group('siswa', function($routes) {
     $routes->get('/', 'SiswaController::index');
     $routes->get('create', 'SiswaController::create');
     $routes->post('/', 'SiswaController::store');
+    $routes->get('(:num)/show', 'SiswaController::show/$1');
     $routes->get('(:num)/edit', 'SiswaController::edit/$1');
     $routes->put('(:num)', 'SiswaController::update/$1');
     $routes->delete('(:num)', 'SiswaController::delete/$1');

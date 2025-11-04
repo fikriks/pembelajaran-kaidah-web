@@ -52,27 +52,7 @@
           </a>
         </li>
 
-        <li class="nav-small-cap">
-          <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-          <span class="hide-menu">Laporan</span>
-        </li>
-        <li class="sidebar-item">
-          <a class="sidebar-link" href="<?= site_url('laporan') ?>" aria-expanded="false">
-            <span>
-              <i class="ti ti-chart-bar"></i>
-            </span>
-            <span class="hide-menu">Statistik Pembelajaran</span>
-          </a>
-        </li>
-        <li class="sidebar-item">
-          <a class="sidebar-link" href="<?= site_url('laporan/siswa') ?>" aria-expanded="false">
-            <span>
-              <i class="ti ti-user-check"></i>
-            </span>
-            <span class="hide-menu">Progress Siswa</span>
-          </a>
-        </li>
-
+  
         <?php if (session()->get('user_role') === 'ADMIN'): ?>
         <li class="nav-small-cap">
           <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
@@ -125,20 +105,6 @@
           </a>
         </li>
       </ul>
-
-      <!-- Learning Stats Card -->
-      <div class="unlimited-access hide-menu bg-light-primary position-relative mb-7 mt-5 rounded">
-        <div class="d-flex">
-          <div class="unlimited-access-title me-3">
-            <h6 class="fw-semibold fs-4 mb-2 text-dark w-85">Statistik Pembelajaran</h6>
-            <p class="text-muted small mb-3">Pantau progress belajar kaidah bahasa Arab</p>
-            <a href="<?= site_url('laporan') ?>" class="btn btn-primary fs-2 fw-semibold lh-sm">Lihat Laporan</a>
-          </div>
-          <div class="unlimited-access-img">
-            <img src="../assets/images/backgrounds/rocket.png" alt="Progress" class="img-fluid">
-          </div>
-        </div>
-      </div>
     </nav>
     <!-- End Sidebar navigation -->
   </div>

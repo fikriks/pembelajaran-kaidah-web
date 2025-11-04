@@ -65,25 +65,25 @@
 <div class="card border-0 shadow-sm dataTables-card">
     <div class="card-body">
         <div class="table-responsive">
-            <table id="siswaTable" class="table text-nowrap mb-0 align-middle datatable" data-type="students">
+            <table id="siswaTable" class="table table-bordered text-nowrap mb-0 align-middle datatable" data-type="students">
                 <thead class="text-dark">
                     <tr>
-                        <th class="border-bottom-0">NIS</th>
-                        <th class="border-bottom-0">Nama Lengkap</th>
-                        <th class="border-bottom-0">Jenis Kelamin</th>
-                        <th class="border-bottom-0">Kelas</th>
-                        <th class="border-bottom-0">Status</th>
-                        <th class="border-bottom-0">Aksi</th>
+                        <th>NIS</th>
+                        <th>Nama Lengkap</th>
+                        <th>Jenis Kelamin</th>
+                        <th>Kelas</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php if (!empty($siswa)): ?>
                         <?php foreach ($siswa as $item): ?>
                             <tr>
-                                <td class="border-bottom-0">
+                                <td>
                                     <span class="fw-semibold"><?= esc($item['nis']) ?></span>
                                 </td>
-                                <td class="border-bottom-0">
+                                <td>
                                     <div class="d-flex align-items-center">
                                         <div class="rounded-circle bg-primary bg-opacity-10 p-2 me-2">
                                             <i class="ti ti-user text-primary fs-4"></i>
@@ -93,20 +93,20 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="border-bottom-0">
+                                <td>
                                     <span class="badge bg-<?= ($item['jenis_kelamin'] === 'L') ? 'info' : 'danger' ?> rounded-3">
                                         <?= ($item['jenis_kelamin'] === 'L') ? 'Laki-laki' : 'Perempuan' ?>
                                     </span>
                                 </td>
-                                <td class="border-bottom-0">
+                                <td>
                                     <span class="fw-semibold"><?= esc($item['kelas']) ?></span>
                                 </td>
-                                <td class="border-bottom-0">
+                                <td>
                                     <span class="badge bg-<?= ($item['status'] === 'AKTIF') ? 'success' : 'secondary' ?> rounded-3">
                                         <?= esc($item['status']) ?>
                                     </span>
                                 </td>
-                                <td class="border-bottom-0">
+                                <td>
                                     <div class="table-actions">
                                         <a href="<?= site_url('siswa/' . $item['id'] . '/login-history') ?>"
                                            class="btn btn-sm btn-info me-1"
@@ -215,33 +215,65 @@ $(document).ready(function() {
 });
 
 function confirmDelete(id) {
-    if (confirm('Apakah Anda yakin ingin menghapus siswa ini?')) {
-        const form = document.getElementById('deleteForm');
-        form.action = '<?= site_url('siswa') ?>/' + id;
+    toast.confirm(
+        'Apakah Anda yakin ingin menghapus siswa ini? Data yang dihapus tidak dapat dikembalikan.',
+        function() {
+            // Show loading
+            const loading = toast.loading('Menghapus siswa...');
 
-        // Add method override for DELETE
-        const methodInput = document.createElement('input');
-        methodInput.type = 'hidden';
-        methodInput.name = '_method';
-        methodInput.value = 'DELETE';
-        form.appendChild(methodInput);
+            const form = document.getElementById('deleteForm');
+            form.action = '<?= site_url('siswa') ?>/' + id;
 
-        form.submit();
-    }
+            // Add method override for DELETE
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'DELETE';
+            form.appendChild(methodInput);
+
+            form.submit();
+
+            // Dismiss loading after a delay (in case redirect takes time)
+            setTimeout(() => loading.dismiss(), 2000);
+        },
+        null,
+        {
+            title: 'Hapus Siswa',
+            confirmText: 'Hapus',
+            confirmClass: 'btn-danger'
+        }
+    );
 }
 
 function confirmResetPassword(id) {
-    const form = document.getElementById('resetPasswordForm');
-    form.action = '<?= site_url('siswa') ?>/' + id + '/reset-password';
+    toast.confirm(
+        'Apakah Anda yakin ingin reset password siswa ini? Password baru akan digenerate secara otomatis.',
+        function() {
+            // Show loading
+            const loading = toast.loading('Reset password...');
 
-    // Add method override for PATCH
-    const methodInput = document.createElement('input');
-    methodInput.type = 'hidden';
-    methodInput.name = '_method';
-    methodInput.value = 'PATCH';
-    form.appendChild(methodInput);
+            const form = document.getElementById('resetPasswordForm');
+            form.action = '<?= site_url('siswa') ?>/' + id + '/reset-password';
 
-    form.submit();
+            // Add method override for PATCH
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'PATCH';
+            form.appendChild(methodInput);
+
+            form.submit();
+
+            // Dismiss loading after a delay (in case redirect takes time)
+            setTimeout(() => loading.dismiss(), 2000);
+        },
+        null,
+        {
+            title: 'Reset Password',
+            confirmText: 'Reset',
+            confirmClass: 'btn-warning'
+        }
+    );
 }
 
 // Auto-hide flash messages

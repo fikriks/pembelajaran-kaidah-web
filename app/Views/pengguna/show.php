@@ -23,7 +23,7 @@
             <a href="<?= site_url('pengguna') ?>" class="btn btn-secondary me-2">
                 <i class="ti ti-arrow-left me-2"></i>Kembali
             </a>
-            <a href="<?= site_url('pengguna/edit/' . $user['id_pengguna']) ?>" class="btn btn-primary">
+            <a href="<?= site_url('pengguna/' . $user['id_pengguna'] . '/edit') ?>" class="btn btn-primary">
                 <i class="ti ti-edit me-2"></i>Edit Pengguna
             </a>
         </div>
@@ -35,8 +35,8 @@
             <div class="row">
                 <!-- Profile Section -->
                 <div class="col-md-4 text-center">
-                    <div class="avatar-xl bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3">
-                        <i class="ti ti-user fs-1"></i>
+                    <div class="avatar-xxl bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3">
+                        <i class="ti ti-user" style="font-size: 6rem;"></i>
                     </div>
                     <h4 class="fw-bold"><?= esc($user['nama_lengkap']) ?></h4>
                     <p class="text-muted mb-2">@<?= esc($user['nama_pengguna']) ?></p>
@@ -57,7 +57,7 @@
 
                     <!-- Quick Actions -->
                     <div class="d-grid gap-2">
-                        <a href="<?= site_url('pengguna/edit/' . $user['id_pengguna']) ?>" class="btn btn-primary btn-sm">
+                        <a href="<?= site_url('pengguna/' . $user['id_pengguna'] . '/edit') ?>" class="btn btn-primary btn-sm">
                             <i class="ti ti-edit me-2"></i>Edit Profil
                         </a>
                         <?php if ($user['id_pengguna'] != session()->get('user_id')): ?>
@@ -102,10 +102,6 @@
                                         <label class="form-label text-muted">Username</label>
                                         <h5 class="fw-semibold"><?= esc($user['nama_pengguna']) ?></h5>
                                     </div>
-                                    <div class="mb-3">
-                                        <label class="form-label text-muted">Email</label>
-                                        <h5 class="fw-semibold"><?= esc($user['email'] ?? 'Tidak ada') ?></h5>
-                                    </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="mb-3">
@@ -142,13 +138,13 @@
                                 <div class="col-md-6">
                                     <div class="mb-3">
                                         <label class="form-label text-muted">Dibuat Pada</label>
-                                        <h5 class="fw-semibold"><?= date('d M Y H:i:s', strtotime($user['waktu_dibuat'])) ?></h5>
+                                        <h5 class="fw-semibold"><?= format_date_time($user['waktu_dibuat']) ?></h5>
                                         <small class="text-muted"><?= time_ago($user['waktu_dibuat']) ?></small>
                                     </div>
                                     <?php if (!empty($user['waktu_diubah'])): ?>
                                     <div class="mb-3">
                                         <label class="form-label text-muted">Terakhir Diubah</label>
-                                        <h5 class="fw-semibold"><?= date('d M Y H:i:s', strtotime($user['waktu_diubah'])) ?></h5>
+                                        <h5 class="fw-semibold"><?= format_date_time($user['waktu_diubah']) ?></h5>
                                         <small class="text-muted"><?= time_ago($user['waktu_diubah']) ?></small>
                                     </div>
                                     <?php endif; ?>
@@ -183,7 +179,7 @@
                         <!-- Activity Tab -->
                         <div class="tab-pane fade" id="activity" role="tabpanel">
                             <div class="text-center py-5">
-                                <i class="ti ti-clock fs-1 text-muted mb-3"></i>
+                                <i class="ti ti-clock fs-2 text-muted mb-3"></i>
                                 <h5 class="text-muted">Aktivitas Pengguna</h5>
                                 <p class="text-muted">Riwayat aktivitas pengguna akan segera tersedia</p>
                                 <div class="alert alert-info">
@@ -203,7 +199,7 @@
         <div class="col-md-3">
             <div class="card border-primary bg-light">
                 <div class="card-body text-center">
-                    <i class="ti ti-calendar text-primary fs-2 mb-2"></i>
+                    <i class="ti ti-trophy text-primary mb-2" style="font-size: 3.5rem;"></i>
                     <h4 class="fw-bold"><?= calculate_days_since($user['waktu_dibuat']) ?></h4>
                     <p class="text-muted mb-0">Hari Aktif</p>
                 </div>
@@ -212,7 +208,11 @@
         <div class="col-md-3">
             <div class="card border-success bg-light">
                 <div class="card-body text-center">
-                    <i class="ti ti-shield-check text-success fs-2 mb-2"></i>
+                    <?php if ($user['status'] === 'AKTIF'): ?>
+                        <i class="ti ti-toggle-right text-success mb-2" style="font-size: 3.5rem;"></i>
+                    <?php else: ?>
+                        <i class="ti ti-toggle-left text-secondary mb-2" style="font-size: 3.5rem;"></i>
+                    <?php endif; ?>
                     <h4 class="fw-bold">
                         <?php if ($user['status'] === 'AKTIF'): ?>
                             Aktif
@@ -227,7 +227,7 @@
         <div class="col-md-3">
             <div class="card border-info bg-light">
                 <div class="card-body text-center">
-                    <i class="ti ti-user-shield text-info fs-2 mb-2"></i>
+                    <i class="ti ti-crown text-info mb-2" style="font-size: 3.5rem;"></i>
                     <h4 class="fw-bold"><?= $user['hak_akses'] ?></h4>
                     <p class="text-muted mb-0">Hak Akses</p>
                 </div>
@@ -236,7 +236,7 @@
         <div class="col-md-3">
             <div class="card border-warning bg-light">
                 <div class="card-body text-center">
-                    <i class="ti ti-clock text-warning fs-2 mb-2"></i>
+                    <i class="ti ti-calendar-event text-warning mb-2" style="font-size: 3.5rem;"></i>
                     <h4 class="fw-bold">
                         <?= date('H:i', strtotime($user['waktu_dibuat'])) ?>
                     </h4>
@@ -246,40 +246,7 @@
         </div>
     </div>
 
-    <!-- Action Buttons -->
-    <div class="card border-0">
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5 class="fw-bold mb-3">Tindakan Cepat</h5>
-                    <div class="d-grid gap-2 d-md-flex">
-                        <a href="<?= site_url('pengguna/edit/' . $user['id_pengguna']) ?>" class="btn btn-primary">
-                            <i class="ti ti-edit me-2"></i>Edit Pengguna
-                        </a>
-                        <?php if ($user['id_pengguna'] != session()->get('user_id')): ?>
-                        <button type="button" class="btn btn-warning" onclick="toggleStatus()">
-                            <i class="ti ti-toggle-<?= $user['status'] === 'AKTIF' ? 'left' : 'right' ?> me-2"></i>
-                            <?= $user['status'] === 'AKTIF' ? 'Nonaktifkan' : 'Aktifkan' ?>
-                        </button>
-                        <?php endif; ?>
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <h5 class="fw-bold mb-3">Navigasi</h5>
-                    <div class="d-grid gap-2 d-md-flex">
-                        <a href="<?= site_url('pengguna') ?>" class="btn btn-secondary">
-                            <i class="ti ti-arrow-left me-2"></i>Kembali ke Daftar
-                        </a>
-                        <a href="<?= site_url('dashboard') ?>" class="btn btn-info">
-                            <i class="ti ti-layout-dashboard me-2"></i>Dashboard
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
+  
 <script>
 // Toggle user status
 function toggleStatus() {
@@ -287,42 +254,41 @@ function toggleStatus() {
     const newStatus = currentStatus === 'AKTIF' ? 'NONAKTIF' : 'AKTIF';
     const actionText = newStatus === 'AKTIF' ? 'mengaktifkan' : 'menonaktifkan';
 
-    if (confirm(`Apakah Anda yakin ingin ${actionText} pengguna ini?`)) {
-        fetch(`<?= site_url('pengguna/toggleStatus/') ?><?= $user['id_pengguna'] ?>`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'success') {
-                location.reload();
-            } else {
-                alert(data.message || 'Gagal mengubah status');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Terjadi kesalahan saat mengubah status');
-        });
-    }
+    toast.confirm(
+        `Apakah Anda yakin ingin ${actionText} pengguna ini?`,
+        function() {
+            // Show loading
+            const loading = toast.loading('Mengubah status...');
+
+            fetch(`<?= site_url('pengguna/toggleStatus/') ?><?= $user['id_pengguna'] ?>`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    toast.success('Status pengguna berhasil diperbarui!');
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    toast.error(data.message || 'Gagal mengubah status');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                toast.error('Terjadi kesalahan saat mengubah status');
+            })
+            .finally(() => {
+                // Dismiss loading
+                loading.dismiss();
+            });
+        }
+    );
 }
 
-// Helper functions
-function time_ago($datetime) {
-    // Simple time ago function - replace with actual implementation
-    return $datetime ? 'Beberapa waktu lalu' : 'Tidak ada data';
-}
-
-function calculate_days_since($datetime) {
-    if (!$datetime) return 0;
-    $created = strtotime($datetime);
-    $today = time();
-    $days = floor(($today - $created) / (60 * 60 * 24));
-    return max(1, $days);
-}
+// Helper functions are now defined in PHP section
 
 // Initialize tooltips
 document.addEventListener('DOMContentLoaded', function() {
@@ -338,7 +304,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (e.key === 'e' && !e.ctrlKey && !e.metaKey && !e.altKey) {
             if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
                 e.preventDefault();
-                window.location.href = '<?= site_url('pengguna/edit/' . $user['id_pengguna']) ?>';
+                window.location.href = '<?= site_url('pengguna/' . $user['id_pengguna'] . '/edit') ?>';
             }
         }
 
@@ -354,6 +320,11 @@ document.addEventListener('DOMContentLoaded', function() {
 .avatar-xl {
     width: 120px;
     height: 120px;
+}
+
+.avatar-xxl {
+    width: 180px;
+    height: 180px;
 }
 
 .nav-tabs .nav-link {
