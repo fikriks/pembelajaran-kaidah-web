@@ -4,10 +4,14 @@ namespace App\Database\Migrations;
 
 use CodeIgniter\Database\Migration;
 
-class PenggunaMigration extends Migration
+class UpdatePenggunaTableMigration extends Migration
 {
     public function up()
     {
+        // Drop existing table
+        $this->forge->dropTable('pengguna', true);
+
+        // Create new table with updated structure
         $this->forge->addField([
             'id_pengguna' => [
                 'type'           => 'INT',

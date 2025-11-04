@@ -16,27 +16,38 @@
      </ul>
      <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
        <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
-         <a href="https://adminmart.com/product/modernize-free-bootstrap-admin-dashboard/" target="_blank" class="btn btn-primary">Download Free</a>
-         <li class="nav-item dropdown">
+                  <li class="nav-item dropdown">
+          <?php
+          $user = session()->get('user');
+          $userName = $user['nama_lengkap'] ?? 'User';
+          $userRole = $user['hak_akses'] ?? 'GURU';
+          $userPhoto = $user['foto_profil'] ?? '../assets/images/profile/user-1.jpg';
+          ?>
            <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
              aria-expanded="false">
-             <img src="../assets/images/profile/user-1.jpg" alt="" width="35" height="35" class="rounded-circle">
+             <img src="<?= $userPhoto ?>" alt="<?= $userName ?>" width="35" height="35" class="rounded-circle">
            </a>
            <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
              <div class="message-body">
-               <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
+               <div class="d-flex align-items-center gap-2 p-3 border-bottom">
+                 <img src="<?= $userPhoto ?>" alt="<?= $userName ?>" width="40" height="40" class="rounded-circle">
+                 <div>
+                   <h6 class="mb-0 fw-semibold"><?= $userName ?></h6>
+                   <small class="text-muted"><?= ucfirst(strtolower($userRole)) ?></small>
+                 </div>
+               </div>
+               <a href="<?= site_url('profile') ?>" class="d-flex align-items-center gap-2 dropdown-item">
                  <i class="ti ti-user fs-6"></i>
-                 <p class="mb-0 fs-3">My Profile</p>
+                 <p class="mb-0 fs-3">Profil Saya</p>
                </a>
-               <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-                 <i class="ti ti-mail fs-6"></i>
-                 <p class="mb-0 fs-3">My Account</p>
+               <a href="<?= site_url('dashboard') ?>" class="d-flex align-items-center gap-2 dropdown-item">
+                 <i class="ti ti-layout-dashboard fs-6"></i>
+                 <p class="mb-0 fs-3">Dashboard</p>
                </a>
-               <a href="javascript:void(0)" class="d-flex align-items-center gap-2 dropdown-item">
-                 <i class="ti ti-list-check fs-6"></i>
-                 <p class="mb-0 fs-3">My Task</p>
-               </a>
-               <a href="./authentication-login.html" class="btn btn-outline-primary mx-3 mt-2 d-block">Logout</a>
+               <div class="dropdown-divider"></div>
+               <a href="<?= site_url('logout') ?>" class="btn btn-outline-danger mx-3 mt-2 d-block">
+                <i class="ti ti-logout me-1"></i> Keluar
+              </a>
              </div>
            </div>
          </li>

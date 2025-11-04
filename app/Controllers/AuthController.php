@@ -54,8 +54,23 @@ class AuthController extends BaseController
         $user = $this->penggunaModel->authenticate($nama_pengguna, $kata_sandi);
 
         if ($user) {
-            // Set session
-            $this->session->set('user', $user);
+            // Set session data for compatibility
+            $sessionData = [
+                'id_pengguna'   => $user['id_pengguna'],
+                'nama_pengguna' => $user['nama_pengguna'],
+                'nama_lengkap'  => $user['nama_lengkap'],
+                'hak_akses'     => $user['hak_akses'],
+                'foto_profil'   => $user['foto_profil'],
+                'logged_in'     => true
+            ];
+
+            // Set session for BaseController compatibility
+            $this->session->set('user', $sessionData);
+
+            // Set individual session variables for view compatibility
+            $this->session->set('user_role', $user['hak_akses']);
+            $this->session->set('user_id', $user['id_pengguna']);
+            $this->session->set('user_name', $user['nama_lengkap']);
 
             return redirect()->to(site_url('dashboard'))
                            ->with('success', 'Selamat datang, ' . $user['nama_lengkap'] . '!');
@@ -67,17 +82,28 @@ class AuthController extends BaseController
     }
 
     /**
-     * Logout user
+     * Logout user (GET)
      */
     public function logout()
     {
         if ($this->currentUser) {
-            // Clear session
+            // Clear all session data
             $this->session->remove('user');
+            $this->session->remove('user_role');
+            $this->session->remove('user_id');
+            $this->session->remove('user_name');
         }
 
         return redirect()->to(site_url('login'))
                        ->with('success', 'Anda telah berhasil logout.');
+    }
+
+    /**
+     * Process logout (POST)
+     */
+    public function processLogout()
+    {
+        return $this->logout();
     }
 
     /**
@@ -192,5 +218,40 @@ class AuthController extends BaseController
 
         return redirect()->to(site_url('login'))
                        ->with('success', 'Password berhasil direset. Silakan login dengan password baru.');
+    }
+
+    /**
+     * Get current authentication status (AJAX/API)
+     */
+    public function getAuth()
+    {
+        // Return JSON response for AJAX requests
+        if ($this->currentUser) {
+            return $this->response->setJSON([
+                'status' => 'authenticated',
+                'user' => [
+                    'id_pengguna'   => $this->currentUser['id_pengguna'],
+                    'nama_pengguna' => $this->currentUser['nama_pengguna'],
+                    'nama_lengkap'  => $this->currentUser['nama_lengkap'],
+                    'hak_akses'     => $this->currentUser['hak_akses'],
+                    'foto_profil'   => $this->currentUser['foto_profil']
+                ]
+            ]);
+        } else {
+            return $this->response->setJSON([
+                'status' => 'unauthenticated',
+                'user' => null
+            ]);
+        }
+    }
+
+    /**
+     * Handle authentication login requests (for compatibility)
+     */
+    public function getAuthenticationLogin()
+    {
+        // This method handles weird requests from JavaScript
+        // Return the same as getAuth for compatibility
+        return $this->getAuth();
     }
 }

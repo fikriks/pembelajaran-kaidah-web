@@ -15,7 +15,6 @@ class PenggunaModel extends Model
     protected $allowedFields    = [
         'nama_pengguna',
         'kata_sandi',
-        'email',
         'nama_lengkap',
         'hak_akses',
         'foto_profil',
@@ -32,10 +31,9 @@ class PenggunaModel extends Model
     protected $validationRules      = [
         'nama_pengguna' => 'required|min_length[3]|max_length[50]|alpha_numeric_space|is_unique[pengguna.nama_pengguna,id_pengguna,{id_pengguna}]',
         'kata_sandi'    => 'required|min_length[6]',
-        'email'         => 'required|min_length[5]|max_length[100]|valid_email|is_unique[pengguna.email,id_pengguna,{id_pengguna}]',
         'nama_lengkap'  => 'required|min_length[3]|max_length[100]',
-        'hak_akses'     => 'required|in_list[admin,guru]',
-        'status'        => 'required|in_list[aktif,nonaktif]'
+        'hak_akses'     => 'required|in_list[ADMIN,GURU]',
+        'status'        => 'required|in_list[AKTIF,NONAKTIF]'
     ];
     protected $validationMessages   = [
         'nama_pengguna' => [
@@ -48,13 +46,6 @@ class PenggunaModel extends Model
         'kata_sandi' => [
             'required'      => 'Kata sandi harus diisi',
             'min_length'    => 'Kata sandi minimal 6 karakter'
-        ],
-        'email' => [
-            'required'      => 'Email harus diisi',
-            'min_length'    => 'Email minimal 5 karakter',
-            'max_length'    => 'Email maksimal 100 karakter',
-            'valid_email'   => 'Format email tidak valid',
-            'is_unique'     => 'Email sudah digunakan'
         ],
         'nama_lengkap' => [
             'required'      => 'Nama lengkap harus diisi',
@@ -117,7 +108,7 @@ class PenggunaModel extends Model
     public function authenticate($nama_pengguna, $kata_sandi)
     {
         $user = $this->where('nama_pengguna', $nama_pengguna)
-                     ->where('status', 'aktif')
+                     ->where('status', 'AKTIF')
                      ->first();
 
         if ($user && password_verify($kata_sandi, $user['kata_sandi'])) {
@@ -127,14 +118,10 @@ class PenggunaModel extends Model
         return null;
     }
 
-    public function getByEmail($email)
-    {
-        return $this->where('email', $email)->first();
-    }
-
+    
     public function getActiveUsers($hak_akses = null)
     {
-        $builder = $this->where('status', 'aktif');
+        $builder = $this->where('status', 'AKTIF');
 
         if ($hak_akses) {
             $builder = $builder->where('hak_akses', $hak_akses);

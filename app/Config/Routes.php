@@ -57,6 +57,18 @@ $routes->group('/users', function($routes) {
     $routes->delete('/(:num)', 'UserController::delete/$1');
 });
 
+// Siswa Management (Admin only)
+$routes->group('/siswa', function($routes) {
+    $routes->get('/', 'SiswaController::index');
+    $routes->get('/create', 'SiswaController::create');
+    $routes->post('/', 'SiswaController::store');
+    $routes->get('/(:num)/edit', 'SiswaController::edit/$1');
+    $routes->put('/(:num)', 'SiswaController::update/$1');
+    $routes->delete('/(:num)', 'SiswaController::delete/$1');
+    $routes->patch('/(:num)/reset-password', 'SiswaController::resetPassword/$1');
+    $routes->get('/(:num)/login-history', 'SiswaController::loginHistory/$1');
+});
+
 // Materi Kaidah Management
 $routes->group('/kaidah', function($routes) {
     $routes->get('/', 'KaidahController::index');
@@ -102,6 +114,12 @@ $routes->group('/api', ['namespace' => 'App\Controllers\API'], function($routes)
     $routes->get('/auth/profile', 'AuthController::profile');
     $routes->put('/auth/profile', 'AuthController::updateProfile');
     $routes->post('/auth/logout', 'AuthController::logout');
+
+    // Siswa Authentication routes (Mobile App)
+    $routes->post('/siswa/login', 'SiswaAuthController::login');
+    $routes->get('/siswa/profile', 'SiswaAuthController::profile');
+    $routes->options('/siswa/login', 'SiswaAuthController::options');
+    $routes->options('/siswa/profile', 'SiswaAuthController::options');
 
     // Kaidah routes
     $routes->get('/kaidah', 'KaidahController::index');

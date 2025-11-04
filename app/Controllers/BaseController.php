@@ -249,8 +249,8 @@ abstract class BaseController extends Controller
 
         // Define permission matrix
         $permissions = [
-            'admin' => ['view_dashboard', 'manage_users', 'manage_kaidah', 'manage_soal', 'view_reports', 'manage_settings'],
-            'guru'  => ['view_dashboard', 'manage_kaidah', 'manage_soal', 'view_reports']
+            'ADMIN' => ['view_dashboard', 'manage_users', 'manage_kaidah', 'manage_soal', 'view_reports', 'manage_settings'],
+            'GURU'  => ['view_dashboard', 'manage_kaidah', 'manage_soal', 'view_reports']
         ];
 
         return in_array($permission, $permissions[$role] ?? []);

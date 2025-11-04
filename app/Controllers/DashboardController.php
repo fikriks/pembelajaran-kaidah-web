@@ -34,9 +34,9 @@ class DashboardController extends BaseController
 
         $role = $this->currentUser['hak_akses'];
 
-        if ($role === 'admin') {
+        if ($role === 'ADMIN') {
             return $this->adminDashboard();
-        } elseif ($role === 'guru') {
+        } elseif ($role === 'GURU') {
             return $this->guruDashboard();
         }
 
@@ -63,8 +63,8 @@ class DashboardController extends BaseController
 
         // User statistics
         $userStats = [
-            'admin_count' => $this->penggunaModel->where('hak_akses', 'admin')->countAllResults(),
-            'guru_count' => $this->penggunaModel->where('hak_akses', 'guru')->countAllResults()
+            'admin_count' => $this->penggunaModel->where('hak_akses', 'ADMIN')->countAllResults(),
+            'guru_count' => $this->penggunaModel->where('hak_akses', 'GURU')->countAllResults()
         ];
 
         // Material statistics (empty for now)

@@ -18,7 +18,7 @@ class PenggunaController extends BaseController
      */
     public function index()
     {
-        $this->requireRole('admin');
+        $this->requireRole('ADMIN');
 
         $perPage = $this->request->getGet('per_page') ?? 10;
         $search = $this->request->getGet('search');
@@ -30,15 +30,14 @@ class PenggunaController extends BaseController
         // Apply filters
         if ($search) {
             $builder = $builder->like('nama_lengkap', $search)
-                             ->orLike('nama_pengguna', $search)
-                             ->orLike('email', $search);
+                             ->orLike('nama_pengguna', $search);
         }
 
-        if ($role && in_array($role, ['admin', 'guru'])) {
+        if ($role && in_array($role, ['ADMIN', 'GURU'])) {
             $builder = $builder->where('hak_akses', $role);
         }
 
-        if ($status && in_array($status, ['aktif', 'nonaktif'])) {
+        if ($status && in_array($status, ['AKTIF', 'NONAKTIF'])) {
             $builder = $builder->where('status', $status);
         }
 
@@ -62,7 +61,7 @@ class PenggunaController extends BaseController
      */
     public function create()
     {
-        $this->requireRole('admin');
+        $this->requireRole('ADMIN');
 
         $this->data = array_merge($this->data, [
             'page_title' => 'Tambah Pengguna Baru',
@@ -77,15 +76,14 @@ class PenggunaController extends BaseController
      */
     public function store()
     {
-        $this->requireRole('admin');
+        $this->requireRole('ADMIN');
 
         $rules = [
             'nama_pengguna' => 'required|min_length[3]|max_length[50]|alpha_numeric_space|is_unique[pengguna.nama_pengguna]',
             'kata_sandi'    => 'required|min_length[6]',
-            'email'         => 'required|valid_email|is_unique[pengguna.email]',
-            'nama_lengkap'  => 'required|min_length[3]|max_length[100]',
-            'hak_akses'     => 'required|in_list[admin,guru]',
-            'status'        => 'required|in_list[aktif,nonaktif]'
+                        'nama_lengkap'  => 'required|min_length[3]|max_length[100]',
+            'hak_akses'     => 'required|in_list[ADMIN,GURU]',
+            'status'        => 'required|in_list[AKTIF,NONAKTIF]'
         ];
 
         if (!$this->validate($rules)) {
@@ -119,7 +117,7 @@ class PenggunaController extends BaseController
      */
     public function show($id)
     {
-        $this->requireRole('admin');
+        $this->requireRole('ADMIN');
 
         $user = $this->penggunaModel->find($id);
 
@@ -141,7 +139,7 @@ class PenggunaController extends BaseController
      */
     public function edit($id)
     {
-        $this->requireRole('admin');
+        $this->requireRole('ADMIN');
 
         $user = $this->penggunaModel->find($id);
 
@@ -164,7 +162,7 @@ class PenggunaController extends BaseController
      */
     public function update($id)
     {
-        $this->requireRole('admin');
+        $this->requireRole('ADMIN');
 
         $user = $this->penggunaModel->find($id);
 
@@ -175,10 +173,9 @@ class PenggunaController extends BaseController
 
         $rules = [
             'nama_pengguna' => "required|min_length[3]|max_length[50]|alpha_numeric_space|is_unique[pengguna.nama_pengguna,id_pengguna,{$id}]",
-            'email'         => "required|valid_email|is_unique[pengguna.email,id_pengguna,{$id}]",
-            'nama_lengkap'  => 'required|min_length[3]|max_length[100]',
-            'hak_akses'     => 'required|in_list[admin,guru]',
-            'status'        => 'required|in_list[aktif,nonaktif]'
+                        'nama_lengkap'  => 'required|min_length[3]|max_length[100]',
+            'hak_akses'     => 'required|in_list[ADMIN,GURU]',
+            'status'        => 'required|in_list[AKTIF,NONAKTIF]'
         ];
 
         // Add password validation if password is provided
@@ -222,7 +219,7 @@ class PenggunaController extends BaseController
      */
     public function delete($id)
     {
-        $this->requireRole('admin');
+        $this->requireRole('ADMIN');
 
         $user = $this->penggunaModel->find($id);
 
@@ -251,7 +248,7 @@ class PenggunaController extends BaseController
      */
     public function toggleStatus($id)
     {
-        $this->requireRole('admin');
+        $this->requireRole('ADMIN');
 
         $user = $this->penggunaModel->find($id);
 
@@ -281,7 +278,7 @@ class PenggunaController extends BaseController
      */
     public function bulkAction()
     {
-        $this->requireRole('admin');
+        $this->requireRole('ADMIN');
 
         $action = $this->request->getPost('action');
         $userIds = $this->request->getPost('user_ids');

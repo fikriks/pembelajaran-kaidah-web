@@ -67,23 +67,31 @@
         <li class="sidebar-item">
           <a class="sidebar-link" href="<?= site_url('laporan/siswa') ?>" aria-expanded="false">
             <span>
-              <i class="ti ti-users"></i>
+              <i class="ti ti-user-check"></i>
             </span>
             <span class="hide-menu">Progress Siswa</span>
           </a>
         </li>
 
-        <?php if (session()->get('user_role') === 'admin'): ?>
+        <?php if (session()->get('user_role') === 'ADMIN'): ?>
         <li class="nav-small-cap">
           <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
           <span class="hide-menu">Pengaturan</span>
         </li>
         <li class="sidebar-item">
-          <a class="sidebar-link" href="<?= site_url('users') ?>" aria-expanded="false">
+          <a class="sidebar-link <?= (strpos(current_url(), site_url('users')) !== false) ? 'active' : '' ?>" href="<?= site_url('users') ?>" aria-expanded="false">
             <span>
               <i class="ti ti-user"></i>
             </span>
             <span class="hide-menu">Manajemen User</span>
+          </a>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link <?= (strpos(current_url(), site_url('siswa')) !== false) ? 'active' : '' ?>" href="<?= site_url('siswa') ?>" aria-expanded="false">
+            <span>
+              <i class="ti ti-user-check"></i>
+            </span>
+            <span class="hide-menu">Manajemen Siswa</span>
           </a>
         </li>
         <?php endif; ?>
