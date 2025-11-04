@@ -53,7 +53,7 @@
             <div>
                 <strong>Info Siswa:</strong> <?= esc($siswa['nama_lengkap']) ?> (NIS: <?= esc($siswa['nis']) ?>)
                 <br class="d-md-none">
-                <small class="text-muted">Status: <span class="badge bg-<?= ($siswa['status'] === 'aktif') ? 'success' : 'secondary' ?> rounded-3"><?= ucfirst($siswa['status']) ?></span></small>
+                <small class="text-muted">Status: <span class="badge bg-<?= ($siswa['status'] === 'AKTIF') ? 'success' : 'secondary' ?> rounded-3"><?= ucfirst($siswa['status']) ?></span></small>
             </div>
         </div>
 
@@ -110,8 +110,8 @@
                     <label for="status" class="form-label">Status Akun *</label>
                     <select class="form-select" id="status" name="status" required>
                         <option value="">Pilih status</option>
-                        <option value="aktif" <?= ($siswa['status'] === 'aktif') ? 'selected' : '' ?>>Aktif</option>
-                        <option value="nonaktif" <?= ($siswa['status'] === 'nonaktif') ? 'selected' : '' ?>>Nonaktif</option>
+                        <option value="AKTIF" <?= ($siswa['status'] === 'AKTIF') ? 'selected' : '' ?>>Aktif</option>
+                        <option value="NONAKTIF" <?= ($siswa['status'] === 'NONAKTIF') ? 'selected' : '' ?>>Nonaktif</option>
                     </select>
                     <div class="invalid-feedback">
                         Status wajib dipilih

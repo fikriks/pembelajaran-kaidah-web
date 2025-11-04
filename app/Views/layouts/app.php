@@ -15,6 +15,9 @@
   <!-- DataTables CSS -->
   <link rel="stylesheet" href="<?= base_url('assets/libs/datatables/dataTables.bootstrap5.css') ?>" />
 
+  <!-- Notyf CSS -->
+  <link rel="stylesheet" href="<?= base_url('assets/libs/notyf/notyf.min.css') ?>" />
+
   <!-- Additional Page-specific CSS -->
   <?= $this->renderSection('styles') ?>
 </head>
@@ -31,6 +34,7 @@
       <?= $this->include('layouts/navbar.php') ?>
 
       <div class="container-fluid">
+        <?= $this->include('partials/flash_messages') ?>
         <?= $this->renderSection('content') ?>
 
         <?= $this->include('layouts/footer.php') ?>
@@ -47,6 +51,10 @@
   <script src="<?= base_url('assets/libs/datatables/dataTables.min.js') ?>"></script>
   <script src="<?= base_url('assets/libs/datatables/dataTables.bootstrap5.js') ?>"></script>
   <script src="<?= base_url('assets/js/datatables-helper.js') ?>"></script>
+
+  <!-- Notyf JavaScript -->
+  <script src="<?= base_url('assets/libs/notyf/notyf.min.js') ?>"></script>
+  <script src="<?= base_url('assets/js/toast-helper.js') ?>"></script>
 
   <!-- Additional Page-specific JavaScript -->
   <?= $this->renderSection('scripts') ?>

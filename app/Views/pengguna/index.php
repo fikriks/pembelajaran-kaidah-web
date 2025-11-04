@@ -64,7 +64,6 @@
                         <th class="border-bottom-0">ID</th>
                         <th class="border-bottom-0">Username</th>
                         <th class="border-bottom-0">Nama Lengkap</th>
-                        <th class="border-bottom-0">Email</th>
                         <th class="border-bottom-0">Role</th>
                         <th class="border-bottom-0">Status</th>
                         <th class="border-bottom-0">Aksi</th>
@@ -91,9 +90,6 @@
                                     <span class="fw-semibold"><?= esc($item['nama_lengkap']) ?></span>
                                 </td>
                                 <td class="border-bottom-0">
-                                    <small class="text-muted"><?= esc($item['email'] ?? '-') ?></small>
-                                </td>
-                                <td class="border-bottom-0">
                                     <span class="badge bg-<?= ($item['hak_akses'] === 'ADMIN') ? 'danger' : 'info' ?> rounded-3">
                                         <?= ($item['hak_akses'] === 'ADMIN') ? 'Admin' : 'Guru' ?>
                                     </span>
@@ -108,22 +104,22 @@
                                         <a href="<?= site_url('pengguna/show/' . $item['id_pengguna']) ?>"
                                             class="btn btn-sm btn-info me-1"
                                             title="Detail">
-                                            <i class="ti ti-eye"></i>
+                                            <i class="ti ti-eye me-1"></i>Detail
                                         </a>
                                         <a href="<?= site_url('pengguna/edit/' . $item['id_pengguna']) ?>"
                                             class="btn btn-sm btn-warning me-1"
                                             title="Edit">
-                                            <i class="ti ti-edit"></i>
+                                            <i class="ti ti-edit me-1"></i>Edit
                                         </a>
                                         <button type="button" class="btn btn-sm btn-success me-1"
                                             onclick="toggleStatus(<?= $item['id_pengguna'] ?>)"
                                             title="Ubah Status">
-                                            <i class="ti ti-toggle-<?= $item['status'] === 'AKTIF' ? 'left' : 'right' ?>"></i>
+                                            <i class="ti ti-toggle-<?= $item['status'] === 'AKTIF' ? 'left' : 'right' ?> me-1"></i>Status
                                         </button>
                                         <button type="button" class="btn btn-sm btn-danger"
                                             onclick="confirmDelete(<?= $item['id_pengguna'] ?>)"
                                             title="Hapus">
-                                            <i class="ti ti-trash"></i>
+                                            <i class="ti ti-trash me-1"></i>Hapus
                                         </button>
                                     </div>
                                 </td>
@@ -131,7 +127,7 @@
                         <?php endforeach; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="7" class="text-center py-5">
+                            <td colspan="6" class="text-center py-5">
                                 <i class="ti ti-users fs-1 text-muted mb-3"></i>
                                 <h5 class="text-muted">Belum ada data pengguna</h5>
                                 <p class="text-muted">Tambahkan pengguna baru untuk mulai menggunakan sistem</p>

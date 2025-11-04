@@ -30,7 +30,7 @@ class SiswaModel extends Model
 
     // Validation
     protected $validationRules      = [
-        'nis' => 'required|is_unique[siswa,nis,{id}]|min_length[5]|max_length[20]',
+        'nis' => 'required|is_unique[siswa.nis,id,{id}]|min_length[5]|max_length[20]',
         'nama_lengkap' => 'required|min_length[3]|max_length[100]',
         'kata_sandi' => 'required|min_length[6]',
         'jenis_kelamin' => 'required|in_list[L,P]',
