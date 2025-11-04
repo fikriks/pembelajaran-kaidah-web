@@ -1,5 +1,7 @@
 <?= $this->extend('layouts/app') ?>
 
+<?= $this->section('title') ?>Manajemen Kaidah - <?= $this->endSection() ?>
+
 <?= $this->section('styles') ?>
 <style>
     .kaidah-card {

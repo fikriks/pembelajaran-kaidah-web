@@ -1,5 +1,7 @@
 <?= $this->extend('layouts/app') ?>
 
+<?= $this->section('title') ?>Dashboard Admin - <?= $this->endSection() ?>
+
 <?= $this->section('content') ?>
 <!--  Row 1 -->
 <div class="row">
