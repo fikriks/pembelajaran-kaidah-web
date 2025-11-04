@@ -52,7 +52,7 @@
     }
 
     .meta-info {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: #667eea;
         color: white;
         padding: 1.5rem;
         border-radius: 12px;
@@ -79,28 +79,10 @@
         height: 80px;
         line-height: 80px;
         border-radius: 50%;
-        background: rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(10px);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-    }
-
-    .statistics-info .text-primary .fs-1 {
-        background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1));
-        box-shadow: 0 8px 32px rgba(76, 175, 80, 0.15);
-    }
-
-    .statistics-info .text-success .fs-1 {
-        background: linear-gradient(135deg, rgba(76, 175, 80, 0.2), rgba(76, 175, 80, 0.1));
-        box-shadow: 0 8px 32px rgba(76, 175, 80, 0.15);
-    }
-
-    .statistics-info .text-info .fs-1 {
-        background: linear-gradient(135deg, rgba(33, 150, 243, 0.2), rgba(33, 150, 243, 0.1));
-        box-shadow: 0 8px 32px rgba(33, 150, 243, 0.15);
     }
 
     .btn-back {
-        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+        background: #6c757d;
         border: none;
         color: white;
         padding: 0.75rem 1.5rem;
@@ -112,7 +94,7 @@
     }
 
     .btn-back:hover {
-        background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
+        background: #5a6268;
         transform: translateY(-2px);
         color: white;
         text-decoration: none;
