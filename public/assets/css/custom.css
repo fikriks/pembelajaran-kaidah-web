@@ -420,6 +420,63 @@
 }
 
 /* ================================
+   FULL WIDTH CONTENT LAYOUT
+   ================================ */
+
+/* Override max-width constraints for full-width content */
+.body-wrapper > .container-fluid {
+    max-width: none !important;
+    width: 100% !important;
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+}
+
+/* Responsive padding for content */
+@media (max-width: 768px) {
+    .body-wrapper > .container-fluid {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+}
+
+@media (max-width: 576px) {
+    .body-wrapper > .container-fluid {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+}
+
+/* Ensure DataTables cards use full available width */
+.dataTables-card {
+    max-width: none !important;
+    width: 100% !important;
+}
+
+/* Additional layout optimizations for full-width content */
+.card {
+    max-width: none !important;
+}
+
+/* Stats cards responsive width */
+.stats-card {
+    width: 100% !important;
+}
+
+/* Ensure tables and responsive containers use full width */
+.table-responsive {
+    max-width: none !important;
+    width: 100% !important;
+}
+
+/* Remove any width constraints on main content areas */
+.body-wrapper .card,
+.body-wrapper .table-responsive,
+.body-wrapper .dataTables_wrapper {
+    max-width: none !important;
+    width: 100% !important;
+}
+
+/* ================================
    LOADING STATES
    ================================ */
 .loading-skeleton {
