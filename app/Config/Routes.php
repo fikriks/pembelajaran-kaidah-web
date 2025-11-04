@@ -60,6 +60,20 @@ $routes->group('pengguna', function($routes) {
     $routes->post('bulkAction', 'PenggunaController::bulkAction');
 });
 
+// Guru Management (Admin only)
+$routes->group('guru', function($routes) {
+    $routes->get('/', 'GuruController::index');
+    $routes->get('create', 'GuruController::create');
+    $routes->post('/', 'GuruController::store');
+    $routes->get('(:num)', 'GuruController::show/$1');
+    $routes->get('(:num)/edit', 'GuruController::edit/$1');
+    $routes->put('(:num)', 'GuruController::update/$1');
+    $routes->delete('(:num)', 'GuruController::delete/$1');
+    $routes->post('checkUsername', 'GuruController::checkUsername');
+    $routes->post('(:num)/toggleStatus', 'GuruController::toggleStatus/$1');
+    $routes->post('bulkAction', 'GuruController::bulkAction');
+});
+
 // Siswa Management (Admin only)
 $routes->group('siswa', function($routes) {
     $routes->get('/', 'SiswaController::index');

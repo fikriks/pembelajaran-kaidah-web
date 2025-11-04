@@ -87,6 +87,14 @@
           </a>
         </li>
         <li class="sidebar-item">
+          <a class="sidebar-link <?= (strpos(current_url(), site_url('guru')) !== false) ? 'active' : '' ?>" href="<?= site_url('guru') ?>" aria-expanded="false">
+            <span>
+              <i class="ti ti-school"></i>
+            </span>
+            <span class="hide-menu">Manajemen Guru</span>
+          </a>
+        </li>
+        <li class="sidebar-item">
           <a class="sidebar-link <?= (strpos(current_url(), site_url('siswa')) !== false) ? 'active' : '' ?>" href="<?= site_url('siswa') ?>" aria-expanded="false">
             <span>
               <i class="ti ti-user-check"></i>
