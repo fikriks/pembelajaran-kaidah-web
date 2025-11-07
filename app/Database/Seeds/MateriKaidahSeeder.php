@@ -61,8 +61,7 @@ class MateriKaidahSeeder extends Seeder
 - قَرَأْتُ الْكُتُبَ (qara\'tul kutuba) = aku membaca buku-buku
 - رَأَيْتُ الْمُسْلِمِينَ (ra\'aitul muslimina) = aku melihat kaum muslimin
 - جَاءَ الرِّجَالُ (ja\'ar rijalu) = para pria telah datang',
-                'tingkat_kesulitan'=> 'mudah',
-                'urutan'           => 1,
+                                'urutan'           => 1,
                 'dibuat_oleh'      => 2, // guru1
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -132,8 +131,7 @@ class MateriKaidahSeeder extends Seeder
 - ذَهَبَتِ الْمَرْأَةُ (dzahabatil mar\'atu) = sang wanita pergi
 - رَأَيْتُ الْوَلَدَ (ra\'aitul walada) = aku melihat anak laki-laki
 - قَابَلْتُ الْبِنْتَ (qabaltul binta) = aku bertemu anak perempuan',
-                'tingkat_kesulitan'=> 'mudah',
-                'urutan'           => 2,
+                                'urutan'           => 2,
                 'dibuat_oleh'      => 2, // guru1
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -199,8 +197,7 @@ class MateriKaidahSeeder extends Seeder
 - الْمُعَلِّمُ مُجْتَهِدٌ (guru itu rajin) - rafa\'
 - رَأَيْتُ الْمُعَلِّمَ (aku melihat guru) - nashab
 - فِي مَكْتَبِ الْمُعَلِّمِ (di kantor guru) - khafdh',
-                'tingkat_kesulitan'=> 'sedang',
-                'urutan'           => 3,
+                                'urutan'           => 3,
                 'dibuat_oleh'      => 3, // guru2
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -283,8 +280,7 @@ class MateriKaidahSeeder extends Seeder
 - يَا مُحَمَّدُ أَقْبِلْ (wahai Muhammad, majulah!)
 - يَا عِبَادَ اللّٰهِ (wahai hamba-hamba Allah!)
 - يَا رَسُولَ اللّٰهِ (wahai Rasulullah!)',
-                'tingkat_kesulitan'=> 'sedang',
-                'urutan'           => 4,
+                                'urutan'           => 4,
                 'dibuat_oleh'      => 3, // guru2
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -387,8 +383,7 @@ class MateriKaidahSeeder extends Seeder
 الْمُسْتَثْنَى:
 - حَضَرَ الطُّلَّابُ إِلَّا عَلِيًّ (hadharuth thullabu illa \'Aliyyan) = semua mahasiswa hadir kecuali Ali
 - لَا أُحِبُّ إِلَّا الصِّدْقَ (la uhibbu illash shidqa) = aku tidak suka kecuali kebenaran',
-                'tingkat_kesulitan'=> 'sedang',
-                'urutan'           => 5,
+                                'urutan'           => 5,
                 'dibuat_oleh'      => 2, // guru1
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -481,8 +476,7 @@ class MateriKaidahSeeder extends Seeder
 التَّوْكِيدُ الْمَجْرُورُ:
 - زُرْتُ الْمَدْرَسَةَ نَفْسَهَا (zurtul madrasata nafsaha) = aku mengunjungi sekolah itu sendiri
 - الْتَقَيْتُ بِالْمُدَرِّسِ عَيْنِهِ (iltaqaytu bil mudarrisi \'aynihi) = aku bertemu guru itu sendiri',
-                'tingkat_kesulitan'=> 'sedang',
-                'urutan'           => 6,
+                                'urutan'           => 6,
                 'dibuat_oleh'      => 3, // guru2
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -587,8 +581,7 @@ class MateriKaidahSeeder extends Seeder
 - مُحَمَّدٌ قَائِمٌ (Muhammad berdiri) - khabar mufrad
 - الطُّلَّابُ فِي الْفَصْلِ (para mahasiswa di kelas) - khabar zharaf
 - الْمُسْلِمُونَ قَائِمُونَ (para muslim berdiri) - khabar dhomir muttasil',
-                'tingkat_kesulitan'=> 'mudah',
-                'urutan'           => 7,
+                                'urutan'           => 7,
                 'dibuat_oleh'      => 2, // guru1
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -716,8 +709,7 @@ class MateriKaidahSeeder extends Seeder
 - بَيْتُهُ = rumahnya
 - مَكْتَبُهُمْ = kantor mereka
 - شَجَرَتُهَنَّ = pohon mereka perempuan',
-                'tingkat_kesulitan'=> 'mudah',
-                'urutan'           => 8,
+                                'urutan'           => 8,
                 'dibuat_oleh'      => 3, // guru2
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -835,8 +827,7 @@ Untuk isyarah dekat, bisa ditambah:
 - ذَلِكَ لِأَنَّ (itu karena) - alasan
 - أُولَئِكَ الَّذِينَ (mereka yang) - identifikasi
 - هَؤُلَاءِ قَدْ قَالُوا (mereka ini telah mengatakan) - kutipan',
-                'tingkat_kesulitan'=> 'sedang',
-                'urutan'           => 9,
+                                'urutan'           => 9,
                 'dibuat_oleh'      => 2, // guru1
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -969,8 +960,7 @@ Untuk isyarah dekat, bisa ditambah:
 - يَا بُنَيَّ، أَقِمِ الصَّلَاةَ (wahai anakku, dirikanlah shalat)
 - اِذْهَبْ وَجِئْ بِالْخَبَرِ (pergilah dan bawalah kabar itu)
 - قَرَأْتُ الْقُرْآنَ تِلَاوَةً (aku membaca Al-Qur\'an dengan bacaan)',
-                'tingkat_kesulitan'=> 'sedang',
-                'urutan'           => 10,
+                                'urutan'           => 10,
                 'dibuat_oleh'      => 3, // guru2
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),

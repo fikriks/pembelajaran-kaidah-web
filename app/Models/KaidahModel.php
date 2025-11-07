@@ -13,7 +13,6 @@ class KaidahModel extends Model
         'deskripsi',
         'penjelasan',
         'contoh',
-        'tingkat_kesulitan',
         'urutan',
         'dibuat_oleh',
         'waktu_dibuat',
@@ -25,7 +24,6 @@ class KaidahModel extends Model
     protected $useTimestamps = false;
     protected $validationRules = [
         'judul_kaidah' => 'required|min_length[3]|max_length[255]',
-        'tingkat_kesulitan' => 'required|in_list[mudah,sedang,sulit]',
         'urutan' => 'required|integer|greater_than_equal_to[0]',
         'dibuat_oleh' => 'required|integer'
     ];
@@ -34,10 +32,6 @@ class KaidahModel extends Model
             'required' => 'Judul kaidah harus diisi',
             'min_length' => 'Judul kaidah minimal 3 karakter',
             'max_length' => 'Judul kaidah maksimal 255 karakter'
-        ],
-        'tingkat_kesulitan' => [
-            'required' => 'Tingkat kesulitan harus dipilih',
-            'in_list' => 'Tingkat kesulitan tidak valid'
         ],
         'urutan' => [
             'required' => 'Urutan harus diisi',
@@ -79,16 +73,7 @@ class KaidahModel extends Model
                     ->first();
     }
 
-    // Fungsi untuk mendapatkan kaidah berdasarkan tingkat kesulitan
-    public function getKaidahByDifficulty($difficulty)
-    {
-        return $this->select('materi_kaidah.*, pengguna.nama_lengkap as nama_pembuat')
-                    ->join('pengguna', 'pengguna.id_pengguna = materi_kaidah.dibuat_oleh', 'left')
-                    ->where('materi_kaidah.tingkat_kesulitan', $difficulty)
-                    ->orderBy('materi_kaidah.urutan', 'ASC')
-                    ->findAll();
-    }
-
+    
     // Fungsi untuk mencari kaidah
     public function searchKaidah($keyword)
     {
@@ -108,15 +93,9 @@ class KaidahModel extends Model
     public function getKaidahStatistics()
     {
         $total = $this->countAll();
-        $mudah = $this->where('tingkat_kesulitan', 'mudah')->countAllResults();
-        $sedang = $this->where('tingkat_kesulitan', 'sedang')->countAllResults();
-        $sulit = $this->where('tingkat_kesulitan', 'sulit')->countAllResults();
 
         return [
-            'total' => $total,
-            'mudah' => $mudah,
-            'sedang' => $sedang,
-            'sulit' => $sulit
+            'total' => $total
         ];
     }
 
@@ -180,7 +159,7 @@ class KaidahModel extends Model
     // Fungsi untuk mendapatkan kaidah yang tersedia untuk API mobile
     public function getKaidahForAPI()
     {
-        return $this->select('id_materi, judul_kaidah, deskripsi, tingkat_kesulitan, urutan')
+        return $this->select('id_materi, judul_kaidah, deskripsi, urutan')
                     ->orderBy('urutan', 'ASC')
                     ->findAll();
     }

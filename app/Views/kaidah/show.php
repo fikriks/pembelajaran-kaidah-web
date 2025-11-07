@@ -22,22 +22,6 @@
         font-weight: bold;
     }
 
-    /* Difficulty badges */
-    .badge-mudah {
-        background-color: #4CAF50;
-        color: white;
-    }
-
-    .badge-sedang {
-        background-color: #FF9800;
-        color: white;
-    }
-
-    .badge-sulit {
-        background-color: #F44336;
-        color: white;
-    }
-
     /* Card styling */
     .detail-card {
         transition: all 0.3s ease;
@@ -49,9 +33,7 @@
         box-shadow: 0 8px 25px rgba(0,0,0,0.1);
     }
 
-    .detail-card.mudah { border-left-color: #4CAF50; }
-    .detail-card.sedang { border-left-color: #FF9800; }
-    .detail-card.sulit { border-left-color: #F44336; }
+    .detail-card { border-left-color: #4CAF50; }
 </style>
 <?= $this->endSection() ?>
 
@@ -83,14 +65,11 @@
     <!-- Left Column - Main Info -->
     <div class="col-lg-8">
         <!-- Header Card -->
-        <div class="card border-0 shadow-sm mb-4 detail-card <?= $kaidah['tingkat_kesulitan'] ?>">
+        <div class="card border-0 shadow-sm mb-4 detail-card">
             <div class="card-body p-4">
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <div class="flex-grow-1">
                         <div class="mb-2">
-                            <span class="badge rounded-3 badge-<?= $kaidah['tingkat_kesulitan'] ?> me-2">
-                                <?= ucfirst($kaidah['tingkat_kesulitan']) ?>
-                            </span>
                             <span class="badge bg-light text-dark">
                                 Urutan: #<?= $kaidah['urutan'] ?>
                             </span>
@@ -171,15 +150,7 @@
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body">
                 <h6 class="text-muted mb-3">Informasi Materi</h6>
-                <div class="mb-3">
-                    <label class="text-muted small">Tingkat Kesulitan</label>
-                    <div>
-                        <span class="badge rounded-3 badge-<?= $kaidah['tingkat_kesulitan'] ?>">
-                            <?= ucfirst($kaidah['tingkat_kesulitan']) ?>
-                        </span>
-                    </div>
-                </div>
-                <div class="mb-3">
+                                <div class="mb-3">
                     <label class="text-muted small">Urutan Materi</label>
                     <div class="fw-semibold">#<?= $kaidah['urutan'] ?></div>
                 </div>

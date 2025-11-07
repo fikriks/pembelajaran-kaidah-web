@@ -69,9 +69,7 @@ class DashboardController extends BaseController
 
         // Material statistics (empty for now)
         $materialStats = [
-            ['tingkat_kesulitan' => 'mudah', 'count' => 0],
-            ['tingkat_kesulitan' => 'sedang', 'count' => 0],
-            ['tingkat_kesulitan' => 'sulit', 'count' => 0]
+            ['total_materials' => 0]
         ];
 
         // Empty activity data

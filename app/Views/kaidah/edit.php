@@ -124,19 +124,7 @@
             </div>
 
             <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="tingkat_kesulitan" class="form-label">Tingkat Kesulitan *</label>
-                    <select class="form-select" id="tingkat_kesulitan" name="tingkat_kesulitan" required>
-                        <option value="">Pilih tingkat kesulitan</option>
-                        <option value="mudah" <?= (old('tingkat_kesulitan', $kaidah['tingkat_kesulitan'])) === 'mudah' ? 'selected' : '' ?>>Mudah</option>
-                        <option value="sedang" <?= (old('tingkat_kesulitan', $kaidah['tingkat_kesulitan'])) === 'sedang' ? 'selected' : '' ?>>Sedang</option>
-                        <option value="sulit" <?= (old('tingkat_kesulitan', $kaidah['tingkat_kesulitan'])) === 'sulit' ? 'selected' : '' ?>>Sulit</option>
-                    </select>
-                    <div class="invalid-feedback">
-                        Tingkat kesulitan wajib dipilih
-                    </div>
-                </div>
-                <div class="col-md-6 mb-3">
+                <div class="col-md-12 mb-3">
                     <label for="nama_arab" class="form-label">Nama Arab (Opsional)</label>
                     <div class="input-group">
                         <span class="input-group-text">

@@ -21,22 +21,6 @@
         direction: rtl;
     }
 
-    /* Difficulty badges */
-    .badge-mudah {
-        background-color: #4CAF50;
-        color: white;
-    }
-
-    .badge-sedang {
-        background-color: #FF9800;
-        color: white;
-    }
-
-    .badge-sulit {
-        background-color: #F44336;
-        color: white;
-    }
-
     /* Kaidah card hover */
     .kaidah-card {
         transition: all 0.3s ease;
@@ -48,9 +32,7 @@
         box-shadow: 0 8px 25px rgba(0,0,0,0.1);
     }
 
-    .kaidah-card.mudah { border-left-color: #4CAF50; }
-    .kaidah-card.sedang { border-left-color: #FF9800; }
-    .kaidah-card.sulit { border-left-color: #F44336; }
+    .kaidah-card { border-left-color: #4CAF50; }
 
     /* Table styling */
     .table-actions {
@@ -93,27 +75,6 @@
             'subtitle' => 'Kaidah',
             'icon' => 'book',
             'variant' => 'primary'
-        ],
-        [
-            'title' => 'Mudah',
-            'value' => $stats['mudah'] ?? 0,
-            'subtitle' => 'Materi',
-            'icon' => 'trophy',
-            'variant' => 'success'
-        ],
-        [
-            'title' => 'Sedang',
-            'value' => $stats['sedang'] ?? 0,
-            'subtitle' => 'Materi',
-            'icon' => 'battery-2',
-            'variant' => 'warning'
-        ],
-        [
-            'title' => 'Sulit',
-            'value' => $stats['sulit'] ?? 0,
-            'subtitle' => 'Materi',
-            'icon' => 'battery-1',
-            'variant' => 'danger'
         ]
     ]
 ]) ?>
@@ -142,7 +103,6 @@
                         <th>No</th>
                         <th>Judul Kaidah</th>
                         <th>Deskripsi</th>
-                        <th>Tingkat</th>
                         <th>Urutan</th>
                         <th>Dibuat Oleh</th>
                         <th>Aksi</th>
@@ -151,7 +111,7 @@
                 <tbody>
                     <?php if (empty($kaidah)): ?>
                     <tr>
-                        <td colspan="7" class="text-center py-5">
+                        <td colspan="6" class="text-center py-5">
                             <i class="ti ti-inbox fs-1 text-muted mb-3"></i>
                             <h5 class="text-muted">Belum ada materi kaidah</h5>
                             <p class="text-muted">Mulai tambahkan materi pembelajaran kaidah bahasa Arab</p>
@@ -192,12 +152,7 @@
                                     <?php endif; ?>
                                 </div>
                             </td>
-                            <td>
-                                <span class="badge rounded-3 badge-<?= $item['tingkat_kesulitan'] ?>">
-                                    <?= ucfirst($item['tingkat_kesulitan']) ?>
-                                </span>
-                            </td>
-                            <td>
+                                                        <td>
                                 <div class="d-flex align-items-center">
                                     <span class="badge bg-light text-dark me-2">#<?= $item['urutan'] ?></span>
                                 </div>
@@ -268,9 +223,6 @@ setInterval(function() {
                 const stats = data.data;
                 // Update stats cards if needed
                 document.querySelector('.stats-card-primary h2').textContent = stats.total || 0;
-                document.querySelector('.stats-card-success h2').textContent = stats.mudah || 0;
-                document.querySelector('.stats-card-warning h2').textContent = stats.sedang || 0;
-                document.querySelector('.stats-card-danger h2').textContent = stats.sulit || 0;
             }
         })
         .catch(error => console.error('Error fetching statistics:', error));

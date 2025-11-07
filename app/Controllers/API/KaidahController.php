@@ -106,8 +106,7 @@ class KaidahController extends BaseController
                     'deskripsi' => $kaidah['deskripsi'],
                     'penjelasan' => $kaidah['penjelasan'],
                     'contoh' => $kaidah['contoh'],
-                    'tingkat_kesulitan' => $kaidah['tingkat_kesulitan'],
-                    'urutan' => $kaidah['urutan'],
+                                        'urutan' => $kaidah['urutan'],
                     'total_soal' => $totalSoal,
                     'waktu_dibuat' => $kaidah['waktu_dibuat']
                 ],

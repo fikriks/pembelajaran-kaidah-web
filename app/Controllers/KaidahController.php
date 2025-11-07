@@ -75,14 +75,7 @@ class KaidahController extends BaseController
                     'max_length' => 'Contoh maksimal 1000 karakter'
                 ]
             ],
-            'tingkat_kesulitan' => [
-                'rules' => 'required|in_list[mudah,sedang,sulit]',
-                'errors' => [
-                    'required' => 'Tingkat kesulitan harus dipilih',
-                    'in_list' => 'Tingkat kesulitan tidak valid'
-                ]
-            ],
-            'urutan' => [
+                        'urutan' => [
                 'rules' => 'required|integer|greater_than_equal_to[0]',
                 'errors' => [
                     'required' => 'Urutan harus diisi',
@@ -102,8 +95,7 @@ class KaidahController extends BaseController
             'deskripsi' => $this->request->getPost('deskripsi'),
             'penjelasan' => $this->request->getPost('penjelasan'),
             'contoh' => $this->request->getPost('contoh'),
-            'tingkat_kesulitan' => $this->request->getPost('tingkat_kesulitan'),
-            'urutan' => $this->request->getPost('urutan'),
+                        'urutan' => $this->request->getPost('urutan'),
             'dibuat_oleh' => session()->get('user')['id_pengguna']
         ];
 
@@ -174,14 +166,7 @@ class KaidahController extends BaseController
                     'max_length' => 'Contoh maksimal 1000 karakter'
                 ]
             ],
-            'tingkat_kesulitan' => [
-                'rules' => 'required|in_list[mudah,sedang,sulit]',
-                'errors' => [
-                    'required' => 'Tingkat kesulitan harus dipilih',
-                    'in_list' => 'Tingkat kesulitan tidak valid'
-                ]
-            ],
-            'urutan' => [
+                        'urutan' => [
                 'rules' => 'required|integer|greater_than_equal_to[0]',
                 'errors' => [
                     'required' => 'Urutan harus diisi',
@@ -201,8 +186,7 @@ class KaidahController extends BaseController
             'deskripsi' => $this->request->getPost('deskripsi'),
             'penjelasan' => $this->request->getPost('penjelasan'),
             'contoh' => $this->request->getPost('contoh'),
-            'tingkat_kesulitan' => $this->request->getPost('tingkat_kesulitan'),
-            'urutan' => $this->request->getPost('urutan')
+                        'urutan' => $this->request->getPost('urutan')
         ];
 
         try {
