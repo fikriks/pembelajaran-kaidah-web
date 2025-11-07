@@ -217,10 +217,6 @@
                             <td>
                                 <div>
                                     <small class="text-muted fw-semibold"><?= esc($item['judul_kaidah']) ?></small>
-                                    <br>
-                                    <span class="badge bg-light text-dark difficulty-badge">
-                                        <?= ucfirst($item['tingkat_kesulitan_materi']) ?>
-                                    </span>
                                 </div>
                             </td>
                             <td>

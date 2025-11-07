@@ -17,7 +17,6 @@ class MateriKaidahModel extends Model
         'deskripsi',
         'penjelasan',
         'contoh',
-        'tingkat_kesulitan',
         'urutan',
         'dibuat_oleh'
     ];
@@ -34,7 +33,6 @@ class MateriKaidahModel extends Model
         'deskripsi'         => 'required|max_length[500]',
         'penjelasan'        => 'required',
         'contoh'            => 'required',
-        'tingkat_kesulitan' => 'required|in_list[mudah,sedang,sulit]',
         'urutan'            => 'required|integer|greater_than_equal_to[1]',
         'dibuat_oleh'       => 'required|integer|greater_than[0]'
     ];
@@ -54,10 +52,6 @@ class MateriKaidahModel extends Model
         ],
         'contoh' => [
             'required'      => 'Contoh harus diisi'
-        ],
-        'tingkat_kesulitan' => [
-            'required'      => 'Tingkat kesulitan harus dipilih',
-            'in_list'       => 'Tingkat kesulitan tidak valid'
         ],
         'urutan' => [
             'required'      => 'Urutan harus diisi',
@@ -95,12 +89,7 @@ class MateriKaidahModel extends Model
                      ->findAll();
     }
 
-    public function getByDifficulty($tingkat_kesulitan)
-    {
-        return $this->where('tingkat_kesulitan', $tingkat_kesulitan)
-                     ->orderBy('urutan', 'ASC')
-                     ->findAll();
-    }
+    // Removed getByDifficulty method as tingkat_kesulitan field no longer exists
 
     public function getByCreator($id_pembuat)
     {
@@ -149,8 +138,61 @@ class MateriKaidahModel extends Model
 
     public function getForDropdown()
     {
-        return $this->select('id_materi, judul_kaidah, tingkat_kesulitan')
+        return $this->select('id_materi, judul_kaidah')
                      ->orderBy('urutan', 'ASC')
                      ->findAll();
+    }
+
+    // API methods
+    public function getKaidahWithProgress($userId, $search = null, $difficulty = null, $limit = 20, $page = 1)
+    {
+        $builder = $this->select('materi_kaidah.*')
+                         ->orderBy('materi_kaidah.urutan', 'ASC');
+
+        if ($search) {
+            $builder->groupStart()
+                    ->like('materi_kaidah.judul_kaidah', $search)
+                    ->orLike('materi_kaidah.deskripsi', $search)
+                    ->groupEnd();
+        }
+
+        $offset = ($page - 1) * $limit;
+        $result = $builder->findAll($limit, $offset);
+        $total = $this->countAllResults();
+
+        return [
+            'data' => $result,
+            'current_page' => $page,
+            'per_page' => $limit,
+            'total' => $total
+        ];
+    }
+
+    public function searchKaidah($keyword, $userId = null, $limit = 10, $page = 1)
+    {
+        $builder = $this->select('materi_kaidah.*')
+                         ->groupStart()
+                         ->like('materi_kaidah.judul_kaidah', $keyword)
+                         ->orLike('materi_kaidah.deskripsi', $keyword)
+                         ->orLike('materi_kaidah.penjelasan', $keyword)
+                         ->groupEnd()
+                         ->orderBy('materi_kaidah.urutan', 'ASC');
+
+        $offset = ($page - 1) * $limit;
+        $result = $builder->findAll($limit, $offset);
+        $total = $this->countAllResults();
+
+        return [
+            'data' => $result,
+            'current_page' => $page,
+            'per_page' => $limit,
+            'total' => $total
+        ];
+    }
+
+    public function countByDifficulty($difficulty)
+    {
+        // Since tingkat_kesulitan field was removed, return 0 for all difficulty counts
+        return 0;
     }
 }

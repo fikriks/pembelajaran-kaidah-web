@@ -189,7 +189,6 @@
                         <option value="">Pilih materi kaidah</option>
                         <?php foreach ($materiList as $materi): ?>
                             <option value="<?= $materi['id_materi'] ?>"
-                                    data-difficulty="<?= $materi['tingkat_kesulitan'] ?>"
                                     data-urutan="<?= $materi['urutan'] ?>">
                                 <?= esc($materi['judul_kaidah']) ?> (Urutan #<?= $materi['urutan'] ?>)
                             </option>
@@ -594,16 +593,7 @@ function validateJawaban() {
     return true;
 }
 
-// Auto sync materi dengan tingkat kesulitan
-document.getElementById('id_materi')?.addEventListener('change', function() {
-    const selectedOption = this.options[this.selectedIndex];
-    const difficulty = selectedOption.dataset.difficulty;
-    const difficultySelect = document.getElementById('tingkat_kesulitan');
-
-    if (difficulty && difficultySelect.value === '') {
-        difficultySelect.value = difficulty;
-    }
-});
+// Removed auto sync materi dengan tingkat kesulitan since materi no longer has difficulty field
 
 // Preview soal
 function previewSoal() {

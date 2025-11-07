@@ -212,8 +212,7 @@ class KaidahController extends BaseController
                 'sesi_id' => $idSesi,
                 'kaidah' => [
                     'id_materi' => $kaidah['id_materi'],
-                    'judul_kaidah' => $kaidah['judul_kaidah'],
-                    'tingkat_kesulitan' => $kaidah['tingkat_kesulitan']
+                    'judul_kaidah' => $kaidah['judul_kaidah']
                 ],
                 'jumlah_soal' => $jumlahSoal,
                 'waktu_mulai' => date('Y-m-d H:i:s')
@@ -287,12 +286,8 @@ class KaidahController extends BaseController
             return $this->fail('Token tidak valid', 401);
         }
 
-        // Get difficulty levels
-        $difficultyLevels = [
-            ['value' => 'mudah', 'label' => 'Mudah', 'count' => $this->kaidahModel->countByDifficulty('mudah')],
-            ['value' => 'sedang', 'label' => 'Sedang', 'count' => $this->kaidahModel->countByDifficulty('sedang')],
-            ['value' => 'sulit', 'label' => 'Sulit', 'count' => $this->kaidahModel->countByDifficulty('sulit')]
-        ];
+        // Difficulty levels removed since tingkat_kesulitan field no longer exists
+        $difficultyLevels = [];
 
         // Get progress status options
         $progressOptions = [
@@ -310,8 +305,7 @@ class KaidahController extends BaseController
                 'sort_options' => [
                     ['value' => 'urutan', 'label' => 'Urutan'],
                     ['value' => 'judul', 'label' => 'Judul A-Z'],
-                    ['value' => 'created', 'label' => 'Terbaru'],
-                    ['value' => 'difficulty', 'label' => 'Tingkat Kesulitan']
+                    ['value' => 'created', 'label' => 'Terbaru']
                 ]
             ]
         ];

@@ -42,7 +42,6 @@ class SoalController extends BaseController
         $soal = $this->soalModel->select('
             soal.*,
             materi_kaidah.judul_kaidah,
-            materi_kaidah.tingkat_kesulitan as tingkat_kesulitan_materi,
             pengguna.nama_lengkap as nama_pembuat
         ')
         ->join('materi_kaidah', 'materi_kaidah.id_materi = soal.id_materi')
