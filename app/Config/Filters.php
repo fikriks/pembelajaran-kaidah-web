@@ -109,18 +109,13 @@ class Filters extends BaseFilters
      * @var array<string, array<string, list<string>>>
      */
     public array $filters = [
-        // Disabled API auth filter for simplicity
-        /*
+        // API auth filter for profile and logout only
         'api-auth' => [
             'before' => [
-                'api/kaidah*',
-                'api/sesi*',
-                'api/progress*',
                 'api/auth/profile',
                 'api/auth/logout'
             ]
         ],
-        */
       'auth' => [
             'before' => [
                 'dashboard*',

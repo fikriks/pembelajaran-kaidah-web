@@ -4,6 +4,7 @@ namespace App\Controllers\API;
 
 use App\Controllers\BaseController;
 use App\Models\SiswaModel;
+use App\Libraries\APISessionHelper;
 use CodeIgniter\API\ResponseTrait;
 
 class SiswaAuthController extends BaseController
@@ -53,7 +54,7 @@ class SiswaAuthController extends BaseController
         $this->saveLoginHistory($siswa['id'], $nis);
 
         // Generate simple token (base64 encoded user_id + timestamp)
-        $token = base64_encode($siswa['id'] . ':' . time());
+        $token = APISessionHelper::generateSessionToken($siswa['id']);
 
         $response = [
             'status' => 'success',
@@ -81,17 +82,11 @@ class SiswaAuthController extends BaseController
      */
     public function profile()
     {
-        // Ambil token dari header
-        $authHeader = $this->request->getHeader('Authorization');
-        if (!$authHeader) {
-            return $this->fail('Token diperlukan', 401);
-        }
-
-        $token = str_replace('Bearer ', '', $authHeader->getValue());
-        $userId = $this->extractUserIdFromToken($token);
+        // Validate session
+        $userId = APISessionHelper::validateSession($this->request);
 
         if (!$userId) {
-            return $this->fail('Token tidak valid', 401);
+            return $this->fail('Session tidak valid atau kadaluarsa', 401);
         }
 
         $siswa = $this->siswaModel->find($userId);

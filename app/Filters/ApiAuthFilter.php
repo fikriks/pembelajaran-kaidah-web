@@ -5,6 +5,7 @@ namespace App\Filters;
 use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;
 use CodeIgniter\HTTP\ResponseInterface;
+use App\Libraries\APISessionHelper;
 
 class ApiAuthFilter implements FilterInterface
 {
@@ -25,33 +26,15 @@ class ApiAuthFilter implements FilterInterface
      */
     public function before(RequestInterface $request, $arguments = null)
     {
-        // Get Authorization header
-        $authorization = $request->getHeaderLine('Authorization');
+        // Validate session using session helper
+        $userId = APISessionHelper::validateSession($request);
 
-        if (empty($authorization) || !preg_match('/Bearer\s+(.*)$/i', $authorization, $matches)) {
-            return $this->respondWithError('Token tidak ditemukan', 401);
+        if (!$userId) {
+            return $this->respondWithError('Session tidak valid atau kadaluarsa', 401);
         }
 
-        $token = $matches[1];
-
-        try {
-            $payload = json_decode(base64_decode($token), true);
-
-            if (!$payload || !isset($payload['user_id']) || !isset($payload['exp'])) {
-                return $this->respondWithError('Token tidak valid', 401);
-            }
-
-            // Check if token expired
-            if ($payload['exp'] < time()) {
-                return $this->respondWithError('Token sudah kadaluarsa', 401);
-            }
-
-            // Add user ID to request for later use
-            $request->userId = $payload['user_id'];
-
-        } catch (\Exception $e) {
-            return $this->respondWithError('Token tidak valid', 401);
-        }
+        // Add user ID to request for later use
+        $request->userId = $userId;
     }
 
     /**
