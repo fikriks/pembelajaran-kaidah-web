@@ -3,8 +3,8 @@
   <!-- Sidebar scroll-->
   <div>
     <div class="brand-logo d-flex align-items-center justify-content-between">
-      <a href="<?= site_url('dashboard') ?>" class="text-nowrap logo-img">
-        <img src="../assets/images/logos/dark-logo.svg" width="180" alt="Pembelajaran Kaidah" />
+      <a href="<?= site_url('dashboard') ?>" class="text-nowrap logo-img mt-3">
+        <img src="<?= base_url('assets/images/logos/logo.png') ?>" width="110" alt="Pembelajaran Kaidah" />
       </a>
       <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
         <i class="ti ti-x fs-8"></i>
