@@ -61,19 +61,7 @@ $routes->group('pengguna', function($routes) {
     $routes->post('bulkAction', 'PenggunaController::bulkAction');
 });
 
-// Guru Management (Admin only)
-$routes->group('guru', function($routes) {
-    $routes->get('/', 'GuruController::index');
-    $routes->get('create', 'GuruController::create');
-    $routes->post('/', 'GuruController::store');
-    $routes->get('(:num)/show', 'GuruController::show/$1');
-    $routes->get('(:num)/edit', 'GuruController::edit/$1');
-    $routes->put('(:num)', 'GuruController::update/$1');
-    $routes->delete('(:num)', 'GuruController::delete/$1');
-    $routes->post('checkUsername', 'GuruController::checkUsername');
-    $routes->post('(:num)/toggleStatus', 'GuruController::toggleStatus/$1');
-    $routes->post('bulkAction', 'GuruController::bulkAction');
-});
+// Guru Management removed - Only one guru exists: KM. Muhammad Faiz, S.Ag.
 
 // Siswa Management (Admin only)
 $routes->group('siswa', function($routes) {
@@ -165,12 +153,13 @@ $routes->group('api', ['namespace' => 'App\Controllers\API'], function($routes) 
     $routes->options('siswa/profile', 'SiswaAuthController::options');
 
     // Kaidah routes
-    
+    $routes->get('kaidah', 'KaidahController::index');
+    $routes->get('kaidah/(:num)', 'KaidahController::show/$1');
+
     // Sesi/Learning routes
     $routes->post('sesi/start', 'SesiController::start');
     $routes->get('sesi/active', 'SesiController::active');
     $routes->get('sesi/(:num)', 'SesiController::show/$1');
-    $routes->post('sesi/(:num)/continue', 'SesiController::continue/$1');
     $routes->post('sesi/(:num)/jawab', 'SesiController::submitJawaban/$1');
     $routes->post('sesi/(:num)/finish', 'SesiController::finish/$1');
     $routes->get('sesi/(:num)/hasil', 'SesiController::hasil/$1');

@@ -224,16 +224,24 @@ class SiswaAuthController extends BaseController
 
         $db->table('siswa_login_history')->insert($data);
 
-        // Keep only last 50 login records
-        $subquery = $db->table('siswa_login_history')
-                       ->select('id')
+        // Keep only last 50 login records (simpler approach for MySQL compatibility)
+        $allRecords = $db->table('siswa_login_history')
                        ->where('nis', $nis)
                        ->orderBy('login_time', 'DESC')
-                       ->limit(50, 50);
+                       ->get()
+                       ->getResultArray();
 
-        $db->table('siswa_login_history')
-           ->whereIn('id', $subquery)
-           ->delete();
+        if (count($allRecords) > 50) {
+            // Get IDs to delete (older records beyond 50)
+            $toDelete = array_slice($allRecords, 50);
+            $idsToDelete = array_column($toDelete, 'id');
+
+            if (!empty($idsToDelete)) {
+                $db->table('siswa_login_history')
+                   ->whereIn('id', $idsToDelete)
+                   ->delete();
+            }
+        }
     }
 
     /**

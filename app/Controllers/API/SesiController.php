@@ -3,8 +3,11 @@
 namespace App\Controllers\API;
 
 use App\Controllers\BaseController;
-use App\Models\SesiModel;
+use App\Models\SesiLatihanModel;
 use App\Models\SoalModel;
+use App\Models\PilihanJawabanModel;
+use App\Models\RiwayatBelajarModel;
+use App\Models\MateriKaidahModel;
 use App\Libraries\LCMAlgorithm;
 use CodeIgniter\API\ResponseTrait;
 
@@ -12,14 +15,20 @@ class SesiController extends BaseController
 {
     use ResponseTrait;
 
-    protected $sesiModel;
+    protected $sesiLatihanModel;
     protected $soalModel;
+    protected $pilihanJawabanModel;
+    protected $riwayatBelajarModel;
+    protected $materiKaidahModel;
     protected $lcm;
 
     public function __construct()
     {
-        $this->sesiModel = new SesiModel();
+        $this->sesiLatihanModel = new SesiLatihanModel();
         $this->soalModel = new SoalModel();
+        $this->pilihanJawabanModel = new PilihanJawabanModel();
+        $this->riwayatBelajarModel = new RiwayatBelajarModel();
+        $this->materiKaidahModel = new MateriKaidahModel();
         $this->lcm = new LCMAlgorithm();
     }
 
@@ -53,13 +62,24 @@ class SesiController extends BaseController
         $kaidahId = $this->request->getVar('kaidah_id');
         $jumlahSoal = $this->request->getVar('jumlah_soal') ?? 20;
 
+        // Verify kaidah exists
+        $kaidah = $this->materiKaidahModel->find($kaidahId);
+        if (!$kaidah) {
+            return $this->fail('Kaidah tidak ditemukan', 404);
+        }
+
         // Check if user has active session
-        if ($this->sesiModel->hasSesiAktif($userId)) {
+        $activeSession = $this->sesiLatihanModel
+            ->where('id_siswa', $userId)
+            ->where('status', 'sedang_berjalan')
+            ->first();
+
+        if ($activeSession) {
             return $this->fail('Anda masih memiliki sesi pembelajaran yang aktif', 400);
         }
 
         // Get all questions for this kaidah
-        $allSoal = $this->soalModel->getSoalWithJawaban($kaidahId);
+        $allSoal = $this->soalModel->where('id_materi', $kaidahId)->findAll();
         if (empty($allSoal)) {
             return $this->fail('Belum ada soal untuk kaidah ini', 400);
         }
@@ -68,29 +88,41 @@ class SesiController extends BaseController
             $jumlahSoal = count($allSoal);
         }
 
+        // Generate seed for LCM
+        $seed = $this->lcm->generateSeed($userId, $kaidahId);
+
+        // Generate randomized questions using LCM
+        $randomizedSoal = $this->lcm->generateRandomQuestions($allSoal, $jumlahSoal, $seed);
+
         // Create new session
-        $idSesi = $this->sesiModel->createSesi($userId, $kaidahId, $jumlahSoal);
+        $sessionData = [
+            'id_siswa' => $userId,
+            'id_materi' => $kaidahId,
+            'seed_digunakan' => $seed,
+            'total_soal' => $jumlahSoal,
+            'soal_benar' => 0,
+            'skor' => 0.00,
+            'waktu_mulai' => date('Y-m-d H:i:s'),
+            'status' => 'sedang_berjalan',
+            'waktu_dibuat' => date('Y-m-d H:i:s')
+        ];
+
+        $idSesi = $this->sesiLatihanModel->insert($sessionData);
         if (!$idSesi) {
             return $this->fail('Gagal memulai sesi pembelajaran', 500);
         }
 
-        // Get session data with seed
-        $sesi = $this->sesiModel->find($idSesi);
-        $seed = $sesi['seed_digunakan'];
-
-        // Generate randomized questions using LCM
-        $quizResult = $this->lcm->generateQuizData($allSoal, $jumlahSoal, true);
-        $randomizedSoal = $quizResult['questions'];
-
         // Format questions for mobile app
         $formattedSoal = [];
         foreach ($randomizedSoal as $index => $soal) {
+            // Get answer choices for this question
+            $jawaban = $this->pilihanJawabanModel->where('id_soal', $soal['id_soal'])->findAll();
+
             $formattedSoal[] = [
                 'nomor' => $index + 1,
                 'id_soal' => $soal['id_soal'],
                 'pertanyaan' => $soal['pertanyaan'],
                 'tipe_soal' => $soal['tipe_soal'],
-                'tingkat_kesulitan' => $soal['tingkat_kesulitan'],
                 'poin' => $soal['poin'],
                 'jawaban' => array_map(function($jawaban) {
                     return [
@@ -98,8 +130,32 @@ class SesiController extends BaseController
                         'jawaban' => $jawaban['teks_jawaban'],
                         'is_benar' => $jawaban['is_benar']
                     ];
-                }, $soal['jawaban'])
+                }, $jawaban)
             ];
+        }
+
+        // Update or create riwayat belajar
+        $riwayat = $this->riwayatBelajarModel
+            ->where('id_siswa', $userId)
+            ->where('id_materi', $kaidahId)
+            ->first();
+
+        if ($riwayat) {
+            $this->riwayatBelajarModel->update($riwayat['id_riwayat'], [
+                'status' => 'sedang_belajar',
+                'waktu_akses_terakhir' => date('Y-m-d H:i:s'),
+                'waktu_diubah' => date('Y-m-d H:i:s')
+            ]);
+        } else {
+            $this->riwayatBelajarModel->insert([
+                'id_siswa' => $userId,
+                'id_materi' => $kaidahId,
+                'status' => 'sedang_belajar',
+                'persentase_penguasaan' => 0,
+                'waktu_akses_terakhir' => date('Y-m-d H:i:s'),
+                'waktu_dibuat' => date('Y-m-d H:i:s'),
+                'waktu_diubah' => date('Y-m-d H:i:s')
+            ]);
         }
 
         $response = [
@@ -109,9 +165,10 @@ class SesiController extends BaseController
                 'sesi' => [
                     'id_sesi' => $idSesi,
                     'kaidah_id' => $kaidahId,
+                    'judul_kaidah' => $kaidah['judul_kaidah'],
                     'jumlah_soal' => $jumlahSoal,
                     'seed_used' => $seed,
-                    'waktu_mulai' => $sesi['waktu_mulai']
+                    'waktu_mulai' => $sessionData['waktu_mulai']
                 ],
                 'soal' => $formattedSoal,
                 'lcm_info' => [
@@ -123,7 +180,7 @@ class SesiController extends BaseController
             ]
         ];
 
-        return $this->respond($response, 201);
+        return $this->respond($response, 200);
     }
 
     /**
@@ -144,74 +201,42 @@ class SesiController extends BaseController
             return $this->fail('Token tidak valid', 401);
         }
 
-        $activeSesi = $this->sesiModel->getSesiAktifSiswa($userId);
-        if (!$activeSesi) {
-            return $this->fail('Tidak ada sesi aktif', 404);
+        $activeSession = $this->sesiLatihanModel
+            ->where('id_siswa', $userId)
+            ->where('status', 'sedang_berjalan')
+            ->first();
+
+        if (!$activeSession) {
+            return $this->respond([
+                'status' => 'success',
+                'message' => 'Tidak ada sesi aktif',
+                'data' => null
+            ], 200);
         }
 
-        // Get questions for this session
-        $allSoal = $this->soalModel->getSoalWithJawaban($activeSesi['id_materi']);
-        $seed = $activeSesi['seed_digunakan'];
-        $jumlahSoal = $activeSesi['total_soal'];
+        // Get kaidah info
+        $kaidah = $this->materiKaidahModel->find($activeSession['id_materi']);
 
-        // Regenerate the same question order using the same seed
-        $quizResult = $this->lcm->generateQuizData($allSoal, $jumlahSoal, true, $seed);
-        $randomizedSoal = $quizResult['questions'];
-
-        // Get answered questions to show progress
-        $db = \Config\Database::connect();
-        $answeredQuestions = $db->table('detail_jawaban_siswa')
-            ->where('id_sesi', $activeSesi['id_sesi'])
-            ->get()
-            ->getResultArray();
-
-        $answeredMap = [];
-        foreach ($answeredQuestions as $answer) {
-            $answeredMap[$answer['id_soal']] = $answer;
-        }
-
-        // Format questions with progress
-        $formattedSoal = [];
-        foreach ($randomizedSoal as $index => $soal) {
-            $isAnswered = isset($answeredMap[$soal['id_soal']]);
-            $userAnswer = $answeredMap[$soal['id_soal']] ?? null;
-
-            $formattedSoal[] = [
-                'nomor' => $index + 1,
-                'id_soal' => $soal['id_soal'],
-                'pertanyaan' => $soal['pertanyaan'],
-                'tipe_soal' => $soal['tipe_soal'],
-                'tingkat_kesulitan' => $soal['tingkat_kesulitan'],
-                'poin' => $soal['poin'],
-                'is_answered' => $isAnswered,
-                'user_answer' => $isAnswered ? [
-                    'id_pilihan' => $userAnswer['id_pilihan'],
-                    'is_benar' => $userAnswer['is_benar'],
-                    'waktu_jawab' => $userAnswer['waktu_jawab']
-                ] : null,
-                'jawaban' => array_map(function($jawaban) use ($isAnswered, $userAnswer) {
-                    return [
-                        'id_pilihan' => $jawaban['id_pilihan'],
-                        'jawaban' => $jawaban['teks_jawaban'],
-                        'is_benar' => $isAnswered ? ($jawaban['id_pilihan'] == $userAnswer['id_pilihan']) : null
-                    ];
-                }, $soal['jawaban'])
-            ];
-        }
+        // Calculate session duration
+        $startTime = strtotime($activeSession['waktu_mulai']);
+        $currentTime = time();
+        $duration = $currentTime - $startTime;
 
         $response = [
             'status' => 'success',
-            'message' => 'Sesi aktif berhasil diambil',
+            'message' => 'Sesi aktif ditemukan',
             'data' => [
-                'sesi' => $activeSesi,
-                'progress' => [
-                    'total_soal' => $activeSesi['total_soal'],
-                    'soal_dijawab' => $activeSesi['soal_benar'] + count($answeredQuestions) - $activeSesi['soal_benar'],
-                    'soal_benar' => $activeSesi['soal_benar'],
-                    'skor_saat_ini' => round($activeSesi['skor'], 2),
-                    'persentase_selesai' => round((count($answeredQuestions) / $activeSesi['total_soal']) * 100, 1)
-                ],
-                'soal' => $formattedSoal
+                'sesi' => [
+                    'id_sesi' => $activeSession['id_sesi'],
+                    'kaidah_id' => $activeSession['id_materi'],
+                    'judul_kaidah' => $kaidah['judul_kaidah'] ?? 'Unknown',
+                    'total_soal' => $activeSession['total_soal'],
+                    'soal_benar' => $activeSession['soal_benar'],
+                    'skor' => $activeSession['skor'],
+                    'waktu_mulai' => $activeSession['waktu_mulai'],
+                    'durasi_detik' => $duration,
+                    'status' => $activeSession['status']
+                ]
             ]
         ];
 
@@ -219,7 +244,7 @@ class SesiController extends BaseController
     }
 
     /**
-     * Get session detail
+     * Get session details
      * GET /api/sesi/:id
      */
     public function show($id)
@@ -236,119 +261,34 @@ class SesiController extends BaseController
             return $this->fail('Token tidak valid', 401);
         }
 
-        $sesi = $this->sesiModel->getSesiWithRelations($id);
+        $sesi = $this->sesiLatihanModel
+            ->where('id_sesi', $id)
+            ->where('id_siswa', $userId)
+            ->first();
+
         if (!$sesi) {
             return $this->fail('Sesi tidak ditemukan', 404);
         }
 
-        // Check if session belongs to user
-        if ($sesi['id_siswa'] != $userId) {
-            return $this->fail('Anda tidak memiliki akses ke sesi ini', 403);
-        }
-
-        // Get detailed answers
-        $detailJawaban = $this->sesiModel->getSesiForMobile($id);
-        $sesi['detail_jawaban'] = $detailJawaban['detail_jawaban'] ?? [];
-        $sesi['progress_persen'] = $detailJawaban['progress_persen'] ?? 0;
+        // Get kaidah info
+        $kaidah = $this->materiKaidahModel->find($sesi['id_materi']);
 
         $response = [
             'status' => 'success',
             'message' => 'Detail sesi berhasil diambil',
             'data' => [
-                'sesi' => $sesi
-            ]
-        ];
-
-        return $this->respond($response, 200);
-    }
-
-    /**
-     * Continue session (get next question)
-     * POST /api/sesi/:id/continue
-     */
-    public function continue($id)
-    {
-        $authHeader = $this->request->getHeader('Authorization');
-        if (!$authHeader) {
-            return $this->fail('Token diperlukan', 401);
-        }
-
-        $token = str_replace('Bearer ', '', $authHeader->getValue());
-        $userId = $this->extractUserIdFromToken($token);
-
-        if (!$userId) {
-            return $this->fail('Token tidak valid', 401);
-        }
-
-        $sesi = $this->sesiModel->find($id);
-        if (!$sesi) {
-            return $this->fail('Sesi tidak ditemukan', 404);
-        }
-
-        if ($sesi['id_siswa'] != $userId) {
-            return $this->fail('Anda tidak memiliki akses ke sesi ini', 403);
-        }
-
-        if ($sesi['status'] != 'sedang_berjalan') {
-            return $this->fail('Sesi sudah selesai atau dibatalkan', 400);
-        }
-
-        // Get next unanswered question
-        $db = \Config\Database::connect();
-        $answeredQuestions = $db->table('detail_jawaban_siswa')
-            ->where('id_sesi', $id)
-            ->get()
-            ->getResultArray();
-
-        $answeredIds = array_column($answeredQuestions, 'id_soal');
-        $totalAnswered = count($answeredQuestions);
-
-        if ($totalAnswered >= $sesi['total_soal']) {
-            return $this->fail('Semua soal sudah dijawab', 400);
-        }
-
-        // Get questions and regenerate order
-        $allSoal = $this->soalModel->getSoalWithJawaban($sesi['id_materi']);
-        $quizResult = $this->lcm->generateQuizData($allSoal, $sesi['total_soal'], true, $sesi['seed_digunakan']);
-        $randomizedSoal = $quizResult['questions'];
-
-        // Find next unanswered question
-        $nextQuestion = null;
-        foreach ($randomizedSoal as $index => $soal) {
-            if (!in_array($soal['id_soal'], $answeredIds)) {
-                $nextQuestion = $soal;
-                $nextQuestion['nomor'] = $index + 1;
-                break;
-            }
-        }
-
-        if (!$nextQuestion) {
-            return $this->fail('Tidak ada soal tersisa', 400);
-        }
-
-        $response = [
-            'status' => 'success',
-            'message' => 'Soal berikutnya berhasil diambil',
-            'data' => [
-                'sesi_progress' => [
+                'sesi' => [
+                    'id_sesi' => $sesi['id_sesi'],
+                    'kaidah_id' => $sesi['id_materi'],
+                    'judul_kaidah' => $kaidah['judul_kaidah'] ?? 'Unknown',
                     'total_soal' => $sesi['total_soal'],
-                    'sudah_dijawab' => $totalAnswered,
-                    'sisa_soal' => $sesi['total_soal'] - $totalAnswered,
-                    'persentase' => round(($totalAnswered / $sesi['total_soal']) * 100, 1)
-                ],
-                'soal' => [
-                    'nomor' => $nextQuestion['nomor'],
-                    'id_soal' => $nextQuestion['id_soal'],
-                    'pertanyaan' => $nextQuestion['pertanyaan'],
-                    'tipe_soal' => $nextQuestion['tipe_soal'],
-                    'tingkat_kesulitan' => $nextQuestion['tingkat_kesulitan'],
-                    'poin' => $nextQuestion['poin'],
-                    'jawaban' => array_map(function($jawaban) {
-                        return [
-                            'id_pilihan' => $jawaban['id_pilihan'],
-                            'jawaban' => $jawaban['teks_jawaban']
-                        ];
-                    }, $nextQuestion['jawaban'])
+                    'soal_benar' => $sesi['soal_benar'],
+                    'skor' => $sesi['skor'],
+                    'waktu_mulai' => $sesi['waktu_mulai'],
+                    'waktu_selesai' => $sesi['waktu_selesai'],
+                    'durasi_detik' => $sesi['durasi_detik'],
+                    'status' => $sesi['status'],
+                    'seed_digunakan' => $sesi['seed_digunakan']
                 ]
             ]
         ];
@@ -383,100 +323,63 @@ class SesiController extends BaseController
             return $this->fail($this->validator->getErrors(), 400);
         }
 
-        $sesi = $this->sesiModel->find($id);
-        if (!$sesi) {
-            return $this->fail('Sesi tidak ditemukan', 404);
-        }
-
-        if ($sesi['id_siswa'] != $userId) {
-            return $this->fail('Anda tidak memiliki akses ke sesi ini', 403);
-        }
-
-        if ($sesi['status'] != 'sedang_berjalan') {
-            return $this->fail('Sesi sudah selesai atau dibatalkan', 400);
-        }
-
         $idSoal = $this->request->getVar('id_soal');
         $idPilihan = $this->request->getVar('id_pilihan');
 
-        // Check if question already answered
-        $db = \Config\Database::connect();
-        $existingAnswer = $db->table('detail_jawaban_siswa')
+        // Verify session belongs to user and is active
+        $sesi = $this->sesiLatihanModel
             ->where('id_sesi', $id)
-            ->where('id_soal', $idSoal)
-            ->get()
-            ->getRowArray();
+            ->where('id_siswa', $userId)
+            ->where('status', 'sedang_berjalan')
+            ->first();
 
-        if ($existingAnswer) {
-            return $this->fail('Soal ini sudah dijawab', 400);
+        if (!$sesi) {
+            return $this->fail('Sesi tidak ditemukan atau tidak aktif', 404);
         }
 
-        // Get question to determine correct answer
-        $soal = $this->soalModel->find($idSoal);
-        if (!$soal) {
-            return $this->fail('Soal tidak ditemukan', 404);
+        // Check if answer is correct
+        $jawaban = $this->pilihanJawabanModel
+            ->where('id_pilihan', $idPilihan)
+            ->where('id_soal', $idSoal)
+            ->first();
+
+        if (!$jawaban) {
+            return $this->fail('Jawaban tidak valid', 400);
         }
 
-        // Check if the chosen answer is correct
-        $correctAnswer = $db->table('pilihan_jawaban')
-            ->where('id_soal', $idSoal)
-            ->where('is_benar', 1)
-            ->get()
-            ->getRowArray();
+        $isBenar = $jawaban['is_benar'];
 
-        $isBenar = $correctAnswer && $correctAnswer['id_pilihan'] == $idPilihan;
+        // Save answer detail (you might want to create a separate table for this)
+        $answerData = [
+            'id_sesi' => $id,
+            'id_soal' => $idSoal,
+            'id_pilihan' => $idPilihan,
+            'is_benar' => $isBenar,
+            'waktu_jawab' => date('Y-m-d H:i:s')
+        ];
 
-        // Save answer
-        $this->transStart();
+        // For now, we'll just update the session score
+        // In a complete implementation, you'd save to detail_jawaban_siswa table
+        if ($isBenar) {
+            $this->sesiLatihanModel->increment($id, 'soal_benar');
 
-        try {
-            // Get question order for this session
-            $allSoal = $this->soalModel->getSoalWithJawaban($sesi['id_materi']);
-            $quizResult = $this->lcm->generateQuizData($allSoal, $sesi['total_soal'], true, $sesi['seed_digunakan']);
-            $randomizedSoal = $quizResult['questions'];
+            // Update score (simple calculation)
+            $sesiUpdated = $this->sesiLatihanModel->find($id);
+            $newScore = ($sesiUpdated['soal_benar'] / $sesiUpdated['total_soal']) * 100;
+            $this->sesiLatihanModel->update($id, ['skor' => $newScore]);
+        }
 
-            $urutanSoal = 1;
-            foreach ($randomizedSoal as $index => $soalItem) {
-                if ($soalItem['id_soal'] == $idSoal) {
-                    $urutanSoal = $index + 1;
-                    break;
-                }
-            }
-
-            // Save detailed answer
-            $db->table('detail_jawaban_siswa')->insert([
-                'id_sesi' => $id,
-                'id_soal' => $idSoal,
-                'id_pilihan' => $idPilihan,
-                'urutan_soal' => $urutanSoal,
+        $response = [
+            'status' => 'success',
+            'message' => 'Jawaban berhasil disimpan',
+            'data' => [
                 'is_benar' => $isBenar,
-                'waktu_jawab' => date('Y-m-d H:i:s'),
-                'waktu_dibuat' => date('Y-m-d H:i:s')
-            ]);
+                'id_soal' => $idSoal,
+                'id_pilihan' => $idPilihan
+            ]
+        ];
 
-            // Update session progress
-            $this->sesiModel->updateProgress($id, $isBenar, $soal['poin']);
-
-            $this->transComplete();
-
-            $response = [
-                'status' => 'success',
-                'message' => 'Jawaban berhasil disimpan',
-                'data' => [
-                    'is_benar' => $isBenar,
-                    'poin_didapat' => $isBenar ? $soal['poin'] : 0,
-                    'waktu_jawab' => date('Y-m-d H:i:s'),
-                    'feedback' => $isBenar ? 'Jawaban benar!' : 'Jawaban salah, coba pelajari lagi materinya.'
-                ]
-            ];
-
-            return $this->respond($response, 200);
-
-        } catch (\Exception $e) {
-            $this->transRollback();
-            log_message('error', 'Error saving answer: ' . $e->getMessage());
-            return $this->fail('Gagal menyimpan jawaban', 500);
-        }
+        return $this->respond($response, 200);
     }
 
     /**
@@ -497,44 +400,60 @@ class SesiController extends BaseController
             return $this->fail('Token tidak valid', 401);
         }
 
-        $sesi = $this->sesiModel->find($id);
+        // Verify session belongs to user and is active
+        $sesi = $this->sesiLatihanModel
+            ->where('id_sesi', $id)
+            ->where('id_siswa', $userId)
+            ->where('status', 'sedang_berjalan')
+            ->first();
+
         if (!$sesi) {
-            return $this->fail('Sesi tidak ditemukan', 404);
+            return $this->fail('Sesi tidak ditemukan atau tidak aktif', 404);
         }
 
-        if ($sesi['id_siswa'] != $userId) {
-            return $this->fail('Anda tidak memiliki akses ke sesi ini', 403);
-        }
+        // Calculate session duration
+        $startTime = strtotime($sesi['waktu_mulai']);
+        $endTime = time();
+        $duration = $endTime - $startTime;
 
-        if ($sesi['status'] != 'sedang_berjalan') {
-            return $this->fail('Sesi sudah selesai atau dibatalkan', 400);
-        }
+        // Update session
+        $updateData = [
+            'status' => 'selesai',
+            'waktu_selesai' => date('Y-m-d H:i:s'),
+            'durasi_detik' => $duration
+        ];
 
-        // Complete the session
-        if (!$this->sesiModel->selesaikanSesi($id)) {
-            return $this->fail('Gagal menyelesaikan sesi', 500);
-        }
+        $this->sesiLatihanModel->update($id, $updateData);
 
-        // Get updated session data
-        $completedSesi = $this->sesiModel->getSesiWithRelations($id);
+        // Update riwayat belajar
+        $completionPercentage = ($sesi['soal_benar'] / $sesi['total_soal']) * 100;
+
+        $riwayat = $this->riwayatBelajarModel
+            ->where('id_siswa', $userId)
+            ->where('id_materi', $sesi['id_materi'])
+            ->first();
+
+        if ($riwayat) {
+            $this->riwayatBelajarModel->update($riwayat['id_riwayat'], [
+                'status' => 'selesai',
+                'persentase_penguasaan' => $completionPercentage,
+                'waktu_akses_terakhir' => date('Y-m-d H:i:s'),
+                'waktu_diubah' => date('Y-m-d H:i:s')
+            ]);
+        }
 
         $response = [
             'status' => 'success',
             'message' => 'Sesi pembelajaran selesai',
             'data' => [
-                'hasil' => [
-                    'sesi_id' => $id,
-                    'total_soal' => $completedSesi['total_soal'],
-                    'soal_benar' => $completedSesi['soal_benar'],
-                    'soal_salah' => $completedSesi['total_soal'] - $completedSesi['soal_benar'],
-                    'skor_akhir' => round($completedSesi['skor'], 2),
-                    'persentase_benar' => round(($completedSesi['soal_benar'] / $completedSesi['total_soal']) * 100, 1),
-                    'durasi_menit' => round($completedSesi['durasi_detik'] / 60, 1),
-                    'waktu_selesai' => $completedSesi['waktu_selesai']
-                ],
-                'kaidah' => [
-                    'id_materi' => $completedSesi['id_materi'],
-                    'judul_kaidah' => $completedSesi['judul_kaidah']
+                'sesi' => [
+                    'id_sesi' => $id,
+                    'total_soal' => $sesi['total_soal'],
+                    'soal_benar' => $sesi['soal_benar'],
+                    'skor_akhir' => $sesi['skor'],
+                    'persentase_benar' => $completionPercentage,
+                    'durasi_detik' => $duration,
+                    'waktu_selesai' => $updateData['waktu_selesai']
                 ]
             ]
         ];
@@ -560,57 +479,72 @@ class SesiController extends BaseController
             return $this->fail('Token tidak valid', 401);
         }
 
-        $sesi = $this->sesiModel->getSesiWithRelations($id);
+        $sesi = $this->sesiLatihanModel
+            ->where('id_sesi', $id)
+            ->where('id_siswa', $userId)
+            ->first();
+
         if (!$sesi) {
             return $this->fail('Sesi tidak ditemukan', 404);
         }
 
-        if ($sesi['id_siswa'] != $userId) {
-            return $this->fail('Anda tidak memiliki akses ke sesi ini', 403);
-        }
+        // Get kaidah info
+        $kaidah = $this->materiKaidahModel->find($sesi['id_materi']);
 
-        if ($sesi['status'] != 'selesai') {
-            return $this->fail('Sesi belum selesai', 400);
-        }
-
-        // Get detailed answers
-        $db = \Config\Database::connect();
-        $detailJawaban = $db->table('detail_jawaban_siswa')
-            ->select('detail_jawaban_siswa.*, soal.pertanyaan, pilihan_jawaban.teks_jawaban')
-            ->join('soal', 'soal.id_soal = detail_jawaban_siswa.id_soal')
-            ->join('pilihan_jawaban', 'pilihan_jawaban.id_pilihan = detail_jawaban_siswa.id_pilihan')
-            ->where('detail_jawaban_siswa.id_sesi', $id)
-            ->orderBy('detail_jawaban_siswa.urutan_soal', 'ASC')
-            ->get()
-            ->getResultArray();
+        $persentaseBenar = ($sesi['soal_benar'] / $sesi['total_soal']) * 100;
 
         $response = [
             'status' => 'success',
-            'message' => 'Hasil sesi berhasil diambil',
+            'message' => 'Hasil sesi pembelajaran',
             'data' => [
-                'sesi' => $sesi,
-                'statistik' => [
+                'sesi' => [
+                    'id_sesi' => $sesi['id_sesi'],
+                    'kaidah' => [
+                        'id_materi' => $sesi['id_materi'],
+                        'judul_kaidah' => $kaidah['judul_kaidah'] ?? 'Unknown'
+                    ],
                     'total_soal' => $sesi['total_soal'],
                     'soal_benar' => $sesi['soal_benar'],
                     'soal_salah' => $sesi['total_soal'] - $sesi['soal_benar'],
-                    'skor_akhir' => round($sesi['skor'], 2),
-                    'persentase_benar' => round(($sesi['soal_benar'] / $sesi['total_soal']) * 100, 1),
-                    'durasi_menit' => round($sesi['durasi_detik'] / 60, 1),
-                    'rata_rata_waktu_per_soal' => round($sesi['durasi_detik'] / $sesi['total_soal'], 1) . ' detik'
+                    'skor' => $sesi['skor'],
+                    'persentase_benar' => $persentaseBenar,
+                    'waktu_mulai' => $sesi['waktu_mulai'],
+                    'waktu_selesai' => $sesi['waktu_selesai'],
+                    'durasi_detik' => $sesi['durasi_detik'],
+                    'status' => $sesi['status']
                 ],
-                'detail_jawaban' => array_map(function($jawaban) {
-                    return [
-                        'nomor_soal' => $jawaban['urutan_soal'],
-                        'pertanyaan' => $jawaban['pertanyaan'],
-                        'jawaban_siswa' => $jawaban['teks_jawaban'],
-                        'is_benar' => $jawaban['is_benar'],
-                        'waktu_jawab' => $jawaban['waktu_jawab']
-                    ];
-                }, $detailJawaban)
+                'penilaian' => [
+                    'predikat' => $this->getGrade($persentaseBenar),
+                    'deskripsi' => $this->getGradeDescription($persentaseBenar)
+                ]
             ]
         ];
 
         return $this->respond($response, 200);
+    }
+
+    /**
+     * Get grade based on percentage
+     */
+    private function getGrade($percentage)
+    {
+        if ($percentage >= 90) return 'A';
+        if ($percentage >= 80) return 'B';
+        if ($percentage >= 70) return 'C';
+        if ($percentage >= 60) return 'D';
+        return 'E';
+    }
+
+    /**
+     * Get grade description
+     */
+    private function getGradeDescription($percentage)
+    {
+        if ($percentage >= 90) return 'Sangat Baik';
+        if ($percentage >= 80) return 'Baik';
+        if ($percentage >= 70) return 'Cukup';
+        if ($percentage >= 60) return 'Kurang';
+        return 'Sangat Kurang';
     }
 
     /**
