@@ -7,6 +7,7 @@ use App\Models\MateriKaidahModel;
 use App\Models\SoalModel;
 use App\Models\SesiLatihanModel;
 use App\Models\RiwayatBelajarModel;
+use App\Libraries\APIHelper;
 use CodeIgniter\API\ResponseTrait;
 
 class KaidahController extends BaseController
@@ -32,18 +33,6 @@ class KaidahController extends BaseController
      */
     public function index()
     {
-        $authHeader = $this->request->getHeader('Authorization');
-        if (!$authHeader) {
-            return $this->fail('Token diperlukan', 401);
-        }
-
-        $token = str_replace('Bearer ', '', $authHeader->getValue());
-        $userId = $this->extractUserIdFromToken($token);
-
-        if (!$userId) {
-            return $this->fail('Token tidak valid', 401);
-        }
-
         // Get query parameters
         $search = $this->request->getVar('search');
         $page = $this->request->getVar('page') ?? 1;
@@ -66,16 +55,13 @@ class KaidahController extends BaseController
         // Get data with pagination
         $kaidahList = $builder->get($limit, $offset)->getResultArray();
 
-        // Add progress information for each kaidah
+        // Add total questions for each kaidah (no progress tracking for simplicity)
         foreach ($kaidahList as &$kaidah) {
             // Count total questions for this kaidah
             $totalSoal = $this->soalModel->where('id_materi', $kaidah['id_materi'])->countAllResults();
 
-            // Get learning progress
-            $riwayat = $this->riwayatBelajarModel
-                ->where('id_siswa', $userId)
-                ->where('id_materi', $kaidah['id_materi'])
-                ->first();
+            // No progress tracking - simplified response
+            $riwayat = null;
 
             // Calculate completion percentage
             $completionPercentage = 0;
@@ -115,17 +101,7 @@ class KaidahController extends BaseController
      */
     public function show($id)
     {
-        $authHeader = $this->request->getHeader('Authorization');
-        if (!$authHeader) {
-            return $this->fail('Token diperlukan', 401);
-        }
-
-        $token = str_replace('Bearer ', '', $authHeader->getValue());
-        $userId = $this->extractUserIdFromToken($token);
-
-        if (!$userId) {
-            return $this->fail('Token tidak valid', 401);
-        }
+        // No authentication required for simplicity
 
         $kaidah = $this->materiKaidahModel->find($id);
 
@@ -136,20 +112,11 @@ class KaidahController extends BaseController
         // Get additional information
         $totalSoal = $this->soalModel->where('id_materi', $id)->countAllResults();
 
-        // Get learning progress
-        $riwayat = $this->riwayatBelajarModel
-            ->where('id_siswa', $userId)
-            ->where('id_materi', $id)
-            ->first();
+        // No learning progress tracking for simplicity
+        $riwayat = null;
 
-        // Get recent sessions
-        $recentSessions = $this->sesiLatihanModel
-            ->where('id_siswa', $userId)
-            ->where('id_materi', $id)
-            ->orderBy('waktu_mulai', 'DESC')
-            ->limit(5)
-            ->get()
-            ->getResultArray();
+        // No user-specific sessions for simplicity
+        $recentSessions = [];
 
         $response = [
             'status' => 'success',
@@ -166,37 +133,10 @@ class KaidahController extends BaseController
                     'waktu_dibuat' => $kaidah['waktu_dibuat']
                 ],
                 'total_soal' => $totalSoal,
-                'progress' => [
-                    'status' => $riwayat['status'] ?? 'belum_dimulai',
-                    'completion_percentage' => $riwayat['persentase_penguasaan'] ?? 0,
-                    'last_accessed' => $riwayat['waktu_akses_terakhir'] ?? null
-                ],
                 'recent_sessions' => $recentSessions
             ]
         ];
 
         return $this->respond($response, 200);
-    }
-
-    /**
-     * Extract user ID dari simple token
-     */
-    private function extractUserIdFromToken($token)
-    {
-        try {
-            $decoded = base64_decode($token);
-            if ($decoded && strpos($decoded, ':') !== false) {
-                list($userId, $timestamp) = explode(':', $decoded);
-
-                // Check if token is not too old (24 hours)
-                if (abs(time() - $timestamp) < 86400) {  // Use abs to handle any time difference
-                    return (int)$userId;
-                }
-            }
-        } catch (\Exception $e) {
-            return null;
-        }
-
-        return null;
     }
 }

@@ -9,6 +9,7 @@ use App\Models\PilihanJawabanModel;
 use App\Models\RiwayatBelajarModel;
 use App\Models\MateriKaidahModel;
 use App\Libraries\LCMAlgorithm;
+use App\Libraries\APIHelper;
 use CodeIgniter\API\ResponseTrait;
 
 class SesiController extends BaseController
@@ -38,17 +39,9 @@ class SesiController extends BaseController
      */
     public function start()
     {
-        $authHeader = $this->request->getHeader('Authorization');
-        if (!$authHeader) {
-            return $this->fail('Token diperlukan', 401);
-        }
-
-        $token = str_replace('Bearer ', '', $authHeader->getValue());
-        $userId = $this->extractUserIdFromToken($token);
-
-        if (!$userId) {
-            return $this->fail('Token tidak valid', 401);
-        }
+        // No authentication required for simplicity
+        // Use default user ID for demo purposes
+        $userId = 1;
 
         $rules = [
             'kaidah_id' => 'required|integer',
