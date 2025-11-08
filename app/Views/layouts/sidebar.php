@@ -28,6 +28,19 @@
 
         <li class="nav-small-cap">
           <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+          <span class="hide-menu">Manajemen Bab</span>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link <?= (strpos(current_url(), site_url('bab')) !== false) ? 'active' : '' ?>" href="<?= site_url('bab') ?>" aria-expanded="false">
+            <span>
+              <i class="ti ti-folder"></i>
+            </span>
+            <span class="hide-menu">Manajemen Bab</span>
+          </a>
+        </li>
+
+        <li class="nav-small-cap">
+          <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
           <span class="hide-menu">Manajemen Kaidah</span>
         </li>
         <li class="sidebar-item">

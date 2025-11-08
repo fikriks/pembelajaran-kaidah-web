@@ -36,6 +36,8 @@ Syarat Kalam:
 - يَذْهَبُ أَحْمَدُ إِلَى الْمَدْرَسَةِ (Ahmad pergi ke sekolah)
 - اَلْوَلَدُ يَلْعَبُ فِي الْحَدِيْقَةِ (Anak laki-laki bermain di taman)',
                 'urutan'           => 1,
+                'id_bab'           => 1, // BAB 1: KALAM
+                'deskripsi_bab'    => 'Pengenalan dasar kalam dan huruf-huruf dalam bahasa Arab',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -64,6 +66,8 @@ Jenis Huruf:
 - تَاجِرٌ (Tājir) dimulai dengan ta
 - مَدْرَسَةٌ (Madrasah) mengandung beberapa huruf',
                 'urutan'           => 2,
+                'id_bab'           => 1, // BAB 1: KALAM
+                'deskripsi_bab'    => 'Pengenalan dasar kalam dan huruf-huruf dalam bahasa Arab',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -96,6 +100,8 @@ Aturan Penggunaan:
 - وَلَدٌ (Seorang anak) - tanpa alif lam
 - الْوَلَدُ (Anak tersebut) - dengan alif lam',
                 'urutan'           => 3,
+                'id_bab'           => 1, // BAB 1: KALAM
+                'deskripsi_bab'    => 'Pengenalan dasar kalam dan huruf-huruf dalam bahasa Arab',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -131,6 +137,8 @@ Perubahan Ta Marbutah:
 - شَجَرَةٌ (Pohon) - waqaf: syajarah
 - بَيْتُ (Rumah) - tanpa ta marbutah',
                 'urutan'           => 4,
+                'id_bab'           => 1, // BAB 1: KALAM
+                'deskripsi_bab'    => 'Pengenalan dasar kalam dan huruf-huruf dalam bahasa Arab',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -164,6 +172,8 @@ Jenis-jenis Waw:
 - اِجْلِسْ وَتَوَاضِعًا (Duduklah dengan tenang) - ḥāl
 - مُؤْمِنُوْنَ (orang-orang mukmin) - ta\'nīts jamak',
                 'urutan'           => 5,
+                'id_bab'           => 1, // BAB 1: KALAM
+                'deskripsi_bab'    => 'Pengenalan dasar kalam dan huruf-huruf dalam bahasa Arab',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -200,6 +210,8 @@ Jenis-jenis Ya:
 - هُوَ طَبِيْبٌ (Dia seorang dokter) - ghaib
 - بَيْتِي (rumahku) - dhamir milik',
                 'urutan'           => 6,
+                'id_bab'           => 1, // BAB 1: KALAM
+                'deskripsi_bab'    => 'Pengenalan dasar kalam dan huruf-huruf dalam bahasa Arab',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -241,6 +253,8 @@ Tanwin:
 - مُسْلِمُوْنَ (orang-orang muslim) - jamak mudzakkar
 - مُسْلِمَاتٌ (wanita-wanita muslim) - jamak muannats',
                 'urutan'           => 7,
+                'id_bab'           => 1, // BAB 1: KALAM
+                'deskripsi_bab'    => 'Pengenalan dasar kalam dan huruf-huruf dalam bahasa Arab',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -279,6 +293,8 @@ Aturan Bacaan:
 - مُؤْمِنَاتُ (wanita-wanita mukmin) - selalu dibaca "mu\'minātu"
 - طَالِبَاتُ (pelajar perempuan) - selalu dibaca "ṭālibātu"',
                 'urutan'           => 8,
+                'id_bab'           => 1, // BAB 1: KALAM
+                'deskripsi_bab'    => 'Pengenalan dasar kalam dan huruf-huruf dalam bahasa Arab',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -320,6 +336,8 @@ Aturan Khusus:
 - فَنَّانَةٌ (seniman perempuan)
 - رَئِيْسَةٌ (pemimpin perempuan)',
                 'urutan'           => 9,
+                'id_bab'           => 1, // BAB 1: KALAM
+                'deskripsi_bab'    => 'Pengenalan dasar kalam dan huruf-huruf dalam bahasa Arab',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -362,6 +380,8 @@ Aturan Membaca Sukun:
 - يَرْمُ (melempar) - ra dengan sukun
 - فِي الْبَيْتِ (di rumah) - ba dengan sukun',
                 'urutan'           => 10,
+                'id_bab'           => 1, // BAB 1: KALAM
+                'deskripsi_bab'    => 'Pengenalan dasar kalam dan huruf-huruf dalam bahasa Arab',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -404,6 +424,8 @@ Tanda-tanda I\'rab:
 - خَفْضٌ: مَرَرْتُ بِالْوَلَدِ (aku melewati anak laki-laki)
 - جَزْمٌ: لَمْ يَلْعَبِ الْوَلَدُ (anak laki-laki tidak bermain)',
                 'urutan'           => 11,
+                'id_bab'           => 2, // BAB 2: I'RAB
+                'deskripsi_bab'    => 'Pembahasan i\'rab dan perubahan akhir kata',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -439,6 +461,8 @@ Pengecualian Khusus:
 - مُسْلِمَانِ (dua muslim): رَفْعٌ - ا, نَصْبٌ - ي, خَفْضٌ - ي
 - مُسْلِمُوْنَ (para muslim): رَفْعٌ - و, نَصْبٌ - ي, خَفْضٌ - ي',
                 'urutan'           => 12,
+                'id_bab'           => 2, // BAB 2: I'RAB
+                'deskripsi_bab'    => 'Pembahasan i\'rab dan perubahan akhir kata',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -476,6 +500,8 @@ Aturan Khusus Jamak:
 - رِجَالٌ (para pria): رَفْعٌ - ضَمَّةٌ, نَصْبٌ - فَتْحَةٌ, خَفْضٌ - كَسْرَةٌ
 - أَكْمِلَةٌ (orang-orang bijak): رَفْعٌ - ضَمَّةٌ, نَصْبٌ - فَتْحَةٌ, خَفْضٌ - كَسْرَةٌ',
                 'urutan'           => 13,
+                'id_bab'           => 2, // BAB 2: I'RAB
+                'deskripsi_bab'    => 'Pembahasan i\'rab dan perubahan akhir kata',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -522,6 +548,8 @@ Pengecualian:
 - خَفْضٌ: ذَهَبْتُ إِلَى مُسْلِمَيْنِ (aku pergi kepada dua muslim)
 - كِتَابَانِ (dua buku), طَالِبَتَانِ (dua pelajar perempuan)',
                 'urutan'           => 14,
+                'id_bab'           => 2, // BAB 2: I'RAB
+                'deskripsi_bab'    => 'Pembahasan i\'rab dan perubahan akhir kata',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -567,6 +595,8 @@ I\'rab Isim Mufrad:
 - مَكَانٌ: بَيْتٌ, مَدْرَسَةٌ
 - آلَةٌ: مِفْتَاحٌ, قَلَمٌ',
                 'urutan'           => 15,
+                'id_bab'           => 2, // BAB 2: I'RAB
+                'deskripsi_bab'    => 'Pembahasan i\'rab dan perubahan akhir kata',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -610,6 +640,8 @@ Jenis-jenis Fi\'il Madhi:
 - فَعَلَ (dia melakukan), فَعَلَتْ (dia perempuan melakukan)
 - قَرَأَ (dia membaca), قَرَأَتْ (dia perempuan membaca)',
                 'urutan'           => 16,
+                'id_bab'           => 2, // BAB 2: I'RAB
+                'deskripsi_bab'    => 'Pembahasan i\'rab dan perubahan akhir kata',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -653,6 +685,8 @@ Contoh Penggunaan:
 - يَفْعَلُ (dia melakukan), تَفْعَلِيْنَ (kalian semua perempuan melakukan)
 - يَقُوْلُ (dia berkata), نَقُوْلُ (kami berkata)',
                 'urutan'           => 17,
+                'id_bab'           => 2, // BAB 2: I'RAB
+                'deskripsi_bab'    => 'Pembahasan i\'rab dan perubahan akhir kata',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -700,6 +734,8 @@ Penggunaan Fi\'il Amr:
 - اِقْرَأُوا (bacalah - untuk beberapa laki-laki)
 - اِقْرَأْنَ (bacalah - untuk beberapa perempuan)',
                 'urutan'           => 18,
+                'id_bab'           => 2, // BAB 2: I'RAB
+                'deskripsi_bab'    => 'Pembahasan i\'rab dan perubahan akhir kata',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -747,6 +783,8 @@ Fi\'il Muannats:
 - بَيْتٌ (rumah - muannats), بَابٌ (pintu - muannats)
 - قَلَمٌ (pena - muannats), كِتَابٌ (buku - muannats)',
                 'urutan'           => 19,
+                'id_bab'           => 2, // BAB 2: I'RAB
+                'deskripsi_bab'    => 'Pembahasan i\'rab dan perubahan akhir kata',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),
@@ -794,6 +832,8 @@ Tanda-tanda I\'rab Pengganti:
 - مُعَوَّضَةٌ نَصْبٌ: مُسْلِمَاتٍ (tanwin), مُسْلِمِيْنَ (ya), أَبَا (alif)
 - مُعَوَّضَةٌ خَفْضٌ: مُسْلِمَاتٍ (tanwin), مُسْلِمِيْنَ (ya), أَبِيْ (ya)',
                 'urutan'           => 20,
+                'id_bab'           => 2, // BAB 2: I'RAB
+                'deskripsi_bab'    => 'Pembahasan i\'rab dan perubahan akhir kata',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
                 'waktu_dibuat'     => date('Y-m-d H:i:s'),
                 'waktu_diubah'     => date('Y-m-d H:i:s'),

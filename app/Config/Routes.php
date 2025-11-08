@@ -76,6 +76,23 @@ $routes->group('siswa', function($routes) {
     $routes->get('(:num)/login-history', 'SiswaController::loginHistory/$1');
 });
 
+// Bab Management
+$routes->group('bab', ['filter' => 'auth:admin,guru'], function($routes) {
+    $routes->get('/', 'BabController::index');
+    $routes->get('create', 'BabController::create');
+    $routes->post('/', 'BabController::store');
+    $routes->get('(:num)', 'BabController::show/$1');
+    $routes->get('(:num)/edit', 'BabController::edit/$1');
+    $routes->put('(:num)', 'BabController::update/$1');
+    $routes->delete('(:num)', 'BabController::delete/$1');
+    $routes->post('(:num)/toggleStatus', 'BabController::toggleStatus/$1');
+    $routes->get('statistics', 'BabController::statistics');
+
+    // API routes
+    $routes->get('chapters', 'BabController::getChapters');
+    $routes->get('(:num)/detail', 'BabController::getChapterDetail/$1');
+});
+
 // Materi Kaidah Management
 $routes->group('kaidah', function($routes) {
     $routes->get('/', 'KaidahController::index');
@@ -87,6 +104,13 @@ $routes->group('kaidah', function($routes) {
     $routes->put('(:num)', 'KaidahController::update/$1');
     $routes->delete('(:num)', 'KaidahController::delete/$1');
     $routes->get('statistics', 'KaidahController::statistics');
+    $routes->post('reorder', 'KaidahController::reorder');
+
+    // Chapter-based API routes for mobile app
+    $routes->get('chapters', 'KaidahController::getChapters');
+    $routes->get('chapters/(:alphanum)', 'KaidahController::getChapterDetail/$1');
+    $routes->get('progress/overall', 'KaidahController::getOverallProgress');
+    $routes->get('progress/overview', 'KaidahController::getProgressOverview');
 });
 
 // Soal Management
@@ -155,6 +179,7 @@ $routes->group('api', ['namespace' => 'App\Controllers\API'], function($routes) 
     // Kaidah routes
     $routes->get('kaidah', 'KaidahController::index');
     $routes->get('kaidah/(:num)', 'KaidahController::show/$1');
+    $routes->get('kaidah/grouped', 'KaidahController::getGroupedByBab');
 
     // Sesi/Learning routes
     $routes->post('sesi/start', 'SesiController::start');
@@ -170,6 +195,13 @@ $routes->group('api', ['namespace' => 'App\Controllers\API'], function($routes) 
     $routes->get('progress/history', 'ProgressController::history');
     $routes->get('progress/statistics', 'ProgressController::statistics');
     $routes->get('progress/chart', 'ProgressController::chart');
+
+    // Bab/Chapter routes for Mobile App
+    $routes->get('bab/chapters', 'BabController::getChapters');
+    $routes->get('bab/chapters/(:num)', 'BabController::getChapterDetail/$1');
+    $routes->get('bab/progress', 'BabController::getProgressOverview');
+    $routes->get('bab/statistics', 'BabController::getStatistics');
+    $routes->get('bab/(:num)/unlock-status', 'BabController::checkUnlockStatus/$1');
 });
 
 /*

@@ -59,7 +59,7 @@ class Filters extends BaseFilters
         'after' => [
             'pagecache',   // Web Page Caching
             'performance', // Performance Metrics
-            'toolbar',     // Debug Toolbar
+            // 'toolbar',     // Debug Toolbar - moved to filters
         ],
     ];
 
@@ -120,10 +120,31 @@ class Filters extends BaseFilters
             'before' => [
                 'dashboard*',
                 'users*',
-                'kaidah*',
+                'kaidah',        // Main kaidah page
+                'kaidah/create',
+                'kaidah/(:num)', // Edit, show, delete
+                'kaidah/statistics',
+                'kaidah/reorder',
                 'soal*',
                 'reports*',
                 'settings*'
+            ]
+        ],
+        // Apply debug toolbar only to web routes (not API)
+        'toolbar' => [
+            'after' => [
+                'dashboard*',
+                'users*',
+                'pengguna*',
+                'siswa*',
+                'guru*',
+                'soal*',
+                'reports*',
+                'settings*',
+                'login',
+                'logout',
+                'kaidah', // but not kaidah/chapters or kaidah/progress
+                '/' // home
             ]
         ]
     ];

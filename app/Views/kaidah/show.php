@@ -61,7 +61,7 @@
 </div>
 
 <!-- Main Content -->
-<div class="row">
+<div class="row" data-chapter="<?= esc($kaidah['bab'] ?>">
     <!-- Left Column - Main Info -->
     <div class="col-lg-8">
         <!-- Header Card -->
@@ -70,8 +70,11 @@
                 <div class="d-flex justify-content-between align-items-start mb-3">
                     <div class="flex-grow-1">
                         <div class="mb-2">
-                            <span class="badge bg-light text-dark">
+                            <span class="badge bg-light text-dark me-2">
                                 Urutan: #<?= $kaidah['urutan'] ?>
+                            </span>
+                            <span class="badge bg-primary text-white">
+                                <?= esc($kaidah['bab']) ?>
                             </span>
                         </div>
                         <h3 class="fw-bold mb-3">
@@ -167,6 +170,7 @@
 
       </div>
 </div>
+
 
 <!-- Hidden form for delete -->
 <form id="deleteForm" method="POST" action="">

@@ -102,18 +102,37 @@
                     </div>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label for="urutan" class="form-label">Urutan *</label>
-                    <input type="number" class="form-control" id="urutan" name="urutan"
-                           value="<?= esc(old('urutan', $kaidah['urutan'])) ?>"
-                           placeholder="Urutan tampilan" min="0" required>
+                    <label for="id_bab" class="form-label">Bab *</label>
+                    <select class="form-control" id="id_bab" name="id_bab" required>
+                        <option value="">Pilih Bab</option>
+                        <?php
+                        $babModel = new \App\Models\BabModel();
+                        $babList = $babModel->getActive();
+                        $selectedBab = old('id_bab', $kaidah['id_bab']);
+                        foreach ($babList as $bab): ?>
+                        <option value="<?= $bab['id_bab'] ?>" <?= $selectedBab == $bab['id_bab'] ? 'selected' : '' ?>>
+                            <?= esc($bab['nama_bab']) ?>
+                        </option>
+                        <?php endforeach; ?>
+                    </select>
                     <div class="invalid-feedback">
-                        Urutan wajib diisi
+                        Bab wajib dipilih
                     </div>
                 </div>
             </div>
 
             <div class="row">
-                <div class="col-md-12 mb-3">
+                <div class="col-md-6 mb-3">
+                    <label for="urutan" class="form-label">Urutan *</label>
+                    <input type="number" class="form-control" id="urutan" name="urutan"
+                           value="<?= esc(old('urutan', $kaidah['urutan'])) ?>"
+                           placeholder="Urutan tampilan dalam bab" min="1" required>
+                    <div class="invalid-feedback">
+                        Urutan wajib diisi
+                    </div>
+                    <div class="form-text">Urutan menentukan penampilan materi dalam bab yang dipilih</div>
+                </div>
+                <div class="col-md-6 mb-3">
                     <label for="deskripsi" class="form-label">Deskripsi</label>
                     <textarea class="form-control" id="deskripsi" name="deskripsi" rows="3"
                               placeholder="Deskripsi singkat tentang kaidah ini..."><?= esc(old('deskripsi', $kaidah['deskripsi'])) ?></textarea>
@@ -123,6 +142,7 @@
                 </div>
             </div>
 
+            
             <div class="row">
                 <div class="col-md-12 mb-3">
                     <label for="nama_arab" class="form-label">Nama Arab (Opsional)</label>

@@ -7,6 +7,7 @@ use App\Models\MateriKaidahModel;
 use App\Models\SoalModel;
 use App\Models\SesiLatihanModel;
 use App\Models\RiwayatBelajarModel;
+use App\Models\BabModel;
 use App\Libraries\APIHelper;
 use CodeIgniter\API\ResponseTrait;
 
@@ -18,6 +19,7 @@ class KaidahController extends BaseController
     protected $soalModel;
     protected $sesiLatihanModel;
     protected $riwayatBelajarModel;
+    protected $babModel;
 
     public function __construct()
     {
@@ -25,6 +27,7 @@ class KaidahController extends BaseController
         $this->soalModel = new SoalModel();
         $this->sesiLatihanModel = new SesiLatihanModel();
         $this->riwayatBelajarModel = new RiwayatBelajarModel();
+        $this->babModel = new BabModel();
     }
 
     /**
@@ -140,5 +143,85 @@ class KaidahController extends BaseController
         ];
 
         return $this->respond($response, 200);
+    }
+
+    /**
+     * Get kaidah grouped by bab - Simple version
+     * GET /api/kaidah/grouped
+     */
+    public function getGroupedByBab()
+    {
+        try {
+            // Get all active bab with urutan
+            $babList = $this->babModel
+                ->where('is_active', 1)
+                ->orderBy('urutan', 'ASC')
+                ->findAll();
+
+            if (empty($babList)) {
+                return $this->respond([
+                    'status' => 'success',
+                    'message' => 'No bab records found',
+                    'data' => ['groups' => []]
+                ]);
+            }
+
+            $groups = [];
+
+            foreach ($babList as $bab) {
+                // Get all materi for this bab
+                $kaidahList = $this->materiKaidahModel
+                    ->where('id_bab', $bab['id_bab'])
+                    ->findAll();
+
+                // Process kaidah data and ensure ID is integer
+                $processedKaidahList = [];
+                $totalSoal = 0;
+                foreach ($kaidahList as $kaidah) {
+                    $processedKaidah = $kaidah;
+                    // Ensure ID is integer
+                    $processedKaidah['id_materi'] = (int)$kaidah['id_materi'];
+                    $processedKaidah['id_bab'] = (int)$kaidah['id_bab'];
+                    $processedKaidah['urutan'] = (int)$kaidah['urutan'];
+                    $processedKaidah['dibuat_oleh'] = (int)$kaidah['dibuat_oleh'];
+
+                    $processedKaidahList[] = $processedKaidah;
+
+                    // Count soal for this kaidah
+                    $soalCount = $this->soalModel
+                        ->where('id_materi', $kaidah['id_materi'])
+                        ->countAllResults();
+                    $totalSoal += $soalCount;
+                }
+
+                $groups[] = [
+                    'bab' => [
+                        'id_bab' => (int)$bab['id_bab'],
+                        'nama_bab' => $bab['nama_bab'],
+                        'deskripsi' => $bab['deskripsi'],
+                        'urutan' => (int)$bab['urutan']
+                    ],
+                    'kaidah_list' => $processedKaidahList,
+                    'total_kaidah' => count($processedKaidahList),
+                    'total_soal' => $totalSoal
+                ];
+            }
+
+            return $this->respond([
+                'status' => 'success',
+                'message' => 'Data kaidah per bab berhasil diambil',
+                'data' => [
+                    'groups' => $groups,
+                    'summary' => [
+                        'total_bab' => count($babList),
+                        'total_kaidah' => array_sum(array_column($groups, 'total_kaidah')),
+                        'total_soal' => array_sum(array_column($groups, 'total_soal'))
+                    ]
+                ]
+            ]);
+
+        } catch (\Exception $e) {
+            return $this->fail('Error: ' . $e->getMessage(), 500);
+        }
     }
 }
