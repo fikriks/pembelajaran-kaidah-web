@@ -154,6 +154,7 @@ class SesiController extends BaseController
         $response = [
             'status' => 'success',
             'message' => 'Sesi pembelajaran berhasil dimulai',
+            'code' => 200,
             'data' => [
                 'sesi' => [
                     'id_sesi' => $idSesi,
@@ -203,6 +204,7 @@ class SesiController extends BaseController
             return $this->respond([
                 'status' => 'success',
                 'message' => 'Tidak ada sesi aktif',
+                'code' => 200,
                 'data' => null
             ], 200);
         }
@@ -218,6 +220,7 @@ class SesiController extends BaseController
         $response = [
             'status' => 'success',
             'message' => 'Sesi aktif ditemukan',
+            'code' => 200,
             'data' => [
                 'sesi' => [
                     'id_sesi' => $activeSession['id_sesi'],
@@ -269,6 +272,7 @@ class SesiController extends BaseController
         $response = [
             'status' => 'success',
             'message' => 'Detail sesi berhasil diambil',
+            'code' => 200,
             'data' => [
                 'sesi' => [
                     'id_sesi' => $sesi['id_sesi'],
@@ -365,6 +369,7 @@ class SesiController extends BaseController
         $response = [
             'status' => 'success',
             'message' => 'Jawaban berhasil disimpan',
+            'code' => 200,
             'data' => [
                 'is_benar' => $isBenar,
                 'id_soal' => $idSoal,
@@ -438,6 +443,7 @@ class SesiController extends BaseController
         $response = [
             'status' => 'success',
             'message' => 'Sesi pembelajaran selesai',
+            'code' => 200,
             'data' => [
                 'sesi' => [
                     'id_sesi' => $id,
@@ -489,6 +495,7 @@ class SesiController extends BaseController
         $response = [
             'status' => 'success',
             'message' => 'Hasil sesi pembelajaran',
+            'code' => 200,
             'data' => [
                 'sesi' => [
                     'id_sesi' => $sesi['id_sesi'],

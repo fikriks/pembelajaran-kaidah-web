@@ -3,8 +3,8 @@
 namespace App\Controllers\API;
 
 use App\Controllers\BaseController;
-use App\Models\KaidahModel;
-use App\Models\SesiModel;
+use App\Models\MateriKaidahModel;
+use App\Models\SesiLatihanModel;
 use App\Models\SiswaModel;
 use CodeIgniter\API\ResponseTrait;
 
@@ -12,14 +12,14 @@ class ProgressController extends BaseController
 {
     use ResponseTrait;
 
-    protected $kaidahModel;
-    protected $sesiModel;
+    protected $materiKaidahModel;
+    protected $sesiLatihanModel;
     protected $siswaModel;
 
     public function __construct()
     {
-        $this->kaidahModel = new KaidahModel();
-        $this->sesiModel = new SesiModel();
+        $this->materiKaidahModel = new MateriKaidahModel();
+        $this->sesiLatihanModel = new SesiLatihanModel();
         $this->siswaModel = new SiswaModel();
     }
 
@@ -50,15 +50,14 @@ class ProgressController extends BaseController
         }
 
         // Get all kaidah
-        $allKaidah = $this->kaidahModel->findAll();
+        $allKaidah = $this->materiKaidahModel->findAll();
         $totalKaidah = count($allKaidah);
 
         // Get completed sessions
-        $completedSessions = $db->table('sesi_pembelajaran')
+        $completedSessions = $this->sesiLatihanModel
             ->where('id_siswa', $userId)
             ->where('status', 'selesai')
-            ->get()
-            ->getResultArray();
+            ->findAll();
 
         // Calculate statistics
         $totalSesi = count($completedSessions);
@@ -91,7 +90,6 @@ class ProgressController extends BaseController
             $kaidahProgress[] = [
                 'id_materi' => $kaidah['id_materi'],
                 'judul_kaidah' => $kaidah['judul_kaidah'],
-                'tingkat_kesulitan' => $kaidah['tingkat_kesulitan'],
                 'status' => $status,
                 'total_attempts' => $totalAttempts,
                 'best_score' => round($bestScore, 2),
@@ -109,6 +107,7 @@ class ProgressController extends BaseController
         $response = [
             'status' => 'success',
             'message' => 'Progress berhasil diambil',
+            'code' => 200,
             'data' => [
                 'siswa' => [
                     'id' => $siswa['id'],
@@ -169,6 +168,7 @@ class ProgressController extends BaseController
         $response = [
             'status' => 'success',
             'message' => 'Detail progress berhasil diambil',
+            'code' => 200,
             'data' => [
                 'filters' => $filters,
                 'sessions' => $sessions['data'],
@@ -210,6 +210,7 @@ class ProgressController extends BaseController
         $response = [
             'status' => 'success',
             'message' => 'Riwayat pembelajaran berhasil diambil',
+            'code' => 200,
             'data' => [
                 'period' => $period,
                 'history' => $history
@@ -256,10 +257,11 @@ class ProgressController extends BaseController
             ->get()
             ->getRowArray();
 
-        // Get difficulty breakdown
-        $difficultyStats = $db->table('sesi_pembelajaran sp')
+        // Get kaidah breakdown
+        $kaidahStats = $db->table('sesi_pembelajaran sp')
             ->select('
-                mk.tingkat_kesulitan,
+                mk.id_materi,
+                mk.judul_kaidah,
                 COUNT(*) as total_sessions,
                 AVG(sp.skor) as avg_score,
                 MAX(sp.skor) as best_score
@@ -267,7 +269,7 @@ class ProgressController extends BaseController
             ->join('materi_kaidah mk', 'mk.id_materi = sp.id_materi')
             ->where('sp.id_siswa', $userId)
             ->where('sp.status', 'selesai')
-            ->groupBy('mk.tingkat_kesulitan')
+            ->groupBy('mk.id_materi, mk.judul_kaidah')
             ->get()
             ->getResultArray();
 
@@ -280,6 +282,7 @@ class ProgressController extends BaseController
         $response = [
             'status' => 'success',
             'message' => 'Statistik progress berhasil diambil',
+            'code' => 200,
             'data' => [
                 'session_statistics' => [
                     'total_sessions' => (int)$sessionStats['total_sessions'],
@@ -296,14 +299,15 @@ class ProgressController extends BaseController
                         round(($sessionStats['total_correct'] / $sessionStats['total_questions']) * 100, 1) : 0,
                     'average_duration_minutes' => round($sessionStats['avg_duration'] / 60 ?: 0, 1)
                 ],
-                'difficulty_breakdown' => array_map(function($stat) {
+                'kaidah_breakdown' => array_map(function($stat) {
                     return [
-                        'difficulty' => $stat['tingkat_kesulitan'],
+                        'id_materi' => $stat['id_materi'],
+                        'judul_kaidah' => $stat['judul_kaidah'],
                         'total_sessions' => (int)$stat['total_sessions'],
                         'average_score' => round($stat['avg_score'], 2),
                         'best_score' => round($stat['best_score'], 2)
                     ];
-                }, $difficultyStats),
+                }, $kaidahStats),
                 'monthly_performance' => $monthlyPerformance,
                 'learning_streak' => $streak
             ]
@@ -338,6 +342,7 @@ class ProgressController extends BaseController
         $response = [
             'status' => 'success',
             'message' => 'Data chart progress berhasil diambil',
+            'code' => 200,
             'data' => [
                 'chart_type' => $chartType,
                 'period' => $period,
@@ -469,7 +474,6 @@ class ProgressController extends BaseController
             ->select('
                 sp.*,
                 mk.judul_kaidah,
-                mk.tingkat_kesulitan,
                 s.nama_lengkap as nama_siswa
             ')
             ->join('materi_kaidah mk', 'mk.id_materi = sp.id_materi')
@@ -509,8 +513,7 @@ class ProgressController extends BaseController
                     'sesi_id' => $session['id_sesi'],
                     'kaidah' => [
                         'id_materi' => $session['id_materi'],
-                        'judul_kaidah' => $session['judul_kaidah'],
-                        'tingkat_kesulitan' => $session['tingkat_kesulitan']
+                        'judul_kaidah' => $session['judul_kaidah']
                     ],
                     'skor' => round($session['skor'], 2),
                     'total_soal' => $session['total_soal'],
@@ -674,7 +677,7 @@ class ProgressController extends BaseController
                 return $this->getLearningHistory($userId, $period, 30);
 
             case 'radar':
-                return $this->getDifficultyRadarData($userId);
+                return $this->getKaidahRadarData($userId);
 
             default:
                 return [];
@@ -682,28 +685,29 @@ class ProgressController extends BaseController
     }
 
     /**
-     * Get difficulty radar data
+     * Get kaidah radar data
      */
-    private function getDifficultyRadarData($userId)
+    private function getKaidahRadarData($userId)
     {
         $db = \Config\Database::connect();
 
         $data = $db->table('sesi_pembelajaran sp')
             ->select('
-                mk.tingkat_kesulitan,
+                mk.id_materi,
+                mk.judul_kaidah,
                 AVG(sp.skor) as avg_score,
                 COUNT(*) as sessions
             ')
             ->join('materi_kaidah mk', 'mk.id_materi = sp.id_materi')
             ->where('sp.id_siswa', $userId)
             ->where('sp.status', 'selesai')
-            ->groupBy('mk.tingkat_kesulitan')
+            ->groupBy('mk.id_materi, mk.judul_kaidah')
             ->get()
             ->getResultArray();
 
         return array_map(function($item) {
             return [
-                'difficulty' => $item['tingkat_kesulitan'],
+                'kaidah' => $item['judul_kaidah'],
                 'score' => round($item['avg_score'], 2),
                 'sessions' => (int)$item['sessions']
             ];

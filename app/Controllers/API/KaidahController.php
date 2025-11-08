@@ -81,6 +81,7 @@ class KaidahController extends BaseController
         $response = [
             'status' => 'success',
             'message' => 'Daftar kaidah berhasil diambil',
+            'code' => 200,
             'data' => [
                 'kaidah' => $kaidahList,
                 'pagination' => [
@@ -121,6 +122,7 @@ class KaidahController extends BaseController
         $response = [
             'status' => 'success',
             'message' => 'Detail kaidah berhasil diambil',
+            'code' => 200,
             'data' => [
                 'kaidah' => [
                     'id_materi' => $kaidah['id_materi'],

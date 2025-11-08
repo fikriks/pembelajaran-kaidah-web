@@ -59,6 +59,7 @@ class SiswaAuthController extends BaseController
         $response = [
             'status' => 'success',
             'message' => 'Login berhasil',
+            'code' => 200,  // Add HTTP status code to response body
             'data' => [
                 'siswa' => [
                     'id' => $siswa['id'],
@@ -100,6 +101,7 @@ class SiswaAuthController extends BaseController
         $response = [
             'status' => 'success',
             'message' => 'Profile berhasil diambil',
+            'code' => 200,
             'data' => [
                 'siswa' => [
                     'id' => $siswa['id'],
