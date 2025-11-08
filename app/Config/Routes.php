@@ -181,6 +181,11 @@ $routes->group('api', ['namespace' => 'App\Controllers\API'], function($routes) 
     $routes->get('kaidah/(:num)', 'KaidahController::show/$1');
     $routes->get('kaidah/grouped', 'KaidahController::getGroupedByBab');
 
+    // Soal routes
+    $routes->get('soal', 'SoalController::index');
+    $routes->get('soal/(:num)', 'SoalController::show/$1');
+    $routes->post('soal/random', 'SoalController::apiGetRandomSoal');
+
     // Sesi/Learning routes
     $routes->post('sesi/start', 'SesiController::start');
     $routes->get('sesi/active', 'SesiController::active');

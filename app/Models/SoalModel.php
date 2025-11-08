@@ -13,7 +13,7 @@ class SoalModel extends Model
     protected $useSoftDeletes   = false;
     protected $protectFields    = true;
     protected $allowedFields    = [
-        'id_materi',
+        'id_bab',
         'pertanyaan',
         'tipe_soal',
         'tingkat_kesulitan',
@@ -29,7 +29,7 @@ class SoalModel extends Model
 
     // Validation
     protected $validationRules      = [
-        'id_materi'          => 'required|integer|greater_than[0]',
+        'id_bab'             => 'required|integer|greater_than[0]',
         'pertanyaan'         => 'required',
         'tipe_soal'          => 'required|in_list[pilihan_ganda]',
         'tingkat_kesulitan'  => 'required|in_list[mudah,sedang,sulit]',
@@ -37,10 +37,10 @@ class SoalModel extends Model
         'dibuat_oleh'        => 'required|integer|greater_than[0]'
     ];
     protected $validationMessages   = [
-        'id_materi' => [
-            'required'      => 'Materi kaidah harus dipilih',
-            'integer'       => 'ID materi harus berupa angka',
-            'greater_than'  => 'ID materi tidak valid'
+        'id_bab' => [
+            'required'      => 'Bab harus dipilih',
+            'integer'       => 'ID bab harus berupa angka',
+            'greater_than'  => 'ID bab tidak valid'
         ],
         'pertanyaan' => [
             'required'      => 'Pertanyaan harus diisi'
@@ -193,18 +193,17 @@ class SoalModel extends Model
     {
         $builder = $this->select('
             soal.*,
-            materi_kaidah.judul_kaidah,
-            materi_kaidah.tingkat_kesulitan as tingkat_kesulitan_kaidah,
+            bab.nama_bab,
             pengguna.nama_lengkap as nama_pembuat
         ')
-        ->join('materi_kaidah', 'materi_kaidah.id_materi = soal.id_materi')
+        ->join('bab', 'bab.id_bab = soal.id_bab')
         ->join('pengguna', 'pengguna.id_pengguna = soal.dibuat_oleh');
 
         if ($id) {
             $builder = $builder->where('soal.id_soal', $id);
         }
 
-        $result = $builder->orderBy('soal.id_materi', 'ASC')
+        $result = $builder->orderBy('soal.id_bab', 'ASC')
                       ->orderBy('soal.id_soal', 'DESC')
                       ->findAll();
 
@@ -270,10 +269,10 @@ class SoalModel extends Model
     }
 
     // Fungsi untuk mendapatkan soal acak (placeholder untuk LCM)
-    public function getRandomSoalForQuiz($id_materi, $jumlah = 10, $excludeIds = [])
+    public function getRandomSoalForQuiz($id_bab, $jumlah = 10, $excludeIds = [])
     {
         $builder = $this->select('id_soal')
-            ->where('id_materi', $id_materi);
+            ->where('id_bab', $id_bab);
 
         if (!empty($excludeIds)) {
             $builder->whereNotIn('id_soal', $excludeIds);
@@ -304,7 +303,7 @@ class SoalModel extends Model
             foreach ($data as $index => $item) {
                 try {
                     $soalData = [
-                        'id_materi' => $item['id_materi'],
+                        'id_bab' => $item['id_bab'],
                         'pertanyaan' => $item['pertanyaan'],
                         'tingkat_kesulitan' => $item['tingkat_kesulitan'],
                         'poin' => $item['poin'] ?? 10,
@@ -347,10 +346,10 @@ class SoalModel extends Model
     }
 
     // Fungsi untuk mendapatkan soal untuk API mobile dengan struktur khusus
-    public function getSoalForMobile($id_materi, $jumlah = 20, $seed = null)
+    public function getSoalForMobile($id_bab, $jumlah = 20, $seed = null)
     {
         // Ini akan digunakan dengan LCM algorithm
-        $soalIds = $this->getRandomSoalForQuiz($id_materi, $jumlah);
+        $soalIds = $this->getRandomSoalForQuiz($id_bab, $jumlah);
         $soalList = [];
 
         foreach ($soalIds as $id) {
@@ -376,19 +375,19 @@ class SoalModel extends Model
     }
 
     // Custom methods
-    public function getWithMateri()
+    public function getWithBab()
     {
-        return $this->select('soal.*, materi_kaidah.judul_kaidah, materi_kaidah.tingkat_kesulitan as tingkat_kesulitan_materi, pengguna.nama_lengkap as nama_pembuat')
-                     ->join('materi_kaidah', 'materi_kaidah.id_materi = soal.id_materi')
+        return $this->select('soal.*, bab.nama_bab, pengguna.nama_lengkap as nama_pembuat')
+                     ->join('bab', 'bab.id_bab = soal.id_bab')
                      ->join('pengguna', 'pengguna.id_pengguna = soal.dibuat_oleh')
-                     ->orderBy('materi_kaidah.urutan', 'ASC')
+                     ->orderBy('bab.id_bab', 'ASC')
                      ->orderBy('soal.id_soal', 'ASC')
                      ->findAll();
     }
 
-    public function getByMateri($id_materi)
+    public function getByBab($id_bab)
     {
-        return $this->where('id_materi', $id_materi)
+        return $this->where('id_bab', $id_bab)
                      ->orderBy('id_soal', 'ASC')
                      ->findAll();
     }
@@ -409,8 +408,8 @@ class SoalModel extends Model
 
     public function getWithAnswers($id_soal = null)
     {
-        $builder = $this->select('soal.*, materi_kaidah.judul_kaidah, pilihan_jawaban.*')
-                        ->join('materi_kaidah', 'materi_kaidah.id_materi = soal.id_materi')
+        $builder = $this->select('soal.*, bab.nama_bab, pilihan_jawaban.*')
+                        ->join('bab', 'bab.id_bab = soal.id_bab')
                         ->join('pilihan_jawaban', 'pilihan_jawaban.id_soal = soal.id_soal')
                         ->orderBy('soal.id_soal', 'ASC')
                         ->orderBy('pilihan_jawaban.urutan', 'ASC');
@@ -424,8 +423,8 @@ class SoalModel extends Model
 
     public function getWithCorrectAnswer($id_soal = null)
     {
-        $builder = $this->select('soal.*, materi_kaidah.judul_kaidah, pilihan_jawaban.teks_jawaban as jawaban_benar')
-                        ->join('materi_kaidah', 'materi_kaidah.id_materi = soal.id_materi')
+        $builder = $this->select('soal.*, bab.nama_bab, pilihan_jawaban.teks_jawaban as jawaban_benar')
+                        ->join('bab', 'bab.id_bab = soal.id_bab')
                         ->join('pilihan_jawaban', 'pilihan_jawaban.id_soal = soal.id_soal AND pilihan_jawaban.is_benar = 1')
                         ->orderBy('soal.id_soal', 'ASC');
 
@@ -436,20 +435,20 @@ class SoalModel extends Model
         return $builder->findAll();
     }
 
-    public function search($keyword, $id_materi = null)
+    public function search($keyword, $id_bab = null)
     {
         $builder = $this->like('pertanyaan', $keyword);
 
-        if ($id_materi) {
-            $builder = $builder->where('id_materi', $id_materi);
+        if ($id_bab) {
+            $builder = $builder->where('id_bab', $id_bab);
         }
 
         return $builder->orderBy('id_soal', 'ASC')->findAll();
     }
 
-    public function getRandomQuestions($id_materi, $jumlah = 10)
+    public function getRandomQuestions($id_bab, $jumlah = 10)
     {
-        return $this->where('id_materi', $id_materi)
+        return $this->where('id_bab', $id_bab)
                      ->orderBy('RAND()')
                      ->limit($jumlah)
                      ->findAll();
@@ -461,10 +460,10 @@ class SoalModel extends Model
                      ->first();
     }
 
-    public function getStatsByMateri($id_materi)
+    public function getStatsByBab($id_bab)
     {
         return $this->select('COUNT(*) as total_soal, AVG(poin) as rata_rata_poin, MAX(poin) as poin_tertinggi, MIN(poin) as poin_terendah')
-                     ->where('id_materi', $id_materi)
+                     ->where('id_bab', $id_bab)
                      ->first();
     }
 }

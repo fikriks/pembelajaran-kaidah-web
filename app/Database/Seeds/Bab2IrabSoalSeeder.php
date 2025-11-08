@@ -14,8 +14,7 @@ class Bab2IrabSoalSeeder extends Seeder
 
         // Materi 11: I'rab (ID: 11)
         $data[] = [
-            'id_materi' => 11,
-            'bab' => 'BAB 2: I\'RAB',
+            'id_bab' => 2,
             'pertanyaan' => 'إِعْرَابٌ (I\'rab) adalah perubahan akhir kata karena:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'mudah',
@@ -32,8 +31,7 @@ class Bab2IrabSoalSeeder extends Seeder
         ];
 
         $data[] = [
-            'id_materi' => 11,
-            'bab' => 'BAB 2: I\'RAB',
+            'id_bab' => 2,
             'pertanyaan' => 'Tanda asli untuk status رَفْعٌ (rafa\') adalah:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'mudah',
@@ -51,8 +49,7 @@ class Bab2IrabSoalSeeder extends Seeder
 
         // Materi 12: I'rab Khosus (ID: 12)
         $data[] = [
-            'id_materi' => 12,
-            'bab' => 'BAB 2: I\'RAB',
+            'id_bab' => 2,
             'pertanyaan' => 'أَبٌ (abun) termasuk dalam إِعْرَابُ الْأَسْمَاءِ الْخَمْسَةِ (i\'rab 5 isim). Tandanya:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'sedang',
@@ -69,8 +66,7 @@ class Bab2IrabSoalSeeder extends Seeder
         ];
 
         $data[] = [
-            'id_materi' => 12,
-            'bab' => 'BAB 2: I\'RAB',
+            'id_bab' => 2,
             'pertanyaan' => 'Manakah yang BUKAN termasuk dalam إِعْرَابٌ خَاصٌّ (i\'rab khusus)?',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'sedang',
@@ -88,8 +84,7 @@ class Bab2IrabSoalSeeder extends Seeder
 
         // Materi 13: I'rab Majmu' (ID: 13)
         $data[] = [
-            'id_materi' => 13,
-            'bab' => 'BAB 2: I\'RAB',
+            'id_bab' => 2,
             'pertanyaan' => 'I\'rab untuk جَمْعُ الْمُذَكَّرِ السَّالِمِ (jamak mudzakkar salim) adalah:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'sedang',
@@ -106,8 +101,7 @@ class Bab2IrabSoalSeeder extends Seeder
         ];
 
         $data[] = [
-            'id_materi' => 13,
-            'bab' => 'BAB 2: I\'RAB',
+            'id_bab' => 2,
             'pertanyaan' => 'Perbedaan i\'rab antara جَمْعُ الْمُؤَنَّثِ السَّالِمِ (jamak muannats salim) dengan jamak taksir adalah:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'sedang',
@@ -125,8 +119,7 @@ class Bab2IrabSoalSeeder extends Seeder
 
         // Materi 14: I'rab Mutsanna (ID: 14)
         $data[] = [
-            'id_materi' => 14,
-            'bab' => 'BAB 2: I\'RAB',
+            'id_bab' => 2,
             'pertanyaan' => 'Tanda رَفْعٌ (rafa\') untuk kata ganda (mutsanna) adalah:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'sedang',
@@ -143,8 +136,7 @@ class Bab2IrabSoalSeeder extends Seeder
         ];
 
         $data[] = [
-            'id_materi' => 14,
-            'bab' => 'BAB 2: I\'RAB',
+            'id_bab' => 2,
             'pertanyaan' => 'كِتَابٌ → كِتَابَانِ adalah contoh pembentukan kata ganda dari:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'sedang',
@@ -162,8 +154,7 @@ class Bab2IrabSoalSeeder extends Seeder
 
         // Materi 15: Isim Mufrad (ID: 15)
         $data[] = [
-            'id_materi' => 15,
-            'bab' => 'BAB 2: I\'RAB',
+            'id_bab' => 2,
             'pertanyaan' => 'إِسْمٌ عَلَمٌ (isim \'alam) adalah:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'mudah',
@@ -180,8 +171,7 @@ class Bab2IrabSoalSeeder extends Seeder
         ];
 
         $data[] = [
-            'id_materi' => 15,
-            'bab' => 'BAB 2: I\'RAB',
+            'id_bab' => 2,
             'pertanyaan' => 'مِفْتَاحٌ (miftah) termasuk dalam jenis isim:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'sedang',
@@ -199,8 +189,7 @@ class Bab2IrabSoalSeeder extends Seeder
 
         // Materi 16: Fi'il Madhi (ID: 16)
         $data[] = [
-            'id_materi' => 16,
-            'bab' => 'BAB 2: I\'RAB',
+            'id_bab' => 2,
             'pertanyaan' => 'فِعْلٌ مَاضِيٌ (Fi\'il Madhi) adalah kata kerja yang menunjukkan:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'mudah',
@@ -217,8 +206,7 @@ class Bab2IrabSoalSeeder extends Seeder
         ];
 
         $data[] = [
-            'id_materi' => 16,
-            'bab' => 'BAB 2: I\'RAB',
+            'id_bab' => 2,
             'pertanyaan' => 'Dhamir untuk orang ketiga laki-laki dalam fi\'il madhi adalah:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'sedang',
@@ -236,8 +224,7 @@ class Bab2IrabSoalSeeder extends Seeder
 
         // Materi 17: Fi'il Mudhari' (ID: 17)
         $data[] = [
-            'id_materi' => 17,
-            'bab' => 'BAB 2: I\'RAB',
+            'id_bab' => 2,
             'pertanyaan' => 'فِعْلٌ مُضَارِعٌ (Fi\'il Mudhari\') menunjukkan perbuatan yang:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'mudah',
@@ -254,8 +241,7 @@ class Bab2IrabSoalSeeder extends Seeder
         ];
 
         $data[] = [
-            'id_materi' => 17,
-            'bab' => 'BAB 2: I\'RAB',
+            'id_bab' => 2,
             'pertanyaan' => 'Perubahan كَتَبَ (kataba) menjadi fi\'il mudhari\' adalah:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'sedang',
@@ -273,8 +259,7 @@ class Bab2IrabSoalSeeder extends Seeder
 
         // Materi 18: Fi'il Amr (ID: 18)
         $data[] = [
-            'id_materi' => 18,
-            'bab' => 'BAB 2: I\'RAB',
+            'id_bab' => 2,
             'pertanyaan' => 'فِعْلٌ أَمْرٌ (Fi\'il Amr) digunakan untuk:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'mudah',
@@ -291,8 +276,7 @@ class Bab2IrabSoalSeeder extends Seeder
         ];
 
         $data[] = [
-            'id_materi' => 18,
-            'bab' => 'BAB 2: I\'RAB',
+            'id_bab' => 2,
             'pertanyaan' => 'Pola pembentukan fi\'il amr dari يَذْهَبُ (yadzhabu) adalah:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'sedang',
@@ -310,8 +294,7 @@ class Bab2IrabSoalSeeder extends Seeder
 
         // Materi 19: Mudzakkar dan Muannats (ID: 19)
         $data[] = [
-            'id_materi' => 19,
-            'bab' => 'BAB 2: I\'RAB',
+            'id_bab' => 2,
             'pertanyaan' => 'Tanda umum untuk مُؤَنَّثٌ (muannats/feminin) adalah:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'mudah',
@@ -328,8 +311,7 @@ class Bab2IrabSoalSeeder extends Seeder
         ];
 
         $data[] = [
-            'id_materi' => 19,
-            'bab' => 'BAB 2: I\'RAB',
+            'id_bab' => 2,
             'pertanyaan' => 'Manakah yang termasuk تَاءُ مُلَا (ta mula\'ah) sebagai tanda muannats?',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'sedang',
@@ -347,8 +329,7 @@ class Bab2IrabSoalSeeder extends Seeder
 
         // Materi 20: Tanda-tanda I'rab (ID: 20)
         $data[] = [
-            'id_materi' => 20,
-            'bab' => 'BAB 2: I\'RAB',
+            'id_bab' => 2,
             'pertanyaan' => 'Tanda جَزْمٌ (jazm) adalah:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'mudah',
@@ -365,8 +346,7 @@ class Bab2IrabSoalSeeder extends Seeder
         ];
 
         $data[] = [
-            'id_materi' => 20,
-            'bab' => 'BAB 2: I\'RAB',
+            'id_bab' => 2,
             'pertanyaan' => 'Tanda pengganti untuk رَفْعٌ (rafa\') pada isim muannats salim adalah:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'sedang',
@@ -382,13 +362,13 @@ class Bab2IrabSoalSeeder extends Seeder
             ]
         ];
 
-        // Insert soal ke database (tanpa pilihan_jawaban)
+        // Insert soal ke database
         $soalData = [];
         $pilihanJawabanData = [];
 
         foreach ($data as $index => $soal) {
             $soalData[$index] = [
-                'id_materi' => $soal['id_materi'],
+                'id_bab' => $soal['id_bab'],
                 'pertanyaan' => $soal['pertanyaan'],
                 'tipe_soal' => $soal['tipe_soal'],
                 'tingkat_kesulitan' => $soal['tingkat_kesulitan'],

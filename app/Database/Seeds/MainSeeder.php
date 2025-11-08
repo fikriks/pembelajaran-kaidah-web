@@ -17,10 +17,7 @@ class MainSeeder extends Seeder
         // Seed materi kaidah
         $this->call('MateriKaidahSeeder');
 
-        // Seed soal dan pilihan jawaban
-        $this->call('SoalSeeder');
-        $this->call('PilihanJawabanSeeder');
-
+  
         // Seed soal khusus per bab
         $this->call('Bab1KalamSoalSeeder');
         $this->call('Bab2IrabSoalSeeder');

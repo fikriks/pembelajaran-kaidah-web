@@ -14,8 +14,7 @@ class Bab1KalamSoalSeeder extends Seeder
 
         // Materi 1: Pengenalan Kalam (ID: 1)
         $data[] = [
-            'id_materi' => 1,
-            'bab' => 'BAB 1: KALAM',
+            'id_bab' => 1,
             'pertanyaan' => 'Apa pengertian كَلاَمٌ (kalam) menurut ilmu nahwu?',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'mudah',
@@ -32,8 +31,7 @@ class Bab1KalamSoalSeeder extends Seeder
         ];
 
         $data[] = [
-            'id_materi' => 1,
-            'bab' => 'BAB 1: KALAM',
+            'id_bab' => 1,
             'pertanyaan' => 'Manakah yang BUKAN syarat kalam dalam ilmu nahwu?',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'mudah',
@@ -51,8 +49,7 @@ class Bab1KalamSoalSeeder extends Seeder
 
         // Materi 2: Huruf-huruf Kalam (ID: 2)
         $data[] = [
-            'id_materi' => 2,
-            'bab' => 'BAB 1: KALAM',
+            'id_bab' => 1,
             'pertanyaan' => 'Berapa jumlah huruf hijaiyyah dalam bahasa Arab?',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'mudah',
@@ -69,8 +66,7 @@ class Bab1KalamSoalSeeder extends Seeder
         ];
 
         $data[] = [
-            'id_materi' => 2,
-            'bab' => 'BAB 1: KALAM',
+            'id_bab' => 1,
             'pertanyaan' => 'Manakah huruf yang termasuk حُرُوفٌ مُهْمَلَةٌ (huruf tanpa titik)?',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'sedang',
@@ -88,8 +84,7 @@ class Bab1KalamSoalSeeder extends Seeder
 
         // Materi 3: Alif dan Lam (ID: 3)
         $data[] = [
-            'id_materi' => 3,
-            'bab' => 'BAB 1: KALAM',
+            'id_bab' => 1,
             'pertanyaan' => 'Apa fungsi dari أَلِفٌ وَلاَمٌ (alif dan lam) dalam bahasa Arab?',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'mudah',
@@ -106,8 +101,7 @@ class Bab1KalamSoalSeeder extends Seeder
         ];
 
         $data[] = [
-            'id_materi' => 3,
-            'bab' => 'BAB 1: KALAM',
+            'id_bab' => 1,
             'pertanyaan' => 'Kata الشَّمْسُ (asy-syamsu) menggunakan jenis alif lam apa?',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'sedang',
@@ -125,8 +119,7 @@ class Bab1KalamSoalSeeder extends Seeder
 
         // Materi 4: Ta Marbutah (ID: 4)
         $data[] = [
-            'id_materi' => 4,
-            'bab' => 'BAB 1: KALAM',
+            'id_bab' => 1,
             'pertanyaan' => 'Bagaimana cara membaca تَاءٌ مَرْبُوطَةٌ (ta marbutah) saat waqaf (berhenti)?',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'mudah',
@@ -143,8 +136,7 @@ class Bab1KalamSoalSeeder extends Seeder
         ];
 
         $data[] = [
-            'id_materi' => 4,
-            'bab' => 'BAB 1: KALAM',
+            'id_bab' => 1,
             'pertanyaan' => 'Perubahan apa yang terjadi pada تَاءٌ مَرْبُوطَةٌ saat menjadi mudhaf ilaih (ditambah milik)?',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'sedang',
@@ -162,8 +154,7 @@ class Bab1KalamSoalSeeder extends Seeder
 
         // Materi 5: Waw (ID: 5)
         $data[] = [
-            'id_materi' => 5,
-            'bab' => 'BAB 1: KALAM',
+            'id_bab' => 1,
             'pertanyaan' => 'وَاوُ الْعَطْفِ (Wawu athaf) memiliki fungsi apa dalam kalimat?',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'mudah',
@@ -180,8 +171,7 @@ class Bab1KalamSoalSeeder extends Seeder
         ];
 
         $data[] = [
-            'id_materi' => 5,
-            'bab' => 'BAB 1: KALAM',
+            'id_bab' => 1,
             'pertanyaan' => 'Dalam kalimat وَاللهِ لَأَفْعَلَنَّ (wallahi lafa\'lanan), waw berfungsi sebagai:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'sedang',
@@ -199,8 +189,7 @@ class Bab1KalamSoalSeeder extends Seeder
 
         // Materi 6: Ya (ID: 6)
         $data[] = [
-            'id_materi' => 6,
-            'bab' => 'BAB 1: KALAM',
+            'id_bab' => 1,
             'pertanyaan' => 'يَاءُ الْمُتَكَلِّمِ (Ya mutakallim) digunakan untuk:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'mudah',
@@ -217,8 +206,7 @@ class Bab1KalamSoalSeeder extends Seeder
         ];
 
         $data[] = [
-            'id_materi' => 6,
-            'bab' => 'BAB 1: KALAM',
+            'id_bab' => 1,
             'pertanyaan' => 'مِصْرِيّ (mishriyy) adalah contoh dari يَاءُ:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'sedang',
@@ -236,8 +224,7 @@ class Bab1KalamSoalSeeder extends Seeder
 
         // Materi 7: Nun (ID: 7)
         $data[] = [
-            'id_materi' => 7,
-            'bab' => 'BAB 1: KALAM',
+            'id_bab' => 1,
             'pertanyaan' => 'نُوْنُ التَّثْنِيَةِ (Nun tatsniyah) digunakan untuk:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'mudah',
@@ -254,8 +241,7 @@ class Bab1KalamSoalSeeder extends Seeder
         ];
 
         $data[] = [
-            'id_materi' => 7,
-            'bab' => 'BAB 1: KALAM',
+            'id_bab' => 1,
             'pertanyaan' => 'Perubahan huruf nun saat bertemu dengan alif adalah:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'sedang',
@@ -273,8 +259,7 @@ class Bab1KalamSoalSeeder extends Seeder
 
         // Materi 8: Ta Mabsuthah (ID: 8)
         $data[] = [
-            'id_materi' => 8,
-            'bab' => 'BAB 1: KALAM',
+            'id_bab' => 1,
             'pertanyaan' => 'Perbedaan utama تَاءٌ مَبْسُوْطَةٌ (ta mabsuthah) dengan تَاءٌ مَرْبُوطَةٌ (ta marbutah) adalah:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'mudah',
@@ -291,8 +276,7 @@ class Bab1KalamSoalSeeder extends Seeder
         ];
 
         $data[] = [
-            'id_materi' => 8,
-            'bab' => 'BAB 1: KALAM',
+            'id_bab' => 1,
             'pertanyaan' => 'Manakah kata yang menggunakan ta mabsuthah di akhir?',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'sedang',
@@ -310,8 +294,7 @@ class Bab1KalamSoalSeeder extends Seeder
 
         // Materi 9: Ta Mabsuthah di Akhir Kata (ID: 9)
         $data[] = [
-            'id_materi' => 9,
-            'bab' => 'BAB 1: KALAM',
+            'id_bab' => 1,
             'pertanyaan' => 'Ta di akhir kata menunjukkan:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'mudah',
@@ -328,8 +311,7 @@ class Bab1KalamSoalSeeder extends Seeder
         ];
 
         $data[] = [
-            'id_materi' => 9,
-            'bab' => 'BAB 1: KALAM',
+            'id_bab' => 1,
             'pertanyaan' => 'Kata طَبِيْبَةٌ (thabibah) adalah contoh dari:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'sedang',
@@ -347,8 +329,7 @@ class Bab1KalamSoalSeeder extends Seeder
 
         // Materi 10: Sukun (ID: 10)
         $data[] = [
-            'id_materi' => 10,
-            'bab' => 'BAB 1: KALAM',
+            'id_bab' => 1,
             'pertanyaan' => 'سُكُونٌ (Sukun) adalah tanda baca yang menunjukkan:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'mudah',
@@ -365,8 +346,7 @@ class Bab1KalamSoalSeeder extends Seeder
         ];
 
         $data[] = [
-            'id_materi' => 10,
-            'bab' => 'BAB 1: KALAM',
+            'id_bab' => 1,
             'pertanyaan' => 'Dalam kalimat "الْحَمْدُ لِلّٰهِ", huruf ba (ب) menggunakan:',
             'tipe_soal' => 'pilihan_ganda',
             'tingkat_kesulitan' => 'sedang',
@@ -382,13 +362,13 @@ class Bab1KalamSoalSeeder extends Seeder
             ]
         ];
 
-        // Insert soal ke database (tanpa pilihan_jawaban)
+        // Insert soal ke database
         $soalData = [];
         $pilihanJawabanData = [];
 
         foreach ($data as $index => $soal) {
             $soalData[$index] = [
-                'id_materi' => $soal['id_materi'],
+                'id_bab' => $soal['id_bab'],
                 'pertanyaan' => $soal['pertanyaan'],
                 'tipe_soal' => $soal['tipe_soal'],
                 'tingkat_kesulitan' => $soal['tingkat_kesulitan'],
