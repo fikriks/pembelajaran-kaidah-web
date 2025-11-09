@@ -180,6 +180,7 @@ $routes->group('api', ['namespace' => 'App\Controllers\API'], function($routes) 
     $routes->get('kaidah', 'KaidahController::index');
     $routes->get('kaidah/(:num)', 'KaidahController::show/$1');
     $routes->get('kaidah/grouped', 'KaidahController::getGroupedByBab');
+    $routes->get('kaidah/first/(:num)', 'KaidahController::getFirstMateriByBab/$1');
 
     // Soal routes
     $routes->get('soal', 'SoalController::index');

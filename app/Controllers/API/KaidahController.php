@@ -159,6 +159,95 @@ class KaidahController extends BaseController
     }
 
     /**
+     * Get first materi of a specific bab
+     * GET /api/kaidah/first/{bab_id}
+     */
+    public function getFirstMateriByBab($bab_id)
+    {
+        try {
+            // Get user ID from Authorization header
+            $authHeader = $this->request->getHeader('Authorization');
+            $userId = 1; // Default user ID
+
+            if ($authHeader) {
+                $token = str_replace('Bearer ', '', $authHeader->getValue());
+                $extractedUserId = $this->extractUserIdFromToken($token);
+                if ($extractedUserId) {
+                    $userId = $extractedUserId;
+                }
+            }
+
+            // Get first materi of the specific bab
+            $firstMateri = $this->materiKaidahModel
+                ->where('id_bab', $bab_id)
+                ->orderBy('urutan', 'ASC')
+                ->orderBy('id_materi', 'ASC')
+                ->first();
+
+            if (!$firstMateri) {
+                $response = [
+                    'status' => 'error',
+                    'message' => 'Tidak ada materi untuk bab ini',
+                    'code' => 404
+                ];
+                return $this->respond($response, 404);
+            }
+
+            // Count total questions for this bab
+            $totalSoal = $this->soalModel->where('id_bab', $bab_id)->countAllResults();
+
+            // Get progress from riwayat_belajar
+            $riwayat = $this->riwayatBelajarModel
+                ->where('id_siswa', $userId)
+                ->where('id_materi', $firstMateri['id_materi'])
+                ->orderBy('waktu_diubah', 'DESC')
+                ->first();
+
+            // Calculate completion percentage and status
+            $completionPercentage = 0;
+            $status = 'belum_dimulai';
+
+            if ($riwayat) {
+                $completionPercentage = $riwayat['persentase_penguasaan'] ?? 0;
+                $status = $riwayat['status'] ?? 'belum_dimulai';
+            }
+
+            // Build response
+            $response = [
+                'status' => 'success',
+                'message' => 'Materi pertama bab berhasil diambil',
+                'code' => 200,
+                'data' => [
+                    'id_materi' => $firstMateri['id_materi'],
+                    'id_bab' => $firstMateri['id_bab'],
+                    'judul_kaidah' => $firstMateri['judul_kaidah'],
+                    'deskripsi' => $firstMateri['deskripsi'],
+                    'penjelasan' => $firstMateri['penjelasan'],
+                    'contoh' => $firstMateri['contoh'],
+                    'urutan' => $firstMateri['urutan'],
+                    'total_soal' => $totalSoal,
+                    'progress_percentage' => $completionPercentage,
+                    'status' => $status,
+                    'is_first_materi' => true
+                ]
+            ];
+
+            return $this->respond($response, 200);
+
+        } catch (\Exception $e) {
+            log_message('error', 'Error getting first materi by bab: ' . $e->getMessage());
+
+            $response = [
+                'status' => 'error',
+                'message' => 'Terjadi kesalahan server',
+                'code' => 500
+            ];
+
+            return $this->respond($response, 500);
+        }
+    }
+
+    /**
      * Get kaidah grouped by bab with progress data
      * GET /api/kaidah/grouped
      */

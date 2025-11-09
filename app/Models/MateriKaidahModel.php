@@ -117,6 +117,14 @@ class MateriKaidahModel extends Model
         return ($result && $result['urutan']) ? $result['urutan'] + 1 : 1;
     }
 
+    public function getNextOrderInChapter($id_bab)
+    {
+        $result = $this->selectMax('urutan')
+                     ->where('id_bab', $id_bab)
+                     ->first();
+        return ($result && $result['urutan']) ? $result['urutan'] + 1 : 1;
+    }
+
     public function reorder($orderData)
     {
         $db = \Config\Database::connect();

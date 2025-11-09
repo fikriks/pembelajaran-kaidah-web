@@ -423,7 +423,7 @@ Tanda-tanda I\'rab:
 - نَصْبٌ: رَأَيْتُ الْوَلَدَ (aku melihat anak laki-laki)
 - خَفْضٌ: مَرَرْتُ بِالْوَلَدِ (aku melewati anak laki-laki)
 - جَزْمٌ: لَمْ يَلْعَبِ الْوَلَدُ (anak laki-laki tidak bermain)',
-                'urutan'           => 11,
+                'urutan'           => 1,
                 'id_bab'           => 2, // BAB 2: I'RAB
                 'deskripsi_bab'    => 'Pembahasan i\'rab dan perubahan akhir kata',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
@@ -460,7 +460,7 @@ Pengecualian Khusus:
 - أَبٌ (ayah): رَفْعٌ - ذُوْ, نَصْبٌ - أَبَا, خَفْضٌ - أَبِيْ
 - مُسْلِمَانِ (dua muslim): رَفْعٌ - ا, نَصْبٌ - ي, خَفْضٌ - ي
 - مُسْلِمُوْنَ (para muslim): رَفْعٌ - و, نَصْبٌ - ي, خَفْضٌ - ي',
-                'urutan'           => 12,
+                'urutan'           => 2,
                 'id_bab'           => 2, // BAB 2: I'RAB
                 'deskripsi_bab'    => 'Pembahasan i\'rab dan perubahan akhir kata',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
@@ -499,7 +499,7 @@ Aturan Khusus Jamak:
 - مُسْلِمَاتٌ (para muslimah): رَفْعٌ/نَصْبٌ/خَفْضٌ - ا + تَاءٌ
 - رِجَالٌ (para pria): رَفْعٌ - ضَمَّةٌ, نَصْبٌ - فَتْحَةٌ, خَفْضٌ - كَسْرَةٌ
 - أَكْمِلَةٌ (orang-orang bijak): رَفْعٌ - ضَمَّةٌ, نَصْبٌ - فَتْحَةٌ, خَفْضٌ - كَسْرَةٌ',
-                'urutan'           => 13,
+                'urutan'           => 3,
                 'id_bab'           => 2, // BAB 2: I'RAB
                 'deskripsi_bab'    => 'Pembahasan i\'rab dan perubahan akhir kata',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
@@ -547,7 +547,7 @@ Pengecualian:
 - نَصْبٌ: رَأَيْتُ مُسْلِمَيْنِ (aku melihat dua muslim)
 - خَفْضٌ: ذَهَبْتُ إِلَى مُسْلِمَيْنِ (aku pergi kepada dua muslim)
 - كِتَابَانِ (dua buku), طَالِبَتَانِ (dua pelajar perempuan)',
-                'urutan'           => 14,
+                'urutan'           => 4,
                 'id_bab'           => 2, // BAB 2: I'RAB
                 'deskripsi_bab'    => 'Pembahasan i\'rab dan perubahan akhir kata',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
@@ -594,7 +594,7 @@ I\'rab Isim Mufrad:
 - مَصْدَرٌ: قِرَاءَةٌ, كِتَابَةٌ
 - مَكَانٌ: بَيْتٌ, مَدْرَسَةٌ
 - آلَةٌ: مِفْتَاحٌ, قَلَمٌ',
-                'urutan'           => 15,
+                'urutan'           => 5,
                 'id_bab'           => 2, // BAB 2: I'RAB
                 'deskripsi_bab'    => 'Pembahasan i\'rab dan perubahan akhir kata',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
@@ -639,7 +639,7 @@ Jenis-jenis Fi\'il Madhi:
 - ذَهَبَ (dia pergi), ذَهَبَتْ (dia perempuan pergi)
 - فَعَلَ (dia melakukan), فَعَلَتْ (dia perempuan melakukan)
 - قَرَأَ (dia membaca), قَرَأَتْ (dia perempuan membaca)',
-                'urutan'           => 16,
+                'urutan'           => 6,
                 'id_bab'           => 2, // BAB 2: I'RAB
                 'deskripsi_bab'    => 'Pembahasan i\'rab dan perubahan akhir kata',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
@@ -684,7 +684,7 @@ Contoh Penggunaan:
 - يَذْهَبُ (dia pergi), يَذْهَبُوْنَ (mereka semua pergi)
 - يَفْعَلُ (dia melakukan), تَفْعَلِيْنَ (kalian semua perempuan melakukan)
 - يَقُوْلُ (dia berkata), نَقُوْلُ (kami berkata)',
-                'urutan'           => 17,
+                'urutan'           => 7,
                 'id_bab'           => 2, // BAB 2: I'RAB
                 'deskripsi_bab'    => 'Pembahasan i\'rab dan perubahan akhir kata',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
@@ -733,7 +733,7 @@ Penggunaan Fi\'il Amr:
 - اِقْرَآ (bacalah - untuk dua orang)
 - اِقْرَأُوا (bacalah - untuk beberapa laki-laki)
 - اِقْرَأْنَ (bacalah - untuk beberapa perempuan)',
-                'urutan'           => 18,
+                'urutan'           => 8,
                 'id_bab'           => 2, // BAB 2: I'RAB
                 'deskripsi_bab'    => 'Pembahasan i\'rab dan perubahan akhir kata',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
@@ -782,7 +782,7 @@ Fi\'il Muannats:
 - مُؤَنَّثٌ: بِنْتٌ (anak perempuan), اِمْرَأَةٌ (wanita), مُعَلِّمَةٌ (guru perempuan)
 - بَيْتٌ (rumah - muannats), بَابٌ (pintu - muannats)
 - قَلَمٌ (pena - muannats), كِتَابٌ (buku - muannats)',
-                'urutan'           => 19,
+                'urutan'           => 9,
                 'id_bab'           => 2, // BAB 2: I'RAB
                 'deskripsi_bab'    => 'Pembahasan i\'rab dan perubahan akhir kata',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
@@ -831,7 +831,7 @@ Tanda-tanda I\'rab Pengganti:
 - مُعَوَّضَةٌ رَفْعٌ: مُسْلِمَاتُ (alif), مُسْلِمُوْنَ (waw), أَبُوْ (waw)
 - مُعَوَّضَةٌ نَصْبٌ: مُسْلِمَاتٍ (tanwin), مُسْلِمِيْنَ (ya), أَبَا (alif)
 - مُعَوَّضَةٌ خَفْضٌ: مُسْلِمَاتٍ (tanwin), مُسْلِمِيْنَ (ya), أَبِيْ (ya)',
-                'urutan'           => 20,
+                'urutan'           => 10,
                 'id_bab'           => 2, // BAB 2: I'RAB
                 'deskripsi_bab'    => 'Pembahasan i\'rab dan perubahan akhir kata',
                 'dibuat_oleh'      => 2, // KM. Muhammad Faiz, S.Ag.
