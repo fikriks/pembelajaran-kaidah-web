@@ -41,10 +41,14 @@ class KaidahController extends BaseController
 
     public function create()
     {
+        // Get default bab from query parameter or use first bab
+        $defaultBab = $this->request->getGet('id_bab') ?? 1;
+
         $data = [
             'title' => 'Tambah Materi Kaidah',
             'user' => session()->get('user'),
-            'lastOrder' => $this->materiKaidahModel->getNextOrder()
+            'lastOrder' => $this->materiKaidahModel->getNextOrderInChapter($defaultBab),
+            'defaultBab' => $defaultBab
         ];
 
         return view('kaidah/create', $data);

@@ -64,6 +64,7 @@ class BabController extends BaseController
             return $this->respond([
                 'status' => 'success',
                 'message' => 'Data bab berhasil diambil',
+                'code' => 200,
                 'data' => [
                     'chapters' => $chapters,
                     'pagination' => [
@@ -122,6 +123,7 @@ class BabController extends BaseController
             return $this->respond([
                 'status' => 'success',
                 'message' => 'Detail bab berhasil diambil',
+                'code' => 200,
                 'data' => $chapterData
             ]);
 
@@ -166,6 +168,7 @@ class BabController extends BaseController
             return $this->respond([
                 'status' => 'success',
                 'message' => 'Progress overview berhasil diambil',
+                'code' => 200,
                 'data' => [
                     'chapters' => $chapters,
                     'overall_progress' => [
@@ -195,6 +198,7 @@ class BabController extends BaseController
             return $this->respond([
                 'status' => 'success',
                 'message' => 'Statistik bab berhasil diambil',
+                'code' => 200,
                 'data' => [
                     'total_chapters' => (int)$totalBab,
                     'total_materi' => (int)$totalMateri,
@@ -233,6 +237,7 @@ class BabController extends BaseController
             return $this->respond([
                 'status' => 'success',
                 'message' => 'Status unlock bab berhasil diambil',
+                'code' => 200,
                 'data' => [
                     'id_bab' => (int)$bab['id_bab'],
                     'nama_bab' => $bab['nama_bab'],
