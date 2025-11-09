@@ -104,7 +104,7 @@ class MateriKaidahModel extends Model
     {
         return $this->select('materi_kaidah.*, bab.nama_bab, bab.deskripsi as deskripsi_bab, COUNT(DISTINCT soal.id_soal) as total_soal, COUNT(DISTINCT pilihan_jawaban.id_pilihan) as total_jawaban')
                      ->join('bab', 'bab.id_bab = materi_kaidah.id_bab', 'left')
-                     ->join('soal', 'soal.id_materi = materi_kaidah.id_materi', 'left')
+                     ->join('soal', 'soal.id_bab = materi_kaidah.id_bab', 'left')
                      ->join('pilihan_jawaban', 'pilihan_jawaban.id_soal = soal.id_soal', 'left')
                      ->groupBy('materi_kaidah.id_materi')
                      ->orderBy('materi_kaidah.urutan', 'ASC')

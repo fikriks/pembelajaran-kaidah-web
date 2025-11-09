@@ -201,6 +201,10 @@ $routes->group('api', ['namespace' => 'App\Controllers\API'], function($routes) 
     $routes->get('progress/statistics', 'ProgressController::statistics');
     $routes->get('progress/chart', 'ProgressController::chart');
 
+    // Material progress routes
+    $routes->post('progress/materi/(:num)/complete', 'ProgressController::completeMateri/$1');
+    $routes->get('progress/materi/(:num)', 'ProgressController::getMateriProgress/$1');
+
     // Bab/Chapter routes for Mobile App
     $routes->get('bab/chapters', 'BabController::getChapters');
     $routes->get('bab/chapters/(:num)', 'BabController::getChapterDetail/$1');

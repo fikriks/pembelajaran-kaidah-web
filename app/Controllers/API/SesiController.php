@@ -71,8 +71,8 @@ class SesiController extends BaseController
             return $this->fail('Anda masih memiliki sesi pembelajaran yang aktif', 400);
         }
 
-        // Get all questions for this kaidah
-        $allSoal = $this->soalModel->where('id_materi', $kaidahId)->findAll();
+        // Get all questions for this kaidah/bab
+        $allSoal = $this->soalModel->where('id_bab', $kaidahId)->findAll();
         if (empty($allSoal)) {
             return $this->fail('Belum ada soal untuk kaidah ini', 400);
         }
@@ -90,7 +90,7 @@ class SesiController extends BaseController
         // Create new session
         $sessionData = [
             'id_siswa' => $userId,
-            'id_materi' => $kaidahId,
+            'id_bab' => $kaidahId,
             'seed_digunakan' => $seed,
             'total_soal' => $jumlahSoal,
             'soal_benar' => 0,
