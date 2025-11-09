@@ -6,6 +6,7 @@ use App\Controllers\BaseController;
 use App\Models\MateriKaidahModel;
 use App\Models\SesiLatihanModel;
 use App\Models\SiswaModel;
+use App\Models\RiwayatBelajarModel;
 use CodeIgniter\API\ResponseTrait;
 
 class ProgressController extends BaseController
@@ -15,12 +16,14 @@ class ProgressController extends BaseController
     protected $materiKaidahModel;
     protected $sesiLatihanModel;
     protected $siswaModel;
+    protected $riwayatBelajarModel;
 
     public function __construct()
     {
         $this->materiKaidahModel = new MateriKaidahModel();
         $this->sesiLatihanModel = new SesiLatihanModel();
         $this->siswaModel = new SiswaModel();
+        $this->riwayatBelajarModel = new RiwayatBelajarModel();
     }
 
     /**
@@ -53,7 +56,12 @@ class ProgressController extends BaseController
         $allKaidah = $this->materiKaidahModel->findAll();
         $totalKaidah = count($allKaidah);
 
-        // Get completed sessions
+        // Get riwayat belajar untuk progress
+        $riwayatBelajar = $this->riwayatBelajarModel
+            ->where('id_siswa', $userId)
+            ->findAll();
+
+        // Get completed sessions untuk statistik quiz
         $completedSessions = $this->sesiLatihanModel
             ->where('id_siswa', $userId)
             ->where('status', 'selesai')
@@ -65,36 +73,60 @@ class ProgressController extends BaseController
         $totalQuestions = array_sum(array_column($completedSessions, 'total_soal'));
         $correctAnswers = array_sum(array_column($completedSessions, 'soal_benar'));
 
-        // Get kaidah progress
+        // Get kaidah progress (based on riwayat belajar)
         $kaidahProgress = [];
         foreach ($allKaidah as $kaidah) {
+            // Get riwayat belajar for this kaidah
+            $riwayatItem = array_filter($riwayatBelajar, function($item) use ($kaidah) {
+                return $item['id_materi'] == $kaidah['id_materi'];
+            });
+
+            // Get sessions for this kaidah
             $kaidahSessions = array_filter($completedSessions, function($session) use ($kaidah) {
                 return $session['id_materi'] == $kaidah['id_materi'];
             });
 
-            $bestScore = 0;
-            $totalAttempts = count($kaidahSessions);
+            // Initialize default values
             $status = 'belum_dimulai';
+            $completionPercentage = 0;
+            $lastAccessed = null;
 
+            // Determine status and completion based on riwayat belajar
+            if (!empty($riwayatItem)) {
+                $riwayat = reset($riwayatItem); // Get the most recent riwayat
+                $status = $riwayat['status'];
+                $completionPercentage = (float) $riwayat['persentase_penguasaan'];
+                $lastAccessed = $riwayat['waktu_akses_terakhir'];
+            }
+
+            // Override with session data if available
             if (!empty($kaidahSessions)) {
+                // Calculate completion percentage based on quiz performance
                 $bestScore = max(array_column($kaidahSessions, 'skor'));
-                $avgKaidahScore = array_sum(array_column($kaidahSessions, 'skor')) / $totalAttempts;
 
-                if ($avgKaidahScore >= 80) {
+                // Update status based on best score
+                if ($bestScore >= 80) {
                     $status = 'selesai';
+                    $completionPercentage = 100;
+                } elseif ($bestScore >= 50) {
+                    $status = 'sedang_belajar';
+                    // Use actual score as completion percentage
+                    $completionPercentage = (float) $bestScore;
                 } else {
                     $status = 'sedang_belajar';
+                    $completionPercentage = (float) $bestScore;
                 }
+
+                $lastAccessed = max(array_column($kaidahSessions, 'waktu_selesai'));
             }
 
             $kaidahProgress[] = [
                 'id_materi' => $kaidah['id_materi'],
                 'judul_kaidah' => $kaidah['judul_kaidah'],
+                'deskripsi' => $kaidah['deskripsi'],
                 'status' => $status,
-                'total_attempts' => $totalAttempts,
-                'best_score' => round($bestScore, 2),
-                'average_score' => $totalAttempts > 0 ? round(array_sum(array_column($kaidahSessions, 'skor')) / $totalAttempts, 2) : 0,
-                'last_attempt' => !empty($kaidahSessions) ? max(array_column($kaidahSessions, 'waktu_selesai')) : null
+                'completion_percentage' => round($completionPercentage, 2),
+                'last_accessed' => $lastAccessed
             ];
         }
 
@@ -125,7 +157,9 @@ class ProgressController extends BaseController
                     'total_soal_dijawab' => $totalQuestions,
                     'total_jawaban_benar' => $correctAnswers,
                     'persentase_benar_keseluruhan' => $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100, 1) : 0,
-                    'persentase_kemajuan' => $totalKaidah > 0 ? round((count(array_filter($kaidahProgress, fn($k) => $k['status'] == 'selesai')) / $totalKaidah) * 100, 1) : 0
+                    'persentase_kemajuan' => $totalKaidah > 0 ? round((count(array_filter($kaidahProgress, fn($k) => $k['status'] == 'selesai')) / $totalKaidah) * 100, 1) : 0,
+                    // Add kaidah_progress to overview for Android compatibility
+                    'kaidah_progress' => $kaidahProgress
                 ],
                 'kaidah_progress' => $kaidahProgress,
                 'weekly_activity' => $weeklyActivity,
@@ -733,6 +767,171 @@ class ProgressController extends BaseController
     }
 
     /**
+     * Update progress for specific material
+     * POST /api/progress/materi/{id}/complete
+     */
+    public function completeMateri($id)
+    {
+        $authHeader = $this->request->getHeader('Authorization');
+        if (!$authHeader) {
+            return $this->fail('Token diperlukan', 401);
+        }
+
+        $token = str_replace('Bearer ', '', $authHeader->getValue());
+        $userId = $this->extractUserIdFromToken($token);
+
+        if (!$userId) {
+            return $this->fail('Token tidak valid', 401);
+        }
+
+        $db = \Config\Database::connect();
+
+        // Get student data
+        $siswa = $this->siswaModel->find($userId);
+        if (!$siswa) {
+            return $this->fail('Siswa tidak ditemukan', 404);
+        }
+
+        // Get materi data
+        $materi = $this->materiKaidahModel->find($id);
+        if (!$materi) {
+            return $this->fail('Materi tidak ditemukan', 404);
+        }
+
+        try {
+            // Check if riwayat already exists
+            $existingRiwayat = $db->table('riwayat_belajar')
+                ->where('id_siswa', $userId)
+                ->where('id_materi', $id)
+                ->orderBy('waktu_diubah', 'DESC')
+                ->get()
+                ->getRowArray();
+
+            if ($existingRiwayat) {
+                // Update existing record
+                $db->table('riwayat_belajar')
+                    ->where('id_riwayat', $existingRiwayat['id_riwayat'])
+                    ->update([
+                        'status' => 'selesai',
+                        'persentase_penguasaan' => 100.0,
+                        'waktu_diubah' => date('Y-m-d H:i:s')
+                    ]);
+            } else {
+                // Create new record
+                $db->table('riwayat_belajar')->insert([
+                    'id_siswa' => $userId,
+                    'id_materi' => $id,
+                    'status' => 'selesai',
+                    'persentase_penguasaan' => 100.0,
+                    'waktu_diubah' => date('Y-m-d H:i:s'),
+                    'waktu_dibuat' => date('Y-m-d H:i:s'),
+                    'waktu_akses_terakhir' => date('Y-m-d H:i:s')
+                ]);
+            }
+
+            // Also update materi_kaidah table progress if it has those fields
+            $materiFields = $db->getFieldData('materi_kaidah');
+            if (in_array('progress_percentage', array_column($materiFields, 'name'))) {
+                $db->table('materi_kaidah')
+                    ->where('id_materi', $id)
+                    ->update([
+                        'progress_percentage' => 100,
+                        'completed' => 1
+                    ]);
+            }
+
+            $response = [
+                'status' => 'success',
+                'message' => 'Progress materi berhasil diperbarui',
+                'code' => 200,
+                'data' => [
+                    'materi_id' => (int)$id,
+                    'materi_judul' => $materi['judul_kaidah'],
+                    'status' => 'selesai',
+                    'completion_percentage' => 100,
+                    'updated_at' => date('Y-m-d H:i:s')
+                ]
+            ];
+
+            return $this->respond($response, 200);
+
+        } catch (\Exception $e) {
+            log_message('error', 'Error updating materi progress: ' . $e->getMessage());
+
+            return $this->fail([
+                'status' => 'error',
+                'message' => 'Gagal memperbarui progress materi: ' . $e->getMessage(),
+                'code' => 500
+            ], 500);
+        }
+    }
+
+    /**
+     * Get material progress for specific student and materi
+     * GET /api/progress/materi/{id}
+     */
+    public function getMateriProgress($id)
+    {
+        $authHeader = $this->request->getHeader('Authorization');
+        if (!$authHeader) {
+            return $this->fail('Token diperlukan', 401);
+        }
+
+        $token = str_replace('Bearer ', '', $authHeader->getValue());
+        $userId = $this->extractUserIdFromToken($token);
+
+        if (!$userId) {
+            return $this->fail('Token tidak valid', 401);
+        }
+
+        // Get materi data
+        $materi = $this->materiKaidahModel->find($id);
+        if (!$materi) {
+            return $this->fail('Materi tidak ditemukan', 404);
+        }
+
+        $db = \Config\Database::connect();
+
+        // Get progress from riwayat_belajar
+        $riwayat = $db->table('riwayat_belajar')
+            ->where('id_siswa', $userId)
+            ->where('id_materi', $id)
+            ->orderBy('waktu_diubah', 'DESC')
+            ->get()
+            ->getRowArray();
+
+        $status = 'belum_dimulai';
+        $completionPercentage = 0;
+        $lastAccessed = null;
+
+        if ($riwayat) {
+            $status = $riwayat['status'];
+            $completionPercentage = (float) $riwayat['persentase_penguasaan'];
+            $lastAccessed = $riwayat['waktu_diubah'];
+        }
+
+        $response = [
+            'status' => 'success',
+            'message' => 'Progress materi berhasil diambil',
+            'code' => 200,
+            'data' => [
+                'materi' => [
+                    'id_materi' => (int)$materi['id_materi'],
+                    'judul_kaidah' => $materi['judul_kaidah'],
+                    'deskripsi' => $materi['deskripsi']
+                ],
+                'progress' => [
+                    'status' => $status,
+                    'completion_percentage' => $completionPercentage,
+                    'last_accessed' => $lastAccessed
+                ]
+            ]
+        ];
+
+        return $this->respond($response, 200);
+    }
+
+    /**
      * Extract user ID dari simple token
      */
     private function extractUserIdFromToken($token)
@@ -743,7 +942,7 @@ class ProgressController extends BaseController
                 list($userId, $timestamp) = explode(':', $decoded);
 
                 // Check if token is not too old (24 hours)
-                if (time() - $timestamp < 86400) {
+                if (time() - (int)$timestamp < 86400) {
                     return (int)$userId;
                 }
             }

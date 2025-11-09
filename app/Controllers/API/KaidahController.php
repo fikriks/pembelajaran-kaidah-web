@@ -31,7 +31,7 @@ class KaidahController extends BaseController
     }
 
     /**
-     * Get all kaidah for mobile
+     * Get all kaidah for mobile with simple progress tracking
      * GET /api/kaidah
      */
     public function index()
@@ -40,33 +40,40 @@ class KaidahController extends BaseController
         $search = $this->request->getVar('search');
         $page = $this->request->getVar('page') ?? 1;
         $limit = $this->request->getVar('limit') ?? 20;
-        $offset = ($page - 1) * $limit;
 
-        // Build query
-        $builder = $this->materiKaidahModel->select('id_materi, judul_kaidah, deskripsi, penjelasan, contoh, urutan, dibuat_oleh, waktu_dibuat');
+        // For simplicity, use default user ID 1 for demo
+        $userId = 1;
 
+        // Get all materi kaidah with bab info
+        $builder = $this->materiKaidahModel->select('materi_kaidah.*, bab.nama_bab')
+                                                    ->join('bab', 'bab.id_bab = materi_kaidah.id_bab')
+                                                    ->orderBy('materi_kaidah.urutan', 'ASC');
+
+        // Apply search filter if provided
         if ($search) {
-            $builder->like('judul_kaidah', $search)
-                   ->orLike('deskripsi', $search);
+            $builder->like('materi_kaidah.judul_kaidah', $search)
+                   ->orLike('materi_kaidah.deskripsi', $search);
         }
-
-        $builder->orderBy('urutan', 'ASC');
 
         // Get total count
         $total = $builder->countAllResults(false);
 
         // Get data with pagination
-        $kaidahList = $builder->get($limit, $offset)->getResultArray();
+        $kaidahList = $builder->get($limit, ($page - 1) * $limit)->getResultArray();
 
-        // Add total questions for each kaidah (no progress tracking for simplicity)
+        // Add progress info for each kaidah
         foreach ($kaidahList as &$kaidah) {
-            // Count total questions for this kaidah
-            $totalSoal = $this->soalModel->where('id_materi', $kaidah['id_materi'])->countAllResults();
+            // Count total questions for this bab
+            $totalSoal = $this->soalModel->where('id_bab', $kaidah['id_bab'])->countAllResults();
 
-            // No progress tracking - simplified response
-            $riwayat = null;
+            // Get progress from riwayat_belajar
+            $riwayat = $this->riwayatBelajarModel
+                ->where('id_siswa', $userId)
+                ->where('id_materi', $kaidah['id_materi'])
+                ->orderBy('waktu_diubah', 'DESC')
+                ->first();
 
-            // Calculate completion percentage
+            // Calculate completion percentage and status
             $completionPercentage = 0;
             $status = 'belum_dimulai';
 
@@ -113,8 +120,14 @@ class KaidahController extends BaseController
             return $this->fail('Kaidah tidak ditemukan', 404);
         }
 
+        // Handle missing id_bab field - populate based on urutan
+        if (!isset($kaidah['id_bab']) || empty($kaidah['id_bab'])) {
+            // BAB 1: KALAM for materials 1-10, BAB 2: I'RAB for materials 11-20
+            $kaidah['id_bab'] = ($kaidah['urutan'] <= 10) ? 1 : 2;
+        }
+
         // Get additional information
-        $totalSoal = $this->soalModel->where('id_materi', $id)->countAllResults();
+        $totalSoal = $this->soalModel->where('id_bab', $kaidah['id_bab'])->countAllResults();
 
         // No learning progress tracking for simplicity
         $riwayat = null;
@@ -146,12 +159,24 @@ class KaidahController extends BaseController
     }
 
     /**
-     * Get kaidah grouped by bab - Simple version
+     * Get kaidah grouped by bab with progress data
      * GET /api/kaidah/grouped
      */
     public function getGroupedByBab()
     {
         try {
+            // Get user ID from Authorization header
+            $authHeader = $this->request->getHeader('Authorization');
+            $userId = 1; // Default user ID
+
+            if ($authHeader) {
+                $token = str_replace('Bearer ', '', $authHeader->getValue());
+                $extractedUserId = $this->extractUserIdFromToken($token);
+                if ($extractedUserId) {
+                    $userId = $extractedUserId;
+                }
+            }
+
             // Get all active bab with urutan
             $babList = $this->babModel
                 ->where('is_active', 1)
@@ -172,12 +197,45 @@ class KaidahController extends BaseController
                 // Get all materi for this bab
                 $kaidahList = $this->materiKaidahModel
                     ->where('id_bab', $bab['id_bab'])
+                    ->orderBy('urutan', 'ASC')
                     ->findAll();
 
-                // Process kaidah data and ensure ID is integer
+                // Process kaidah data with progress information
                 $processedKaidahList = [];
                 $totalSoal = 0;
+                $completedMateri = 0;
+                $inProgressMateri = 0;
+                $notStartedMateri = 0;
+
                 foreach ($kaidahList as $kaidah) {
+                    // Get progress from riwayat_belajar
+                    $riwayat = $this->riwayatBelajarModel
+                        ->where('id_siswa', $userId)
+                        ->where('id_materi', $kaidah['id_materi'])
+                        ->orderBy('waktu_diubah', 'DESC')
+                        ->first();
+
+                    // Initialize progress data
+                    $progressPercentage = 0;
+                    $status = 'belum_dimulai';
+                    $completed = false;
+
+                    // Get progress from riwayat if exists
+                    if ($riwayat) {
+                        $progressPercentage = (float) ($riwayat['persentase_penguasaan'] ?? 0);
+                        $status = $riwayat['status'] ?? 'belum_dimulai';
+                        $completed = $progressPercentage >= 100;
+                    }
+
+                    // Count materi status for Bab progress
+                    if ($completed || $progressPercentage >= 100) {
+                        $completedMateri++;
+                    } elseif ($progressPercentage > 0) {
+                        $inProgressMateri++;
+                    } else {
+                        $notStartedMateri++;
+                    }
+
                     $processedKaidah = $kaidah;
                     // Ensure ID is integer
                     $processedKaidah['id_materi'] = (int)$kaidah['id_materi'];
@@ -185,13 +243,32 @@ class KaidahController extends BaseController
                     $processedKaidah['urutan'] = (int)$kaidah['urutan'];
                     $processedKaidah['dibuat_oleh'] = (int)$kaidah['dibuat_oleh'];
 
+                    // Add progress data
+                    $processedKaidah['progress_percentage'] = round($progressPercentage, 2);
+                    $processedKaidah['status'] = $status;
+                    $processedKaidah['completed'] = $completed;
+
                     $processedKaidahList[] = $processedKaidah;
 
-                    // Count soal for this kaidah
+                    // Count soal for this bab
                     $soalCount = $this->soalModel
-                        ->where('id_materi', $kaidah['id_materi'])
+                        ->where('id_bab', $kaidah['id_bab'])
                         ->countAllResults();
                     $totalSoal += $soalCount;
+                }
+
+                // Calculate Bab progress
+                $totalMateri = count($processedKaidahList);
+                $babProgressPercentage = $totalMateri > 0
+                    ? round(($completedMateri / $totalMateri) * 100, 2)
+                    : 0;
+
+                // Determine Bab status color
+                $statusColor = 'secondary';
+                if ($babProgressPercentage >= 100) {
+                    $statusColor = 'success';
+                } elseif ($babProgressPercentage > 0) {
+                    $statusColor = 'warning';
                 }
 
                 $groups[] = [
@@ -199,10 +276,17 @@ class KaidahController extends BaseController
                         'id_bab' => (int)$bab['id_bab'],
                         'nama_bab' => $bab['nama_bab'],
                         'deskripsi' => $bab['deskripsi'],
-                        'urutan' => (int)$bab['urutan']
+                        'urutan' => (int)$bab['urutan'],
+                        // Add Bab progress data
+                        'total_materi' => $totalMateri,
+                        'completed_materi' => $completedMateri,
+                        'in_progress_materi' => $inProgressMateri,
+                        'not_started_materi' => $notStartedMateri,
+                        'progress_percentage' => $babProgressPercentage,
+                        'status_color' => $statusColor
                     ],
                     'kaidah_list' => $processedKaidahList,
-                    'total_kaidah' => count($processedKaidahList),
+                    'total_kaidah' => $totalMateri,
                     'total_soal' => $totalSoal
                 ];
             }
@@ -221,7 +305,30 @@ class KaidahController extends BaseController
             ]);
 
         } catch (\Exception $e) {
+            log_message('error', 'Error in getGroupedByBab: ' . $e->getMessage());
             return $this->fail('Error: ' . $e->getMessage(), 500);
         }
+    }
+
+    /**
+     * Extract user ID from simple token
+     */
+    private function extractUserIdFromToken($token)
+    {
+        try {
+            $decoded = base64_decode($token);
+            if ($decoded && strpos($decoded, ':') !== false) {
+                list($userId, $timestamp) = explode(':', $decoded);
+
+                // Check if token is not too old (24 hours)
+                if (time() - (int)$timestamp < 86400) {
+                    return (int)$userId;
+                }
+            }
+        } catch (\Exception $e) {
+            return null;
+        }
+
+        return null;
     }
 }
