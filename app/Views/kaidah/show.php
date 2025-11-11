@@ -61,7 +61,7 @@
 </div>
 
 <!-- Main Content -->
-<div class="row" data-chapter="<?= esc($kaidah['bab'] ?>">
+<div class="row" data-chapter="<?= esc($kaidah['nama_bab'] ?? '') ?>">
     <!-- Left Column - Main Info -->
     <div class="col-lg-8">
         <!-- Header Card -->
@@ -74,7 +74,7 @@
                                 Urutan: #<?= $kaidah['urutan'] ?>
                             </span>
                             <span class="badge bg-primary text-white">
-                                <?= esc($kaidah['bab']) ?>
+                                <?= esc($kaidah['nama_bab'] ?? 'Uncategorized') ?>
                             </span>
                         </div>
                         <h3 class="fw-bold mb-3">

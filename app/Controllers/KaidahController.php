@@ -250,7 +250,7 @@ class KaidahController extends BaseController
 
     public function show($id)
     {
-        $kaidah = $this->materiKaidahModel->find($id);
+        $kaidah = $this->materiKaidahModel->getWithCreatorById($id);
 
         if (!$kaidah) {
             return redirect()->to('/kaidah')->with('error', 'Materi kaidah tidak ditemukan');

@@ -45,6 +45,102 @@
         border-color: var(--bs-primary);
         background: var(--bs-primary-bg-subtle);
     }
+
+    /* Arabic Keyboard Styles */
+    .arabic-keyboard {
+        background: white;
+        border: 2px solid #4CAF50;
+        border-radius: 12px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        padding: 1rem;
+        margin-top: 0.5rem;
+        display: none;
+        position: relative;
+        z-index: 1000;
+    }
+
+    .arabic-keyboard.show {
+        display: block;
+    }
+
+    .keyboard-row {
+        display: flex;
+        gap: 0.25rem;
+        margin-bottom: 0.25rem;
+        justify-content: center;
+    }
+
+    .arabic-key {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 6px;
+        padding: 0.5rem 0.6rem;
+        font-family: 'Amiri', 'Traditional Arabic', serif;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        min-width: 40px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .arabic-key:hover {
+        background: #4CAF50;
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+    }
+
+    .arabic-key:active {
+        transform: translateY(0);
+        background: #388E3C;
+    }
+
+    .arabic-key.wide {
+        min-width: 80px;
+    }
+
+    .arabic-key.special {
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+
+    .arabic-key.special:hover {
+        background: #1976d2;
+        color: white;
+    }
+
+    .keyboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .keyboard-title {
+        font-weight: 600;
+        color: #333;
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    .keyboard-close {
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        color: #666;
+        cursor: pointer;
+        padding: 0.25rem;
+        border-radius: 4px;
+        transition: all 0.2s ease;
+    }
+
+    .keyboard-close:hover {
+        background: #f1f3f4;
+        color: #333;
+    }
 </style>
 <?= $this->endSection() ?>
 
@@ -140,9 +236,95 @@
                                value="<?= esc(old('nama_arab')) ?>"
                                placeholder="مفرد وجمع"
                                style="font-family: 'Amiri', 'Traditional Arabic', serif; direction: rtl; text-align: right;">
-                        <button class="btn btn-outline-secondary" type="button" id="toggleArabicKeyboard" title="Toggle Arabic Keyboard">
+                        <button class="btn btn-outline-success" type="button" id="toggleArabicKeyboard" title="Toggle Arabic Keyboard">
                             <i class="ti ti-keyboard"></i>
                         </button>
+                    </div>
+
+                    <!-- Arabic Virtual Keyboard -->
+                    <div id="arabicKeyboard" class="arabic-keyboard">
+                        <div class="keyboard-header">
+                            <h6 class="keyboard-title">
+                                <i class="ti ti-keyboard me-2"></i>Keyboard Virtual Arab
+                            </h6>
+                            <button type="button" class="keyboard-close" id="closeKeyboard">
+                                <i class="ti ti-x"></i>
+                            </button>
+                        </div>
+
+                        <!-- Arabic Letters Row 1 -->
+                        <div class="keyboard-row">
+                            <div class="arabic-key" data-char="ض">ض</div>
+                            <div class="arabic-key" data-char="ص">ص</div>
+                            <div class="arabic-key" data-char="ث">ث</div>
+                            <div class="arabic-key" data-char="ق">ق</div>
+                            <div class="arabic-key" data-char="ف">ف</div>
+                            <div class="arabic-key" data-char="غ">غ</div>
+                            <div class="arabic-key" data-char="ع">ع</div>
+                            <div class="arabic-key" data-char="ه">ه</div>
+                            <div class="arabic-key" data-char="خ">خ</div>
+                            <div class="arabic-key" data-char="ح">ح</div>
+                            <div class="arabic-key" data-char="ج">ج</div>
+                            <div class="arabic-key special wide" data-char="backspace">⌫</div>
+                        </div>
+
+                        <!-- Arabic Letters Row 2 -->
+                        <div class="keyboard-row">
+                            <div class="arabic-key" data-char="ش">ش</div>
+                            <div class="arabic-key" data-char="س">س</div>
+                            <div class="arabic-key" data-char="ي">ي</div>
+                            <div class="arabic-key" data-char="ب">ب</div>
+                            <div class="arabic-key" data-char="ل">ل</div>
+                            <div class="arabic-key" data-char="ا">ا</div>
+                            <div class="arabic-key" data-char="ت">ت</div>
+                            <div class="arabic-key" data-char="ن">ن</div>
+                            <div class="arabic-key" data-char="م">م</div>
+                            <div class="arabic-key" data-char="ك">ك</div>
+                            <div class="arabic-key" data-char="ط">ط</div>
+                        </div>
+
+                        <!-- Arabic Letters Row 3 -->
+                        <div class="keyboard-row">
+                            <div class="arabic-key" data-char="ئ">ئ</div>
+                            <div class="arabic-key" data-char="ء">ء</div>
+                            <div class="arabic-key" data-char="ؤ">ؤ</div>
+                            <div class="arabic-key" data-char="ر">ر</div>
+                            <div class="arabic-key" data-char="لا">لا</div>
+                            <div class="arabic-key" data-char="ى">ى</div>
+                            <div class="arabic-key" data-char="ة">ة</div>
+                            <div class="arabic-key" data-char="و">و</div>
+                            <div class="arabic-key" data-char="ز">ز</div>
+                            <div class="arabic-key" data-char="ظ">ظ</div>
+                            <div class="arabic-key" data-char="ذ">ذ</div>
+                        </div>
+
+                        <!-- Diacritics Row -->
+                        <div class="keyboard-row">
+                            <div class="arabic-key special" data-char="َ">َ</div>
+                            <div class="arabic-key special" data-char="ُ">ُ</div>
+                            <div class="arabic-key special" data-char="ِ">ِ</div>
+                            <div class="arabic-key special" data-char="ْ">ْ</div>
+                            <div class="arabic-key special" data-char="ّ">ّ</div>
+                            <div class="arabic-key special" data-char="ً">ً</div>
+                            <div class="arabic-key special" data-char="ٌ">ٌ</div>
+                            <div class="arabic-key special" data-char="ٍ">ٍ</div>
+                            <div class="arabic-key special" data-char="ـ">ـ</div>
+                            <div class="arabic-key wide special" data-char=" ">Space</div>
+                        </div>
+
+                        <!-- Numbers Row -->
+                        <div class="keyboard-row">
+                            <div class="arabic-key special" data-char="١">١</div>
+                            <div class="arabic-key special" data-char="٢">٢</div>
+                            <div class="arabic-key special" data-char="٣">٣</div>
+                            <div class="arabic-key special" data-char="٤">٤</div>
+                            <div class="arabic-key special" data-char="٥">٥</div>
+                            <div class="arabic-key special" data-char="٦">٦</div>
+                            <div class="arabic-key special" data-char="٧">٧</div>
+                            <div class="arabic-key special" data-char="٨">٨</div>
+                            <div class="arabic-key special" data-char="٩">٩</div>
+                            <div class="arabic-key special" data-char="٠">٠</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -281,38 +463,94 @@ if (penjelasan && arabicPreview) {
     penjelasan.dispatchEvent(new Event('input'));
 }
 
-// Arabic keyboard helper
-document.getElementById('toggleArabicKeyboard').addEventListener('click', function() {
-    // Create a simple Arabic keyboard helper
-    const arabicKeyboard = `
-        <div class="alert alert-info mt-2">
-            <h6><i class="ti ti-keyboard me-2"></i>Petik Keyboard Arab:</h6>
-            <div class="row g-2">
-                <div class="col-6">
-                    <small class="d-block">ا ب ت ث ج ح خ د ذ ر ز س ش ص ض ط ظ ع غ ف ق ك ل م ن ه و ي</small>
-                </div>
-                <div class="col-6">
-                    <small class="d-block">َ ُ ِ ْ ّ ً ٌ ٍ ًّ ُّ ِّ</small>
-                    <small class="d-block text-muted">(Fatha, Damma, Kasra, Sukun, Tanwin)</small>
-                </div>
-            </div>
-            <hr>
-            <small class="text-muted">
-                <strong>Tips:</strong> Gunakan keyboard Arab dari sistem operasi atau copy-paste dari sumber lain.
-                Untuk Windows: Win + Space, untuk Mac: Cmd + Space.
-            </small>
-        </div>
-    `;
+// Arabic Virtual Keyboard
+const toggleKeyboardBtn = document.getElementById('toggleArabicKeyboard');
+const arabicKeyboard = document.getElementById('arabicKeyboard');
+const closeKeyboardBtn = document.getElementById('closeKeyboard');
+const arabicInput = document.getElementById('nama_arab');
 
-    // Toggle keyboard helper
-    const helperDiv = document.getElementById('arabicKeyboardHelper');
-    if (helperDiv) {
-        helperDiv.remove();
+// Toggle keyboard visibility
+toggleKeyboardBtn.addEventListener('click', function() {
+    arabicKeyboard.classList.toggle('show');
+    if (arabicKeyboard.classList.contains('show')) {
+        this.classList.remove('btn-outline-success');
+        this.classList.add('btn-success');
+        this.innerHTML = '<i class="ti ti-keyboard-off"></i>';
     } else {
-        const div = document.createElement('div');
-        div.id = 'arabicKeyboardHelper';
-        div.innerHTML = arabicKeyboard;
-        this.closest('.input-group').parentNode.insertBefore(div, this.closest('.input-group').nextSibling);
+        this.classList.remove('btn-success');
+        this.classList.add('btn-outline-success');
+        this.innerHTML = '<i class="ti ti-keyboard"></i>';
+    }
+});
+
+// Close keyboard
+closeKeyboardBtn.addEventListener('click', function() {
+    arabicKeyboard.classList.remove('show');
+    toggleKeyboardBtn.classList.remove('btn-success');
+    toggleKeyboardBtn.classList.add('btn-outline-success');
+    toggleKeyboardBtn.innerHTML = '<i class="ti ti-keyboard"></i>';
+});
+
+// Handle keyboard clicks
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('arabic-key')) {
+        e.preventDefault();
+        const char = e.target.dataset.char;
+
+        if (char === 'backspace') {
+            // Remove last character
+            const currentValue = arabicInput.value;
+            arabicInput.value = currentValue.slice(0, -1);
+        } else {
+            // Add character to input
+            arabicInput.value += char;
+        }
+
+        // Trigger input event to update any listeners
+        arabicInput.dispatchEvent(new Event('input'));
+
+        // Visual feedback
+        e.target.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            e.target.style.transform = '';
+        }, 100);
+
+        // Keep focus on input
+        arabicInput.focus();
+    }
+});
+
+// Close keyboard when clicking outside
+document.addEventListener('click', function(e) {
+    if (!arabicKeyboard.contains(e.target) &&
+        e.target !== toggleKeyboardBtn &&
+        !toggleKeyboardBtn.contains(e.target) &&
+        arabicKeyboard.classList.contains('show')) {
+        arabicKeyboard.classList.remove('show');
+        toggleKeyboardBtn.classList.remove('btn-success');
+        toggleKeyboardBtn.classList.add('btn-outline-success');
+        toggleKeyboardBtn.innerHTML = '<i class="ti ti-keyboard"></i>';
+    }
+});
+
+// Add keyboard support for the virtual keyboard
+document.addEventListener('keydown', function(e) {
+    if (arabicKeyboard.classList.contains('show') && arabicInput === document.activeElement) {
+        // Allow certain keys to work normally
+        if (e.key === 'Escape') {
+            arabicKeyboard.classList.remove('show');
+            toggleKeyboardBtn.classList.remove('btn-success');
+            toggleKeyboardBtn.classList.add('btn-outline-success');
+            toggleKeyboardBtn.innerHTML = '<i class="ti ti-keyboard"></i>';
+        }
+        // Allow backspace, delete, arrow keys, tab
+        else if (['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Tab'].includes(e.key)) {
+            return;
+        }
+        // Prevent other characters to avoid mixing keyboards
+        else if (e.key.length === 1) {
+            e.preventDefault();
+        }
     }
 });
 

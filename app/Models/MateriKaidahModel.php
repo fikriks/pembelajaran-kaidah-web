@@ -85,10 +85,19 @@ class MateriKaidahModel extends Model
     public function getWithCreator()
     {
         return $this->select('materi_kaidah.*, bab.nama_bab, bab.deskripsi as deskripsi_bab, pengguna.nama_lengkap as nama_pembuat')
-                     ->join('bab', 'bab.id_bab = materi_kaidah.id_bab')
-                     ->join('pengguna', 'pengguna.id_pengguna = materi_kaidah.dibuat_oleh')
-                     ->orderBy('materi_kaidah.urutan', 'ASC')
+                     ->join('bab', 'bab.id_bab = materi_kaidah.id_bab', 'left')
+                     ->join('pengguna', 'pengguna.id_pengguna = materi_kaidah.dibuat_oleh', 'left')
+                     ->orderBy('bab.urutan, materi_kaidah.urutan', 'ASC')
                      ->findAll();
+    }
+
+    public function getWithCreatorById($id_materi)
+    {
+        return $this->select('materi_kaidah.*, bab.nama_bab, bab.deskripsi as deskripsi_bab, pengguna.nama_lengkap as nama_pembuat')
+                     ->join('bab', 'bab.id_bab = materi_kaidah.id_bab', 'left')
+                     ->join('pengguna', 'pengguna.id_pengguna = materi_kaidah.dibuat_oleh', 'left')
+                     ->where('materi_kaidah.id_materi', $id_materi)
+                     ->first();
     }
 
     // Removed getByDifficulty method as tingkat_kesulitan field no longer exists

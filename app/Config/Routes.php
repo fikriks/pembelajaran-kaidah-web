@@ -98,7 +98,6 @@ $routes->group('kaidah', function($routes) {
     $routes->get('/', 'KaidahController::index');
     $routes->get('create', 'KaidahController::create');
     $routes->post('/', 'KaidahController::store');
-    $routes->get('(:num)', 'KaidahController::show/$1');
     $routes->get('(:num)/show', 'KaidahController::show/$1');
     $routes->get('(:num)/edit', 'KaidahController::edit/$1');
     $routes->put('(:num)', 'KaidahController::update/$1');
