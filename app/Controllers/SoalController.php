@@ -41,12 +41,13 @@ class SoalController extends BaseController
         // Get all data for client-side DataTables
         $soal = $this->soalModel->select('
             soal.*,
-            materi_kaidah.judul_kaidah,
+            bab.nama_bab,
+            bab.deskripsi as deskripsi_bab,
             pengguna.nama_lengkap as nama_pembuat
         ')
-        ->join('materi_kaidah', 'materi_kaidah.id_materi = soal.id_materi')
+        ->join('bab', 'bab.id_bab = soal.id_bab')
         ->join('pengguna', 'pengguna.id_pengguna = soal.dibuat_oleh')
-        ->orderBy('soal.id_materi', 'ASC')
+        ->orderBy('soal.id_bab', 'ASC')
         ->orderBy('soal.id_soal', 'DESC')
         ->findAll();
 

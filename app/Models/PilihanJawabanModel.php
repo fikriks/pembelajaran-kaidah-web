@@ -94,9 +94,9 @@ class PilihanJawabanModel extends Model
 
     public function getWithQuestion($id_pilihan = null)
     {
-        $builder = $this->select('pilihan_jawaban.*, soal.pertanyaan, materi_kaidah.judul_kaidah')
+        $builder = $this->select('pilihan_jawaban.*, soal.pertanyaan, bab.nama_bab')
                         ->join('soal', 'soal.id_soal = pilihan_jawaban.id_soal')
-                        ->join('materi_kaidah', 'materi_kaidah.id_materi = soal.id_materi')
+                        ->join('bab', 'bab.id_bab = soal.id_bab')
                         ->orderBy('pilihan_jawaban.id_soal', 'ASC')
                         ->orderBy('pilihan_jawaban.urutan', 'ASC');
 

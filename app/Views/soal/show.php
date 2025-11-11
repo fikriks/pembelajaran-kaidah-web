@@ -155,7 +155,7 @@
             <div class="col-md-8">
                 <div class="meta-item">
                     <i class="ti ti-book"></i>
-                    <span><strong>Materi:</strong> <?= esc($soal['judul_kaidah']) ?></span>
+                    <span><strong>Bab:</strong> <?= esc($soal['nama_bab']) ?></span>
                 </div>
                   <div class="meta-item">
                     <i class="ti ti-user"></i>

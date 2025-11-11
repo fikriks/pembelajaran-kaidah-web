@@ -216,7 +216,7 @@
                             </td>
                             <td>
                                 <div>
-                                    <small class="text-muted fw-semibold"><?= esc($item['judul_kaidah']) ?></small>
+                                    <small class="text-muted fw-semibold"><?= esc($item['nama_bab']) ?></small>
                                 </div>
                             </td>
                             <td>
@@ -277,7 +277,7 @@
 
                                     <!-- LCM Test -->
                                     <button type="button" class="btn btn-sm btn-secondary me-1"
-                                            onclick="testLCMForMateri(<?= $item['id_materi'] ?>)"
+                                            onclick="testLCMForMateri(<?= $item['id_soal'] ?>)"
                                             title="Test LCM">
                                         <i class="ti ti-test-pipe me-1"></i>Test
                                     </button>
