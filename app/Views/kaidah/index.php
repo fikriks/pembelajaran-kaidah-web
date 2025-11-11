@@ -198,7 +198,7 @@
     'stats' => [
         [
             'title' => 'Total Materi',
-            'value' => $stats['total'] ?? 0,
+            'value' => $stats['total_kaidah'] ?? 0,
             'subtitle' => 'Kaidah',
             'icon' => 'book',
             'variant' => 'primary'
