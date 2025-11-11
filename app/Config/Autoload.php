@@ -89,6 +89,7 @@ class Autoload extends AutoloadConfig
      * @var list<string>
      */
     public $helpers = [
-        'date_helper'
+        'date_helper',
+        'text_helper'
     ];
 }

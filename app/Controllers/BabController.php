@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Controllers\BaseController;
 use App\Models\BabModel;
 use App\Models\MateriKaidahModel;
 use App\Models\SoalModel;
@@ -21,32 +22,39 @@ class BabController extends BaseController
 
     public function index()
     {
-        $this->requireRole(['ADMIN', 'GURU']);
-
         $data = [
-            'bab' => $this->babModel->getAllWithStats(),
-            'stats' => $this->babModel->getStatistics(),
-            'page_title' => 'Manajemen Bab'
+            'title' => 'Manajemen Bab',
+            'page' => 'bab',
+            'subtitle' => 'Pengelolaan materi pembelajaran per bab'
         ];
 
-        return view('bab/index', array_merge($this->data, $data));
+        // Get statistics for dashboard
+        $stats = $this->getBabStatistics();
+
+        // Get all bab data
+        $bab = $this->babModel->getAllWithStats();
+
+        return view('bab/index', array_merge($data, [
+            'bab' => $bab,
+            'stats' => $stats
+        ]));
     }
 
     public function create()
     {
-        $this->requireRole(['ADMIN', 'GURU']);
-
         $data = [
-            'page_title' => 'Tambah Bab',
-            'validation' => \Config\Services::validation()
+            'title' => 'Tambah Bab',
+            'page' => 'bab',
+            'subtitle' => 'Tambah bab baru untuk materi pembelajaran',
+            'validation' => \Config\Services::validation(),
+            'nextOrder' => $this->babModel->getNextOrder()
         ];
 
-        return view('bab/create', array_merge($this->data, $data));
+        return view('bab/create', $data);
     }
 
     public function store()
     {
-        $this->requireRole(['ADMIN', 'GURU']);
 
         // Validation rules
         $rules = [
@@ -111,7 +119,6 @@ class BabController extends BaseController
 
     public function show($id)
     {
-        $this->requireRole(['ADMIN', 'GURU']);
 
         $bab = $this->babModel->find($id);
         if (!$bab) {
@@ -144,14 +151,16 @@ class BabController extends BaseController
 
     public function edit($id)
     {
-        $this->requireRole(['ADMIN', 'GURU']);
 
-        $bab = $this->babModel->find($id);
+        $bab = $this->babModel->getWithStats($id);
         if (!$bab) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Bab tidak ditemukan');
         }
 
         $data = [
+            'title' => 'Edit Bab',
+            'page' => 'bab',
+            'subtitle' => 'Edit bab: ' . $bab['nama_bab'],
             'bab' => $bab,
             'page_title' => 'Edit Bab: ' . $bab['nama_bab'],
             'validation' => \Config\Services::validation()
@@ -162,7 +171,6 @@ class BabController extends BaseController
 
     public function update($id)
     {
-        $this->requireRole(['ADMIN', 'GURU']);
 
         $bab = $this->babModel->find($id);
         if (!$bab) {
@@ -232,7 +240,6 @@ class BabController extends BaseController
 
     public function delete($id)
     {
-        $this->requireRole(['ADMIN']);
 
         $bab = $this->babModel->find($id);
         if (!$bab) {
@@ -262,7 +269,6 @@ class BabController extends BaseController
 
     public function toggleStatus($id)
     {
-        $this->requireRole(['ADMIN']);
 
         $bab = $this->babModel->find($id);
         if (!$bab) {
@@ -298,7 +304,6 @@ class BabController extends BaseController
 
     public function statistics()
     {
-        $this->requireRole(['ADMIN', 'GURU']);
 
         $stats = $this->babModel->getStatistics();
 
@@ -347,5 +352,53 @@ class BabController extends BaseController
             'message' => 'Detail bab berhasil diambil',
             'data' => $bab
         ]);
+    }
+
+    /**
+     * Get bab statistics for dashboard
+     */
+    private function getBabStatistics()
+    {
+        $db = \Config\Database::connect();
+
+        // Get total bab
+        $totalBab = $this->babModel->countAllResults();
+
+        // Get active bab
+        $activeBab = $this->babModel->where('is_active', 1)->countAllResults();
+
+        // Get materi statistics per bab
+        $materiPerBab = $db->table('bab b')
+            ->select('
+                b.id_bab,
+                b.nama_bab,
+                COUNT(mk.id_materi) as total_materi,
+                COUNT(rb.id_riwayat) as total_dipelajari,
+                COUNT(DISTINCT rb.id_siswa) as total_siswa,
+                COUNT(CASE WHEN rb.status = "selesai" THEN 1 END) as materi_selesai
+            ')
+            ->join('materi_kaidah mk', 'mk.id_bab = b.id_bab', 'left')
+            ->join('riwayat_belajar rb', 'rb.id_materi = mk.id_materi AND rb.status = "selesai"', 'left')
+            ->groupBy('b.id_bab, b.nama_bab')
+            ->orderBy('b.urutan')
+            ->get()
+            ->getResultArray();
+
+        // Get overall progress
+        $totalMateri = $db->table('materi_kaidah')->countAllResults();
+        $completedMateri = $db->table('riwayat_belajar')
+            ->where('status', 'selesai')
+            ->distinct('id_materi')
+            ->countAllResults();
+
+        return [
+            'total_bab' => $totalBab,
+            'active_bab' => $activeBab,
+            'inactive_bab' => $totalBab - $activeBab,
+            'total_materi' => $totalMateri,
+            'completed_materi' => $completedMateri,
+            'completion_rate' => $totalMateri > 0 ? round(($completedMateri / $totalMateri) * 100, 1) : 0,
+            'materi_per_bab' => $materiPerBab
+        ];
     }
 }

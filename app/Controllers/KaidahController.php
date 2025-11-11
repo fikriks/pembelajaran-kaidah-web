@@ -537,4 +537,29 @@ class KaidahController extends BaseController
         // In production, this should return null and require proper authentication
         return 1; // Mock user ID for testing
     }
+
+    /**
+     * Get kaidah statistics for dashboard
+     */
+    private function getKaidahStatistics()
+    {
+        $db = \Config\Database::connect();
+
+        // Get total kaidah
+        $totalKaidah = $this->materiKaidahModel->countAllResults();
+
+        // Get kaidah per bab
+        $kaidahPerBab = $db->table('materi_kaidah mk')
+            ->select('b.nama_bab, COUNT(mk.id_materi) as total')
+            ->join('bab b', 'b.id_bab = mk.id_bab', 'left')
+            ->groupBy('b.id_bab, b.nama_bab')
+            ->orderBy('b.id_bab')
+            ->get()
+            ->getResultArray();
+
+        return [
+            'total_kaidah' => $totalKaidah,
+            'kaidah_per_bab' => $kaidahPerBab
+        ];
+    }
 }

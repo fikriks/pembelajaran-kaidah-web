@@ -88,6 +88,16 @@ class BabModel extends Model
         return $builder->findAll();
     }
 
+    public function getWithStats($id_bab)
+    {
+        return $this->select('bab.*, COUNT(DISTINCT mk.id_materi) as total_materi, COUNT(DISTINCT s.id_soal) as total_soal')
+                    ->join('materi_kaidah mk', 'mk.id_bab = bab.id_bab', 'left')
+                    ->join('soal s', 's.id_bab = bab.id_bab', 'left')
+                    ->where('bab.id_bab', $id_bab)
+                    ->groupBy('bab.id_bab')
+                    ->first();
+    }
+
     public function getByOrder($order)
     {
         return $this->where('urutan', $order)->first();

@@ -48,7 +48,7 @@
                 <div class="col-md-4 mb-3">
                     <label for="urutan" class="form-label">Urutan *</label>
                     <input type="number" class="form-control" id="urutan" name="urutan"
-                           placeholder="1" value="<?= old('urutan') ?: $babModel->getNextOrder() ?>" min="1" required>
+                           placeholder="1" value="<?= old('urutan') ?: $nextOrder ?>" min="1" required>
                     <div class="invalid-feedback">
                         Urutan wajib diisi
                     </div>

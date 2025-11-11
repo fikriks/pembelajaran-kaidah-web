@@ -77,7 +77,7 @@ $routes->group('siswa', function($routes) {
 });
 
 // Bab Management
-$routes->group('bab', ['filter' => 'auth:admin,guru'], function($routes) {
+$routes->group('bab', ['filter' => 'auth'], function($routes) {
     $routes->get('/', 'BabController::index');
     $routes->get('create', 'BabController::create');
     $routes->post('/', 'BabController::store');
@@ -148,6 +148,13 @@ $routes->group('sesi', function($routes) {
 
     // Mobile API endpoints
     $routes->post('mobile/start', 'SesiController::startSessionMobile');
+});
+
+// Progress Belajar
+$routes->group('progress', ['filter' => 'auth'], function($routes) {
+    $routes->get('/', 'ProgressController::index');
+    $routes->get('detail/(:num)', 'ProgressController::detail/$1');
+    $routes->get('students', 'ProgressController::getStudents');
 });
 
 // Laporan

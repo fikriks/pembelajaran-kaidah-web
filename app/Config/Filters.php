@@ -120,6 +120,7 @@ class Filters extends BaseFilters
             'before' => [
                 'dashboard*',
                 'users*',
+                'bab*',          // All bab routes
                 'kaidah',        // Main kaidah page
                 'kaidah/create',
                 'kaidah/(:num)', // Edit, show, delete
@@ -127,7 +128,8 @@ class Filters extends BaseFilters
                 'kaidah/reorder',
                 'soal*',
                 'reports*',
-                'settings*'
+                'settings*',
+                'progress*'      // All progress routes
             ]
         ],
         // Apply debug toolbar only to web routes (not API)
@@ -138,9 +140,11 @@ class Filters extends BaseFilters
                 'pengguna*',
                 'siswa*',
                 'guru*',
+                'bab*',          // All bab routes for debugging
                 'soal*',
                 'reports*',
                 'settings*',
+                'progress*',
                 'login',
                 'logout',
                 'kaidah', // but not kaidah/chapters or kaidah/progress

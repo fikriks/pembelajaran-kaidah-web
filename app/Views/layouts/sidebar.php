@@ -65,7 +65,20 @@
           </a>
         </li>
 
-  
+        <li class="nav-small-cap">
+          <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+          <span class="hide-menu">Progress Belajar</span>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link <?= (strpos(current_url(), site_url('progress')) !== false) ? 'active' : '' ?>" href="<?= site_url('progress') ?>" aria-expanded="false">
+            <span>
+              <i class="ti ti-chart-line"></i>
+            </span>
+            <span class="hide-menu">Progress Siswa</span>
+          </a>
+        </li>
+
+
         <?php if (session()->get('user_role') === 'ADMIN'): ?>
         <li class="nav-small-cap">
           <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
