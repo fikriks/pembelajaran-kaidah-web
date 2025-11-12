@@ -94,52 +94,7 @@
         </div>
     </div>
 
-    <div class="col-lg-4">
-        <!-- Students Needing Attention -->
-        <div class="card border-0 shadow-sm">
-            <div class="card-header border-0 bg-white py-3">
-                <h5 class="card-title mb-0 fw-bold">
-                    <i class="ti ti-alert-circle text-danger me-2"></i>Perlu Perhatian
-                </h5>
-            </div>
-            <div class="card-body">
-                <?php if (!empty($needAttention)): ?>
-                    <?php foreach ($needAttention as $student): ?>
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="rounded-circle bg-danger bg-opacity-10 p-2 me-3">
-                                <i class="ti ti-alert-triangle text-danger"></i>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="fw-semibold"><?= esc($student['nama_lengkap']) ?></div>
-                                <div class="small text-muted"><?= esc($student['kelas']) ?></div>
-                                <div class="small text-info">
-                                    <?php if ($student['avg_score'] < 60): ?>
-                                        Skor rendah: <?= round($student['avg_score'], 1) ?>
-                                    <?php elseif ($student['total_sessions'] < 3): ?>
-                                        Sesi minim: <?= $student['total_sessions'] ?>
-                                    <?php else: ?>
-                                        Terakhir aktif: <?= date('d/m', strtotime($student['last_activity'])) ?>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
-                            <div>
-                                <a href="<?= site_url('progress/' . $student['id'] . '/show') ?>"
-                                   class="btn btn-sm btn-outline-primary">
-                                    <i class="ti ti-eye"></i>
-                                </a>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <div class="text-center py-3">
-                        <i class="ti ti-check-circle fs-1 text-success mb-2"></i>
-                        <p class="text-muted">Semua siswa berprestasi baik</p>
-                    </div>
-                <?php endif; ?>
-            </div>
-        </div>
     </div>
-</div>
 
 <?= $this->endSection() ?>
 

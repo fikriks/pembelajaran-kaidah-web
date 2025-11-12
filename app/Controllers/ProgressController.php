@@ -38,9 +38,6 @@ class ProgressController extends BaseController
         // Get overall statistics
         $data['stats'] = $this->getOverallStats();
 
-        // Get students needing attention
-        $data['needAttention'] = $this->getStudentsNeedingAttention();
-
         return view('progress/index', $data);
     }
 
@@ -176,34 +173,7 @@ class ProgressController extends BaseController
 
    
   
-    /**
-     * Get students who need attention
-     */
-    private function getStudentsNeedingAttention($limit = 5)
-    {
-        $db = \Config\Database::connect();
-
-        // Students with low scores or inactive
-        return $db->table('siswa s')
-            ->select('
-                s.id,
-                s.nama_lengkap,
-                s.kelas,
-                COUNT(sp.id_sesi) as total_sessions,
-                AVG(sp.skor) as avg_score,
-                MAX(sp.waktu_mulai) as last_activity
-            ')
-            ->join('sesi_pembelajaran sp', 'sp.id_siswa = s.id', 'left')
-            ->where('s.status', 'AKTIF')
-            ->groupBy('s.id, s.nama_lengkap, s.kelas')
-            ->having('(avg_score < 60 OR total_sessions < 3)')
-            ->orHaving('last_activity <', date('Y-m-d H:i:s', strtotime('-7 days')))
-            ->orderBy('avg_score', 'ASC')
-            ->limit($limit)
-            ->get()
-            ->getResultArray();
-    }
-
+    
     /**
      * Get student progress overview
      */
