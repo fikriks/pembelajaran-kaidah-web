@@ -38,12 +38,6 @@ class ProgressController extends BaseController
         // Get overall statistics
         $data['stats'] = $this->getOverallStats();
 
-        // Get recent activities
-        $data['recentActivities'] = $this->getRecentActivities();
-
-        // Get top performers
-        $data['topPerformers'] = $this->getTopPerformers();
-
         // Get students needing attention
         $data['needAttention'] = $this->getStudentsNeedingAttention();
 
@@ -180,66 +174,8 @@ class ProgressController extends BaseController
         ];
     }
 
-    /**
-     * Get recent learning activities
-     */
-    private function getRecentActivities($limit = 10)
-    {
-        $db = \Config\Database::connect();
-
-        return $db->table('sesi_pembelajaran sp')
-            ->select('
-                sp.id_sesi,
-                sp.id_siswa,
-                sp.id_materi,
-                sp.waktu_mulai,
-                sp.waktu_selesai,
-                sp.status as sesi_status,
-                sp.total_soal,
-                sp.soal_benar,
-                sp.skor,
-                sp.durasi_detik,
-                s.nama_lengkap as nama_siswa,
-                s.kelas,
-                mk.judul_kaidah,
-                bab.nama_bab
-            ')
-            ->join('siswa s', 's.id = sp.id_siswa')
-            ->join('materi_kaidah mk', 'mk.id_materi = sp.id_materi')
-            ->join('bab', 'bab.id_bab = mk.id_bab', 'left')
-            ->where('s.status', 'AKTIF')
-            ->orderBy('sp.waktu_mulai', 'DESC')
-            ->limit($limit)
-            ->get()
-            ->getResultArray();
-    }
-
-    /**
-     * Get top performing students
-     */
-    private function getTopPerformers($limit = 5)
-    {
-        $db = \Config\Database::connect();
-
-        return $db->table('siswa s')
-            ->select('
-                s.id,
-                s.nama_lengkap,
-                s.kelas,
-                COUNT(sp.id_sesi) as total_sessions,
-                AVG(sp.skor) as avg_score,
-                MAX(sp.skor) as best_score
-            ')
-            ->join('sesi_pembelajaran sp', 'sp.id_siswa = s.id', 'left')
-            ->where('s.status', 'AKTIF')
-            ->groupBy('s.id, s.nama_lengkap, s.kelas')
-            ->having('total_sessions >', 0)
-            ->orderBy('avg_score', 'DESC')
-            ->limit($limit)
-            ->get()
-            ->getResultArray();
-    }
-
+   
+  
     /**
      * Get students who need attention
      */

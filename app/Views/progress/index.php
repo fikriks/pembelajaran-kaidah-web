@@ -30,20 +30,6 @@
             'subtitle' => 'Sudah ada progress',
             'icon' => 'chart-line',
             'variant' => 'success'
-        ],
-        [
-            'title' => 'Total Sesi',
-            'value' => $stats['total_sessions'] ?? 0,
-            'subtitle' => 'Pembelajaran',
-            'icon' => 'book',
-            'variant' => 'info'
-        ],
-        [
-            'title' => 'Tingkat Penyelesaian',
-            'value' => ($stats['completion_rate'] ?? 0) . '%',
-            'subtitle' => 'Rata-rata',
-            'icon' => 'circle-check',
-            'variant' => 'warning'
         ]
     ]
 ]) ?>
@@ -109,39 +95,6 @@
     </div>
 
     <div class="col-lg-4">
-        <!-- Top Performers -->
-        <div class="card border-0 shadow-sm mb-4">
-            <div class="card-header border-0 bg-white py-3">
-                <h5 class="card-title mb-0 fw-bold">
-                    <i class="ti ti-trophy text-warning me-2"></i>Top Performers
-                </h5>
-            </div>
-            <div class="card-body">
-                <?php if (!empty($topPerformers)): ?>
-                    <?php foreach ($topPerformers as $index => $student): ?>
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="rounded-circle bg-warning bg-opacity-10 p-2 me-3">
-                                <span class="fw-bold text-warning"><?= $index + 1 ?></span>
-                            </div>
-                            <div class="flex-grow-1">
-                                <div class="fw-semibold"><?= esc($student['nama_lengkap']) ?></div>
-                                <div class="small text-muted"><?= esc($student['kelas']) ?></div>
-                            </div>
-                            <div class="text-end">
-                                <div class="fw-bold text-primary"><?= round($student['avg_score'], 1) ?></div>
-                                <div class="small text-muted">Skor</div>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                <?php else: ?>
-                    <div class="text-center py-3">
-                        <i class="ti ti-trophy-off fs-1 text-muted mb-2"></i>
-                        <p class="text-muted">Belum ada data performer</p>
-                    </div>
-                <?php endif; ?>
-            </div>
-        </div>
-
         <!-- Students Needing Attention -->
         <div class="card border-0 shadow-sm">
             <div class="card-header border-0 bg-white py-3">
