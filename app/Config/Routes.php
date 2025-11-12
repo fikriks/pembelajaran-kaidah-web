@@ -152,7 +152,7 @@ $routes->group('sesi', function($routes) {
 // Progress Belajar
 $routes->group('progress', ['filter' => 'auth'], function($routes) {
     $routes->get('/', 'ProgressController::index');
-    $routes->get('detail/(:num)', 'ProgressController::detail/$1');
+    $routes->get('(:num)/show', 'ProgressController::detail/$1');
     $routes->get('students', 'ProgressController::getStudents');
 });
 

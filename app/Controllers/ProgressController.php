@@ -201,10 +201,12 @@ class ProgressController extends BaseController
                 sp.durasi_detik,
                 s.nama_lengkap as nama_siswa,
                 s.kelas,
-                mk.judul_kaidah
+                mk.judul_kaidah,
+                bab.nama_bab
             ')
             ->join('siswa s', 's.id = sp.id_siswa')
             ->join('materi_kaidah mk', 'mk.id_materi = sp.id_materi')
+            ->join('bab', 'bab.id_bab = mk.id_bab', 'left')
             ->where('s.status', 'AKTIF')
             ->orderBy('sp.waktu_mulai', 'DESC')
             ->limit($limit)
@@ -328,22 +330,48 @@ class ProgressController extends BaseController
     {
         $db = \Config\Database::connect();
 
-        return $db->table('materi_kaidah mk')
+        // Get all materi
+        $materiList = $db->table('materi_kaidah mk')
             ->select('
                 mk.id_materi,
                 mk.judul_kaidah,
                 mk.deskripsi,
-                COALESCE(rb.status, "belum_dimulai") as status,
-                COALESCE(rb.persentase_penguasaan, 0) as completion_percentage,
-                rb.waktu_akses_terakhir as last_accessed
+                mk.id_bab,
+                bab.nama_bab
             ')
-            ->join('(SELECT * FROM riwayat_belajar WHERE id_siswa = ' . $siswaId . ' ORDER BY waktu_diubah DESC) rb',
-                'rb.id_materi = mk.id_materi AND rb.id_riwayat IN (
-                    SELECT MAX(id_riwayat) FROM riwayat_belajar WHERE id_siswa = ' . $siswaId . ' GROUP BY id_materi
-                )', 'left')
-            ->orderBy('mk.id_materi', 'ASC')
+            ->join('bab', 'bab.id_bab = mk.id_bab', 'left')
+            ->orderBy('mk.id_bab', 'ASC')
+            ->orderBy('mk.urutan', 'ASC')
             ->get()
             ->getResultArray();
+
+        // Get latest progress for each materi
+        $progressData = [];
+        $riwayatList = $db->table('riwayat_belajar')
+            ->where('id_siswa', $siswaId)
+            ->orderBy('waktu_diubah', 'DESC')
+            ->get()
+            ->getResultArray();
+
+        // Group riwayat by materi and get latest
+        foreach ($riwayatList as $riwayat) {
+            $materiId = $riwayat['id_materi'];
+            if (!isset($progressData[$materiId])) {
+                $progressData[$materiId] = $riwayat;
+            }
+        }
+
+        // Combine materi with progress
+        foreach ($materiList as &$materi) {
+            $materiId = $materi['id_materi'];
+            $progress = $progressData[$materiId] ?? null;
+
+            $materi['status'] = $progress['status'] ?? 'belum_dimulai';
+            $materi['completion_percentage'] = $progress['persentase_penguasaan'] ?? 0;
+            $materi['last_accessed'] = $progress['waktu_akses_terakhir'] ?? null;
+        }
+
+        return $materiList;
     }
 
     /**
@@ -365,9 +393,11 @@ class ProgressController extends BaseController
                 sp.soal_benar,
                 sp.skor,
                 sp.durasi_detik,
-                mk.judul_kaidah
+                mk.judul_kaidah,
+                bab.nama_bab
             ')
             ->join('materi_kaidah mk', 'mk.id_materi = sp.id_materi')
+            ->join('bab', 'bab.id_bab = mk.id_bab', 'left')
             ->where('sp.id_siswa', $siswaId)
             ->orderBy('sp.waktu_mulai', 'DESC')
             ->limit($limit)

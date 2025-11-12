@@ -170,7 +170,7 @@
                                 </div>
                             </div>
                             <div>
-                                <a href="<?= site_url('progress/detail/' . $student['id']) ?>"
+                                <a href="<?= site_url('progress/' . $student['id'] . '/show') ?>"
                                    class="btn btn-sm btn-outline-primary">
                                     <i class="ti ti-eye"></i>
                                 </a>
@@ -294,7 +294,7 @@ function renderStudents(students) {
             </td>
             <td>
                 <div class="table-actions">
-                    <a href="<?= site_url('progress/detail') ?>/${student.id}"
+                    <a href="<?= site_url('progress') ?>/${student.id}/show"
                        class="btn btn-sm btn-primary me-1" title="Lihat Detail">
                         <i class="ti ti-eye"></i>
                     </a>

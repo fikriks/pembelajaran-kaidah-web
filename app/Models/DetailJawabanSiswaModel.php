@@ -163,7 +163,7 @@ class DetailJawabanSiswaModel extends Model
     {
         return $this->select('soal.tingkat_kesulitan, COUNT(*) as total_jawaban, AVG(detail_jawaban_siswa.is_benar) * 100 as persentase_benar')
                      ->join('soal', 'soal.id_soal = detail_jawaban_siswa.id_soal')
-                     ->where('soal.id_materi', $id_materi)
+                     ->where('soal.id_bab', $id_materi)
                      ->groupBy('soal.tingkat_kesulitan')
                      ->findAll();
     }
@@ -209,7 +209,7 @@ class DetailJawabanSiswaModel extends Model
                         ->limit($limit);
 
         if ($id_materi) {
-            $builder = $builder->where('soal.id_materi', $id_materi);
+            $builder = $builder->where('soal.id_bab', $id_materi);
         }
 
         return $builder->findAll();

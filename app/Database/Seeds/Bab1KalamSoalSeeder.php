@@ -362,12 +362,12 @@ class Bab1KalamSoalSeeder extends Seeder
             ]
         ];
 
-        // Insert soal ke database
-        $soalData = [];
+        // Insert soal satu per satu untuk mendapatkan ID yang benar
         $pilihanJawabanData = [];
 
-        foreach ($data as $index => $soal) {
-            $soalData[$index] = [
+        foreach ($data as $soal) {
+            // Insert soal dan dapatkan ID
+            $soalData = [
                 'id_bab' => $soal['id_bab'],
                 'pertanyaan' => $soal['pertanyaan'],
                 'tipe_soal' => $soal['tipe_soal'],
@@ -377,14 +377,11 @@ class Bab1KalamSoalSeeder extends Seeder
                 'waktu_dibuat' => $soal['waktu_dibuat'],
                 'waktu_diubah' => $soal['waktu_diubah'],
             ];
-        }
 
-        // Insert soal dulu
-        $this->db->table('soal')->insertBatch($soalData);
-
-        // Insert pilihan jawaban
-        foreach ($data as $index => $soal) {
+            $this->db->table('soal')->insert($soalData);
             $idSoal = $this->db->insertID();
+
+            // Siapkan pilihan jawaban untuk soal ini
             foreach ($soal['pilihan_jawaban'] as $pilihan) {
                 $pilihanJawabanData[] = [
                     'id_soal' => $idSoal,
@@ -396,6 +393,9 @@ class Bab1KalamSoalSeeder extends Seeder
             }
         }
 
-        $this->db->table('pilihan_jawaban')->insertBatch($pilihanJawabanData);
+        // Insert semua pilihan jawaban
+        if (!empty($pilihanJawabanData)) {
+            $this->db->table('pilihan_jawaban')->insertBatch($pilihanJawabanData);
+        }
     }
 }

@@ -41,12 +41,12 @@ class SoalController extends BaseController
         // Get all data for client-side DataTables
         $soal = $this->soalModel->select('
             soal.*,
-            bab.nama_bab,
-            bab.deskripsi as deskripsi_bab,
-            pengguna.nama_lengkap as nama_pembuat
+            COALESCE(bab.nama_bab, "Tidak ada bab") as nama_bab,
+            COALESCE(bab.deskripsi, "Deskripsi tidak tersedia") as deskripsi_bab,
+            COALESCE(pengguna.nama_lengkap, "Tidak ada pembuat") as nama_pembuat
         ')
-        ->join('bab', 'bab.id_bab = soal.id_bab')
-        ->join('pengguna', 'pengguna.id_pengguna = soal.dibuat_oleh')
+        ->join('bab', 'bab.id_bab = soal.id_bab', 'left')
+        ->join('pengguna', 'pengguna.id_pengguna = soal.dibuat_oleh', 'left')
         ->orderBy('soal.id_bab', 'ASC')
         ->orderBy('soal.id_soal', 'DESC')
         ->findAll();
