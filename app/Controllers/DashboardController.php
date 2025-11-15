@@ -62,9 +62,9 @@ class DashboardController extends BaseController
         ];
 
         // Get recent sessions with student and material info
-        $recentSessions = $this->sesiLatihanModel->select('sesi_latihan.*, materi_kaidah.judul_kaidah, siswa.nama as nama_siswa')
+        $recentSessions = $this->sesiLatihanModel->select('sesi_latihan.*, materi_kaidah.judul_kaidah, siswa.nama_lengkap as nama_siswa')
                                                   ->join('materi_kaidah', 'materi_kaidah.id_materi = sesi_latihan.id_materi')
-                                                  ->join('siswa', 'siswa.id_siswa = sesi_latihan.id_siswa')
+                                                  ->join('siswa', 'siswa.id = sesi_latihan.id_siswa')
                                                   ->orderBy('sesi_latihan.waktu_mulai', 'DESC')
                                                   ->limit(10)
                                                   ->findAll();
@@ -349,13 +349,13 @@ class DashboardController extends BaseController
     private function getTopPerformers()
     {
         // Get students with highest average scores from completed sessions
-        return $this->sesiLatihanModel->select('siswa.nama, siswa.kelas,
+        return $this->sesiLatihanModel->select('siswa.nama_lengkap as nama, siswa.kelas,
                                                 COUNT(*) as total_sessions,
                                                 AVG(sesi_latihan.skor) as avg_score')
-                                              ->join('siswa', 'siswa.id_siswa = sesi_latihan.id_siswa')
+                                              ->join('siswa', 'siswa.id = sesi_latihan.id_siswa')
                                               ->where('sesi_latihan.status', 'selesai')
                                               ->where('sesi_latihan.skor >', 0)
-                                              ->groupBy('siswa.id_siswa, siswa.nama, siswa.kelas')
+                                              ->groupBy('siswa.id, siswa.nama_lengkap, siswa.kelas')
                                               ->orderBy('avg_score', 'DESC')
                                               ->limit(5)
                                               ->findAll();
