@@ -15,7 +15,7 @@
           $user = session()->get('user');
           $userName = $user['nama_lengkap'] ?? 'User';
           $userRole = $user['hak_akses'] ?? 'GURU';
-          $userPhoto = !empty($user['foto_profil']) ? base_url('assets/images/profile/' . $user['foto_profil']) : base_url('assets/images/profile/user-1.jpg');
+          $userPhoto = base_url('assets/images/profile/user-1.jpg');
           ?>
            <a class="nav-link nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown"
              aria-expanded="false">
