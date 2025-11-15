@@ -56,24 +56,27 @@ class ProgressController extends BaseController
             return redirect()->to('/progress')->with('error', 'Siswa tidak ditemukan');
         }
 
+        // Safe student name access with fallback
+        $studentName = $siswa['nama_lengkap'] ?? 'Siswa Tidak Diketahui';
+
         $data = [
-            'title' => 'Detail Progress - ' . $siswa['nama_lengkap'],
+            'title' => 'Detail Progress - ' . $studentName,
             'page' => 'progress',
             'subtitle' => 'Detail progress pembelajaran siswa',
             'siswa' => $siswa
         ];
 
-        // Get student progress overview
-        $data['progress'] = $this->getStudentProgress($siswaId);
+        // Get student progress overview with null check
+        $data['progress'] = $this->getStudentProgress($siswaId) ?? [];
 
-        // Get kaidah progress
-        $data['kaidahProgress'] = $this->getStudentKaidahProgress($siswaId);
+        // Get kaidah progress with null check
+        $data['kaidahProgress'] = $this->getStudentKaidahProgress($siswaId) ?? [];
 
-        // Get session history
-        $data['sessions'] = $this->getStudentSessions($siswaId);
+        // Get session history with null check
+        $data['sessions'] = $this->getStudentSessions($siswaId) ?? [];
 
-        // Get weekly activity
-        $data['weeklyActivity'] = $this->getWeeklyActivity($siswaId);
+        // Get weekly activity with null check
+        $data['weeklyActivity'] = $this->getWeeklyActivity($siswaId) ?? [];
 
         return view('progress/detail', $data);
     }
@@ -273,7 +276,14 @@ class ProgressController extends BaseController
             $progress = $progressData[$materiId] ?? null;
 
             $materi['status'] = $progress['status'] ?? 'belum_dimulai';
-            $materi['completion_percentage'] = ($progress['status'] === 'selesai') ? 100 : (($progress['status'] === 'sedang_belajar') ? 50 : 0);
+
+            // Check if progress exists before accessing status
+            if ($progress && isset($progress['status'])) {
+                $materi['completion_percentage'] = ($progress['status'] === 'selesai') ? 100 : (($progress['status'] === 'sedang_belajar') ? 50 : 0);
+            } else {
+                $materi['completion_percentage'] = 0;
+            }
+
             $materi['last_accessed'] = $progress['waktu_akses_terakhir'] ?? null;
         }
 
