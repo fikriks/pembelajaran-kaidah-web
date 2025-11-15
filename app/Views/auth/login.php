@@ -29,18 +29,7 @@
         </div>
     </div>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="remember">
-            <label class="form-check-label" for="remember">
-                Ingat saya
-            </label>
-        </div>
-        <a href="#" class="text-decoration-none text-muted small">
-            Lupa kata sandi?
-        </a>
-    </div>
-
+    
     <button type="submit" class="btn btn-primary auth-btn w-100">
         <i class="bi bi-box-arrow-in-right me-2"></i>Login
     </button>

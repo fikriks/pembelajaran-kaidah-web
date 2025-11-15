@@ -30,15 +30,6 @@
                    <small class="text-muted"><?= ucfirst(strtolower($userRole)) ?></small>
                  </div>
                </div>
-               <a href="<?= site_url('profile') ?>" class="d-flex align-items-center gap-2 dropdown-item">
-                 <i class="ti ti-user fs-6"></i>
-                 <p class="mb-0 fs-3">Profil Saya</p>
-               </a>
-               <a href="<?= site_url('dashboard') ?>" class="d-flex align-items-center gap-2 dropdown-item">
-                 <i class="ti ti-layout-dashboard fs-6"></i>
-                 <p class="mb-0 fs-3">Dashboard</p>
-               </a>
-               <div class="dropdown-divider"></div>
                <a href="<?= site_url('logout') ?>" class="btn btn-outline-danger mx-3 mt-2 d-block">
                 <i class="ti ti-logout me-1"></i> Keluar
               </a>

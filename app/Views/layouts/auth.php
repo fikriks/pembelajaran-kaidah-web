@@ -31,38 +31,18 @@
             <div class="auth-logo">
                 <i class="bi bi-book"></i>
             </div>
-            <h1 class="auth-title">تعلم القواعد</h1>
+            <h1 class="auth-title" style="color: white;">تعلم القواعد</h1>
             <p class="auth-subtitle">Pembelajaran Kaidah Bahasa Arab dengan Algoritma LCM</p>
 
-            <div class="auth-demo">
-                <h5 class="mb-3">
-                    <i class="bi bi-lightbulb me-2"></i>
-                    Demo Credentials
-                </h5>
-                <div class="text-start">
-                    <div class="mb-2">
-                        <strong>Admin:</strong><br>
-                        Username: admin<br>
-                        Password: admin123
-                    </div>
-                    <div>
-                        <strong>Guru:</strong><br>
-                        Username: guru<br>
-                        Password: guru123
-                    </div>
-                </div>
-            </div>
-        </div>
+          </div>
 
         <!-- Right Side - Login Form -->
         <div class="col-md-6 auth-right">
             <div class="auth-card mx-auto">
                 <!-- Logo -->
                 <div class="text-center mb-4">
-                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-primary text-white mb-3"
-                         style="width: 60px; height: 60px;">
-                        <i class="bi bi-book fs-3"></i>
-                    </div>
+                    <img src="<?= base_url('assets/images/logos/logo.png') ?>" alt="Pembelajaran Kaidah"
+                         class="mb-3" style="max-width: 120px; height: auto;">
                     <h3 class="fw-bold text-dark mb-2">Selamat Datang</h3>
                     <p class="text-muted">Silakan login ke akun Anda</p>
                 </div>
@@ -75,10 +55,6 @@
 
                 <!-- Footer -->
                 <div class="text-center mt-4">
-                    <p class="text-muted small mb-0">
-                        <i class="bi bi-shield-check me-1"></i>
-                        Login Aman • Sistem Pembelajaran Kaidah Bahasa Arab
-                    </p>
                     <p class="text-muted small">
                         © 2025 Pembelajaran Kaidah. All rights reserved.
                     </p>

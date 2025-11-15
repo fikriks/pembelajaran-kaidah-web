@@ -102,18 +102,6 @@
         </li>
         <?php endif; ?>
 
-        <li class="nav-small-cap">
-          <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
-          <span class="hide-menu">Akun</span>
-        </li>
-        <li class="sidebar-item">
-          <a class="sidebar-link" href="<?= site_url('profile') ?>" aria-expanded="false">
-            <span>
-              <i class="ti ti-user-circle"></i>
-            </span>
-            <span class="hide-menu">Profil Saya</span>
-          </a>
-        </li>
         <li class="sidebar-item">
           <a class="sidebar-link" href="<?= site_url('logout') ?>" aria-expanded="false">
             <span>
