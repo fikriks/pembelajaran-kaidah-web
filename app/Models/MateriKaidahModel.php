@@ -259,11 +259,15 @@ class MateriKaidahModel extends Model
                     WHEN rb.status = 'selesai' THEN 'selesai'
                     ELSE 'sedang_belajar'
                 END as status,
-                COALESCE(rb.persentase_penguasaan, 0) as persentase_penguasaan
+                CASE
+                    WHEN rb.status = 'selesai' THEN 100
+                    WHEN rb.status = 'sedang_belajar' THEN 50
+                    ELSE 0
+                END as progress_percentage
             FROM materi_kaidah mk
             JOIN bab b ON b.id_bab = mk.id_bab
             LEFT JOIN (
-                SELECT id_materi, MAX(status) as status, MAX(persentase_penguasaan) as persentase_penguasaan
+                SELECT id_materi, MAX(status) as status
                 FROM riwayat_belajar
                 WHERE id_siswa = ?
                 GROUP BY id_materi
