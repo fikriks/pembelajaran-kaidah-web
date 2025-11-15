@@ -156,6 +156,14 @@ $routes->group('progress', ['filter' => 'auth'], function($routes) {
     $routes->get('students', 'ProgressController::getStudents');
 });
 
+// Quiz Monitoring
+$routes->group('quiz-monitoring', ['filter' => 'auth'], function($routes) {
+    $routes->get('/', 'QuizMonitoringController::index');
+    $routes->get('(:num)/detail', 'QuizMonitoringController::detail/$1');
+    $routes->get('sessions', 'QuizMonitoringController::getSessions');
+    $routes->get('(:num)/answers', 'QuizMonitoringController::getAnswers/$1');
+});
+
 // Laporan
 $routes->group('laporan', function($routes) {
     $routes->get('progress', 'LaporanController::progress');

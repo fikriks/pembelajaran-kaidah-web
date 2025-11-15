@@ -77,6 +77,14 @@
             <span class="hide-menu">Progress Siswa</span>
           </a>
         </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link <?= (strpos(current_url(), site_url('quiz-monitoring')) !== false) ? 'active' : '' ?>" href="<?= site_url('quiz-monitoring') ?>" aria-expanded="false">
+            <span>
+              <i class="ti ti-file-check"></i>
+            </span>
+            <span class="hide-menu">Monitoring Quiz</span>
+          </a>
+        </li>
 
 
         <?php if (session()->get('user_role') === 'ADMIN'): ?>
