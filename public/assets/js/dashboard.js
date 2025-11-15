@@ -101,8 +101,12 @@ $(function () {
 
   };
 
-  var chart = new ApexCharts(document.querySelector("#chart"), chart);
-  chart.render();
+  // Initialize chart only if element exists
+  const chartElement = document.querySelector("#chart");
+  if (chartElement) {
+    var chart = new ApexCharts(chartElement, chart);
+    chart.render();
+  }
 
 
   // =====================================
@@ -156,8 +160,12 @@ $(function () {
     },
   };
 
-  var chart = new ApexCharts(document.querySelector("#breakup"), breakup);
-  chart.render();
+  // Initialize chart only if element exists
+  const breakupElement = document.querySelector("#breakup");
+  if (breakupElement) {
+    var chart = new ApexCharts(breakupElement, breakup);
+    chart.render();
+  }
 
 
 
@@ -207,5 +215,9 @@ $(function () {
       },
     },
   };
-  new ApexCharts(document.querySelector("#earning"), earning).render();
+  // Initialize chart only if element exists
+  const earningElement = document.querySelector("#earning");
+  if (earningElement) {
+    new ApexCharts(earningElement, earning).render();
+  }
 })

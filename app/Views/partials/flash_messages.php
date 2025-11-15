@@ -3,7 +3,10 @@
 <?php if (session()->has('success')): ?>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            toast.success('<?= esc(str_replace("'", "\'", session('success'))) ?>');
+            // Check if toast object is available before using it
+            if (typeof toast !== 'undefined' && toast && typeof toast.success === 'function') {
+                toast.success('<?= esc(str_replace("'", "\'", session('success'))) ?>');
+            }
         });
     </script>
 <?php endif; ?>
@@ -11,7 +14,10 @@
 <?php if (session()->has('error')): ?>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            toast.error('<?= esc(str_replace("'", "\'", session('error'))) ?>');
+            // Check if toast object is available before using it
+            if (typeof toast !== 'undefined' && toast && typeof toast.error === 'function') {
+                toast.error('<?= esc(str_replace("'", "\'", session('error'))) ?>');
+            }
         });
     </script>
 <?php endif; ?>
@@ -19,16 +25,19 @@
 <?php if (session()->has('errors')): ?>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            <?php
-            $errors = session('errors');
-            if (is_array($errors)) {
-                foreach ($errors as $error): ?>
-                    toast.error('<?= esc(str_replace("'", "\'", $error)) ?>');
-                <?php endforeach;
-            } else { ?>
-                toast.error('<?= esc(str_replace("'", "\'", $errors)) ?>');
-            <?php }
-            ?>
+            // Check if toast object is available before using it
+            if (typeof toast !== 'undefined' && toast && typeof toast.error === 'function') {
+                <?php
+                $errors = session('errors');
+                if (is_array($errors)) {
+                    foreach ($errors as $error): ?>
+                        toast.error('<?= esc(str_replace("'", "\'", $error)) ?>');
+                    <?php endforeach;
+                } else { ?>
+                    toast.error('<?= esc(str_replace("'", "\'", $errors)) ?>');
+                <?php }
+                ?>
+            }
         });
     </script>
 <?php endif; ?>
@@ -36,7 +45,10 @@
 <?php if (session()->has('info')): ?>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            toast.info('<?= esc(str_replace("'", "\'", session('info'))) ?>');
+            // Check if toast object is available before using it
+            if (typeof toast !== 'undefined' && toast && typeof toast.info === 'function') {
+                toast.info('<?= esc(str_replace("'", "\'", session('info'))) ?>');
+            }
         });
     </script>
 <?php endif; ?>
@@ -44,7 +56,10 @@
 <?php if (session()->has('warning')): ?>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            toast.warning('<?= esc(str_replace("'", "\'", session('warning'))) ?>');
+            // Check if toast object is available before using it
+            if (typeof toast !== 'undefined' && toast && typeof toast.warning === 'function') {
+                toast.warning('<?= esc(str_replace("'", "\'", session('warning'))) ?>');
+            }
         });
     </script>
 <?php endif; ?>

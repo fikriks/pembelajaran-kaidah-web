@@ -20,88 +20,38 @@
 </div>
 
 <!-- Statistics Cards -->
-<div class="row mb-4">
-    <div class="col-lg-3 col-md-6 mb-4">
-        <div class="card border-0 shadow-sm stats-card">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0">
-                        <div class="rounded-circle bg-primary bg-opacity-10 p-3">
-                            <i class="ti ti-book fs-4 text-primary"></i>
-                        </div>
-                    </div>
-                    <div class="ms-3">
-                        <h6 class="text-muted mb-1">Total Kaidah</h6>
-                        <h3 class="mb-0 fw-bold">24</h3>
-                        <small class="text-success">
-                            <i class="ti ti-arrow-up"></i> 12% dari bulan lalu
-                        </small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-3 col-md-6 mb-4">
-        <div class="card border-0 shadow-sm stats-card">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0">
-                        <div class="rounded-circle bg-info bg-opacity-10 p-3">
-                            <i class="ti ti-file-text fs-4 text-info"></i>
-                        </div>
-                    </div>
-                    <div class="ms-3">
-                        <h6 class="text-muted mb-1">Total Soal</h6>
-                        <h3 class="mb-0 fw-bold">156</h3>
-                        <small class="text-success">
-                            <i class="ti ti-arrow-up"></i> 8% dari bulan lalu
-                        </small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-3 col-md-6 mb-4">
-        <div class="card border-0 shadow-sm stats-card">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0">
-                        <div class="rounded-circle bg-success bg-opacity-10 p-3">
-                            <i class="ti ti-users fs-4 text-success"></i>
-                        </div>
-                    </div>
-                    <div class="ms-3">
-                        <h6 class="text-muted mb-1">Siswa Aktif</h6>
-                        <h3 class="mb-0 fw-bold">89</h3>
-                        <small class="text-success">
-                            <i class="ti ti-arrow-up"></i> 23% dari bulan lalu
-                        </small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-3 col-md-6 mb-4">
-        <div class="card border-0 shadow-sm stats-card">
-            <div class="card-body">
-                <div class="d-flex align-items-center">
-                    <div class="flex-shrink-0">
-                        <div class="rounded-circle bg-warning bg-opacity-10 p-3">
-                            <i class="ti ti-chart-line fs-4 text-warning"></i>
-                        </div>
-                    </div>
-                    <div class="ms-3">
-                        <h6 class="text-muted mb-1">Rata-rata Skor</h6>
-                        <h3 class="mb-0 fw-bold">78.5</h3>
-                        <small class="text-success">
-                            <i class="ti ti-arrow-up"></i> 5.2% dari bulan lalu
-                        </small>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<?= view('partials/stats_row', [
+    'stats' => [
+        [
+            'title' => 'Total Kaidah',
+            'value' => $stats['total_materi'] ?? 0,
+            'subtitle' => 'Materi tersedia',
+            'icon' => 'book',
+            'variant' => 'primary'
+        ],
+        [
+            'title' => 'Total Soal',
+            'value' => $stats['total_soal'] ?? 0,
+            'subtitle' => 'Soal aktif',
+            'icon' => 'file-text',
+            'variant' => 'info'
+        ],
+        [
+            'title' => 'Siswa Aktif',
+            'value' => $stats['active_users'] ?? 0,
+            'subtitle' => 'Pengguna terdaftar',
+            'icon' => 'users',
+            'variant' => 'success'
+        ],
+        [
+            'title' => 'Sesi Selesai',
+            'value' => $stats['completed_sessions'] ?? 0,
+            'subtitle' => 'Pembelajaran selesai',
+            'icon' => 'chart-line',
+            'variant' => 'warning'
+        ]
+    ]
+]) ?>
 
 <!-- Learning Progress Overview -->
 <div class="row mb-4">
@@ -127,28 +77,28 @@
                 <div class="mb-3">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="text-muted small">Mudah</span>
-                        <span class="fw-semibold">45%</span>
+                        <span class="fw-semibold"><?= $difficulty_stats['mudah']['percentage'] ?>% (<?= $difficulty_stats['mudah']['count'] ?>)</span>
                     </div>
                     <div class="progress" style="height: 8px;">
-                        <div class="progress-bar bg-success" style="width: 45%"></div>
+                        <div class="progress-bar bg-success" style="width: <?= $difficulty_stats['mudah']['percentage'] ?>%"></div>
                     </div>
                 </div>
                 <div class="mb-3">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="text-muted small">Sedang</span>
-                        <span class="fw-semibold">35%</span>
+                        <span class="fw-semibold"><?= $difficulty_stats['sedang']['percentage'] ?>% (<?= $difficulty_stats['sedang']['count'] ?>)</span>
                     </div>
                     <div class="progress" style="height: 8px;">
-                        <div class="progress-bar bg-warning" style="width: 35%"></div>
+                        <div class="progress-bar bg-warning" style="width: <?= $difficulty_stats['sedang']['percentage'] ?>%"></div>
                     </div>
                 </div>
                 <div class="mb-3">
                     <div class="d-flex justify-content-between align-items-center mb-2">
                         <span class="text-muted small">Sulit</span>
-                        <span class="fw-semibold">20%</span>
+                        <span class="fw-semibold"><?= $difficulty_stats['sulit']['percentage'] ?>% (<?= $difficulty_stats['sulit']['count'] ?>)</span>
                     </div>
                     <div class="progress" style="height: 8px;">
-                        <div class="progress-bar bg-danger" style="width: 20%"></div>
+                        <div class="progress-bar bg-danger" style="width: <?= $difficulty_stats['sulit']['percentage'] ?>%"></div>
                     </div>
                 </div>
             </div>
@@ -185,46 +135,31 @@
                     <h5 class="card-title fw-semibold">Aktivitas Terbaru</h5>
                 </div>
                 <ul class="timeline-widget mb-0 position-relative mb-n5">
-                    <li class="timeline-item d-flex position-relative overflow-hidden">
-                        <div class="timeline-time text-dark flex-shrink-0 text-end">10:30</div>
-                        <div class="timeline-badge-wrap d-flex flex-column align-items-center">
-                            <span class="timeline-badge border-2 border border-success flex-shrink-0 my-8"></span>
-                            <span class="timeline-badge-border d-block flex-shrink-0"></span>
-                        </div>
-                        <div class="timeline-desc fs-3 text-dark mt-n1">
-                            <strong>Ahmad Rizki</strong> menyelesaikan kaidah <span class="text-primary">Isim Mufrad</span>
-                        </div>
-                    </li>
-                    <li class="timeline-item d-flex position-relative overflow-hidden">
-                        <div class="timeline-time text-dark flex-shrink-0 text-end">09:45</div>
-                        <div class="timeline-badge-wrap d-flex flex-column align-items-center">
-                            <span class="timeline-badge border-2 border border-info flex-shrink-0 my-8"></span>
-                            <span class="timeline-badge-border d-block flex-shrink-0"></span>
-                        </div>
-                        <div class="timeline-desc fs-3 text-dark mt-n1 fw-semibold">
-                            <strong>Siti Nurhaliza</strong> mulai belajar <span class="text-primary">Fi'il Madhi</span>
-                        </div>
-                    </li>
-                    <li class="timeline-item d-flex position-relative overflow-hidden">
-                        <div class="timeline-time text-dark flex-shrink-0 text-end">09:15</div>
-                        <div class="timeline-badge-wrap d-flex flex-column align-items-center">
-                            <span class="timeline-badge border-2 border border-warning flex-shrink-0 my-8"></span>
-                            <span class="timeline-badge-border d-block flex-shrink-0"></span>
-                        </div>
-                        <div class="timeline-desc fs-3 text-dark mt-n1">
-                            <strong>Budi Santoso</strong> mencapai skor <span class="text-success">95</span> pada quiz <span class="text-primary">Harf Jar</span>
-                        </div>
-                    </li>
-                    <li class="timeline-item d-flex position-relative overflow-hidden">
-                        <div class="timeline-time text-dark flex-shrink-0 text-end">08:30</div>
-                        <div class="timeline-badge-wrap d-flex flex-column align-items-center">
-                            <span class="timeline-badge border-2 border border-primary flex-shrink-0 my-8"></span>
-                            <span class="timeline-badge-border d-block flex-shrink-0"></span>
-                        </div>
-                        <div class="timeline-desc fs-3 text-dark mt-n1 fw-semibold">
-                            Kaidah baru ditambahkan: <span class="text-primary">Mushabarakah</span>
-                        </div>
-                    </li>
+                    <?php if (!empty($recent_sessions)): ?>
+                        <?php foreach ($recent_sessions as $session): ?>
+                            <li class="timeline-item d-flex position-relative overflow-hidden">
+                                <div class="timeline-time text-dark flex-shrink-0 text-end"><?= date('H:i', strtotime($session['waktu_mulai'])) ?></div>
+                                <div class="timeline-badge-wrap d-flex flex-column align-items-center">
+                                    <span class="timeline-badge border-2 border border-<?= $session['status'] === 'selesai' ? 'success' : ($session['status'] === 'sedang_berjalan' ? 'info' : 'warning') ?> flex-shrink-0 my-8"></span>
+                                    <span class="timeline-badge-border d-block flex-shrink-0"></span>
+                                </div>
+                                <div class="timeline-desc fs-3 text-dark mt-n1">
+                                    <strong><?= esc($session['nama_siswa']) ?></strong>
+                                    <?php if ($session['status'] === 'selesai'): ?>
+                                        menyelesaikan kaidah <span class="text-primary"><?= esc($session['judul_kaidah']) ?></span>
+                                    <?php else: ?>
+                                        mulai belajar <span class="text-primary"><?= esc($session['judul_kaidah']) ?></span>
+                                    <?php endif; ?>
+                                </div>
+                            </li>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <li class="timeline-item d-flex position-relative overflow-hidden">
+                            <div class="timeline-desc fs-3 text-dark mt-n1 text-muted">
+                                Belum ada aktivitas terbaru
+                            </div>
+                        </li>
+                    <?php endif; ?>
                 </ul>
             </div>
         </div>
@@ -245,192 +180,52 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td class="border-bottom-0">
-                                    <div class="d-flex align-items-center">
-                                        <span class="badge bg-warning rounded-3 fw-semibold me-2">1</span>
-                                        <i class="ti ti-trophy text-warning"></i>
-                                    </div>
-                                </td>
-                                <td class="border-bottom-0">
-                                    <div class="d-flex align-items-center">
-                                        <div class="rounded-circle bg-primary bg-opacity-10 p-2 me-2">
-                                            <i class="ti ti-user text-primary fs-4"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0 fw-semibold">Ahmad Rizki</h6>
-                                            <span class="text-muted small">Kelas XI-A</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="border-bottom-0">
-                                    <h6 class="mb-0 fw-semibold">18/24</h6>
-                                </td>
-                                <td class="border-bottom-0">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <span class="badge bg-success rounded-3 fw-semibold">92.5</span>
-                                    </div>
-                                </td>
-                                <td class="border-bottom-0">
-                                    <span class="badge bg-success rounded-3 fw-semibold">Aktif</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="border-bottom-0">
-                                    <span class="badge bg-secondary rounded-3 fw-semibold">2</span>
-                                </td>
-                                <td class="border-bottom-0">
-                                    <div class="d-flex align-items-center">
-                                        <div class="rounded-circle bg-info bg-opacity-10 p-2 me-2">
-                                            <i class="ti ti-user text-info fs-4"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0 fw-semibold">Siti Nurhaliza</h6>
-                                            <span class="text-muted small">Kelas XI-B</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="border-bottom-0">
-                                    <h6 class="mb-0 fw-semibold">16/24</h6>
-                                </td>
-                                <td class="border-bottom-0">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <span class="badge bg-info rounded-3 fw-semibold">88.3</span>
-                                    </div>
-                                </td>
-                                <td class="border-bottom-0">
-                                    <span class="badge bg-success rounded-3 fw-semibold">Aktif</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="border-bottom-0">
-                                    <span class="badge bg-danger rounded-3 fw-semibold">3</span>
-                                </td>
-                                <td class="border-bottom-0">
-                                    <div class="d-flex align-items-center">
-                                        <div class="rounded-circle bg-success bg-opacity-10 p-2 me-2">
-                                            <i class="ti ti-user text-success fs-4"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0 fw-semibold">Budi Santoso</h6>
-                                            <span class="text-muted small">Kelas X-A</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="border-bottom-0">
-                                    <h6 class="mb-0 fw-semibold">15/24</h6>
-                                </td>
-                                <td class="border-bottom-0">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <span class="badge bg-primary rounded-3 fw-semibold">85.7</span>
-                                    </div>
-                                </td>
-                                <td class="border-bottom-0">
-                                    <span class="badge bg-success rounded-3 fw-semibold">Aktif</span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="border-bottom-0">
-                                    <span class="badge bg-dark rounded-3 fw-semibold">4</span>
-                                </td>
-                                <td class="border-bottom-0">
-                                    <div class="d-flex align-items-center">
-                                        <div class="rounded-circle bg-warning bg-opacity-10 p-2 me-2">
-                                            <i class="ti ti-user text-warning fs-4"></i>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-0 fw-semibold">Dewi Lestari</h6>
-                                            <span class="text-muted small">Kelas XI-C</span>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="border-bottom-0">
-                                    <h6 class="mb-0 fw-semibold">14/24</h6>
-                                </td>
-                                <td class="border-bottom-0">
-                                    <div class="d-flex align-items-center gap-2">
-                                        <span class="badge bg-warning rounded-3 fw-semibold">82.1</span>
-                                    </div>
-                                </td>
-                                <td class="border-bottom-0">
-                                    <span class="badge bg-warning rounded-3 fw-semibold">Less Active</span>
-                                </td>
-                            </tr>
+                            <?php if (!empty($top_performers)): ?>
+                                <?php $rank = 1; ?>
+                                <?php foreach ($top_performers as $performer): ?>
+                                    <tr>
+                                        <td class="border-bottom-0">
+                                            <div class="d-flex align-items-center">
+                                                <span class="badge bg-<?= $rank == 1 ? 'warning' : ($rank == 2 ? 'secondary' : ($rank == 3 ? 'danger' : 'dark')) ?> rounded-3 fw-semibold me-2"><?= $rank ?></span>
+                                                <?php if ($rank == 1): ?>
+                                                    <i class="ti ti-trophy text-warning"></i>
+                                                <?php endif; ?>
+                                            </div>
+                                        </td>
+                                        <td class="border-bottom-0">
+                                            <div class="d-flex align-items-center">
+                                                <div class="rounded-circle bg-primary bg-opacity-10 p-2 me-2">
+                                                    <i class="ti ti-user text-primary fs-4"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0 fw-semibold"><?= esc($performer['nama']) ?></h6>
+                                                    <span class="text-muted small">Kelas <?= esc($performer['kelas']) ?></span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="border-bottom-0">
+                                            <h6 class="mb-0 fw-semibold"><?= $performer['total_sessions'] ?></h6>
+                                        </td>
+                                        <td class="border-bottom-0">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="badge bg-success rounded-3 fw-semibold"><?= number_format($performer['avg_score'], 1) ?></span>
+                                            </div>
+                                        </td>
+                                        <td class="border-bottom-0">
+                                            <span class="badge bg-success rounded-3 fw-semibold">Aktif</span>
+                                        </td>
+                                    </tr>
+                                    <?php $rank++; ?>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="5" class="border-bottom-0 text-center text-muted">
+                                        Belum ada data performa siswa
+                                    </td>
+                                </tr>
+                            <?php endif; ?>
                         </tbody>
                     </table>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!-- Popular Kaidah -->
-<div class="row">
-    <div class="col-12">
-        <div class="card border-0 shadow-sm">
-            <div class="card-body p-4">
-                <h5 class="card-title fw-semibold mb-4">Kaidah Populer Minggu Ini</h5>
-                <div class="row">
-                    <div class="col-md-3 mb-3">
-                        <div class="card h-100 border-0 bg-light">
-                            <div class="card-body text-center">
-                                <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-block mb-3">
-                                    <i class="ti ti-book fs-4 text-primary"></i>
-                                </div>
-                                <h6 class="card-title fw-semibold">Isim Mufrad</h6>
-                                <p class="text-muted small mb-2">Kata benda tunggal dalam bahasa Arab</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="badge bg-success rounded-3 fw-semibold">45 siswa</span>
-                                    <small class="text-muted">92% success</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card h-100 border-0 bg-light">
-                            <div class="card-body text-center">
-                                <div class="rounded-circle bg-info bg-opacity-10 p-3 d-inline-block mb-3">
-                                    <i class="ti ti-book fs-4 text-info"></i>
-                                </div>
-                                <h6 class="card-title fw-semibold">Fi'il Madhi</h6>
-                                <p class="text-muted small mb-2">Kata kerja bentuk lampau dalam bahasa Arab</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="badge bg-success rounded-3 fw-semibold">38 siswa</span>
-                                    <small class="text-muted">88% success</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card h-100 border-0 bg-light">
-                            <div class="card-body text-center">
-                                <div class="rounded-circle bg-warning bg-opacity-10 p-3 d-inline-block mb-3">
-                                    <i class="ti ti-book fs-4 text-warning"></i>
-                                </div>
-                                <h6 class="card-title fw-semibold">Harf Jar</h6>
-                                <p class="text-muted small mb-2">Huruf jar dan penggunaannya dalam kalimat</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="badge bg-warning rounded-3 fw-semibold">32 siswa</span>
-                                    <small class="text-muted">75% success</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <div class="card h-100 border-0 bg-light">
-                            <div class="card-body text-center">
-                                <div class="rounded-circle bg-success bg-opacity-10 p-3 d-inline-block mb-3">
-                                    <i class="ti ti-book fs-4 text-success"></i>
-                                </div>
-                                <h6 class="card-title fw-semibold">Mushabarakah</h6>
-                                <p class="text-muted small mb-2">Kata sifat yang mengikuti kata yang disifati</p>
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span class="badge bg-info rounded-3 fw-semibold">28 siswa</span>
-                                    <small class="text-muted">81% success</small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -441,4 +236,74 @@
 <?= $this->section('scripts') ?>
 <script src="<?= base_url('assets/libs/apexcharts/dist/apexcharts.min.js') ?>"></script>
 <script src="<?= base_url('assets/js/dashboard.js') ?>"></script>
+<script>
+// Initialize Learning Chart
+document.addEventListener('DOMContentLoaded', function() {
+    const learningChartElement = document.querySelector("#learning-chart");
+    if (learningChartElement) {
+        const learningChart = {
+            series: [{
+                name: "Sesi Belajar",
+                data: [31, 40, 28, 51, 42, 109, 100]
+            }, {
+                name: "Kuis Selesai",
+                data: [11, 32, 45, 32, 34, 52, 41]
+            }],
+            chart: {
+                height: 350,
+                type: 'area',
+                toolbar: {
+                    show: false
+                },
+                zoom: {
+                    enabled: false
+                }
+            },
+            colors: ["#4CAF50", "#2196F3"],
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: 'smooth',
+                width: 2
+            },
+            fill: {
+                type: 'gradient',
+                gradient: {
+                    shadeIntensity: 1,
+                    opacityFrom: 0.3,
+                    opacityTo: 0.1,
+                }
+            },
+            xaxis: {
+                categories: ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"],
+            },
+            yaxis: {
+                title: {
+                    text: 'Jumlah Sesi'
+                }
+            },
+            tooltip: {
+                theme: 'light'
+            }
+        };
+
+        const chart = new ApexCharts(learningChartElement, learningChart);
+        chart.render();
+    }
+});
+
+// Handle date range selector
+document.addEventListener('DOMContentLoaded', function() {
+    const dateSelect = document.querySelector('select[style*="width: auto"]');
+    if (dateSelect) {
+        dateSelect.addEventListener('change', function() {
+            const days = this.value;
+            // Here you can make an AJAX call to get data for selected period
+            console.log('Load data for ' + days + ' days');
+            // Reload chart with new data
+        });
+    }
+});
+</script>
 <?= $this->endSection() ?>
