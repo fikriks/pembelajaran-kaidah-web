@@ -115,7 +115,7 @@ class ProgressController extends BaseController
         // Get students with progress
         $studentsWithProgress = $db->table('riwayat_belajar rb')
             ->distinct()
-            ->select('rb.id_riwayat, rb.id_siswa, rb.id_materi, rb.status, rb.persentase_penguasaan, rb.waktu_dibuat, rb.waktu_diubah, rb.waktu_akses_terakhir')
+            ->select('rb.id_riwayat, rb.id_siswa, rb.id_materi, rb.status, rb.waktu_dibuat, rb.waktu_diubah, rb.waktu_akses_terakhir')
             ->join('siswa s', 's.id = rb.id_siswa')
             ->where('s.status', 'AKTIF')
             ->countAllResults();
@@ -273,7 +273,7 @@ class ProgressController extends BaseController
             $progress = $progressData[$materiId] ?? null;
 
             $materi['status'] = $progress['status'] ?? 'belum_dimulai';
-            $materi['completion_percentage'] = $progress['persentase_penguasaan'] ?? 0;
+            $materi['completion_percentage'] = ($progress['status'] === 'selesai') ? 100 : (($progress['status'] === 'sedang_belajar') ? 50 : 0);
             $materi['last_accessed'] = $progress['waktu_akses_terakhir'] ?? null;
         }
 
