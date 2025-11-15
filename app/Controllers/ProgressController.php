@@ -121,20 +121,20 @@ class ProgressController extends BaseController
             ->countAllResults();
 
         // Get total sessions
-        $totalSessions = $db->table('sesi_pembelajaran sp')
+        $totalSessions = $db->table('sesi_latihan sp')
             ->join('siswa s', 's.id = sp.id_siswa')
             ->where('s.status', 'AKTIF')
             ->countAllResults();
 
         // Get completed sessions
-        $completedSessions = $db->table('sesi_pembelajaran sp')
+        $completedSessions = $db->table('sesi_latihan sp')
             ->join('siswa s', 's.id = sp.id_siswa')
             ->where('s.status', 'AKTIF')
             ->where('sp.status', 'selesai')
             ->countAllResults();
 
         // Get average score
-        $avgScoreQuery = $db->table('sesi_pembelajaran sp')
+        $avgScoreQuery = $db->table('sesi_latihan sp')
             ->join('siswa s', 's.id = sp.id_siswa')
             ->where('s.status', 'AKTIF')
             ->where('sp.status', 'selesai')
@@ -199,7 +199,7 @@ class ProgressController extends BaseController
             ->countAllResults();
 
         // Get session statistics
-        $sessionStats = $db->table('sesi_pembelajaran')
+        $sessionStats = $db->table('sesi_latihan')
             ->select('
                 COUNT(*) as total_sessions,
                 SUM(CASE WHEN status = "selesai" THEN 1 ELSE 0 END) as completed_sessions,
@@ -287,7 +287,7 @@ class ProgressController extends BaseController
     {
         $db = \Config\Database::connect();
 
-        return $db->table('sesi_pembelajaran sp')
+        return $db->table('sesi_latihan sp')
             ->select('
                 sp.id_sesi,
                 sp.id_siswa,
@@ -331,7 +331,7 @@ class ProgressController extends BaseController
         }
 
         // Get sessions in last 7 days
-        $sessions = $db->table('sesi_pembelajaran')
+        $sessions = $db->table('sesi_latihan')
             ->select('DATE(waktu_mulai) as date, COUNT(*) as sessions, SUM(durasi_detik) as study_time')
             ->where('id_siswa', $siswaId)
             ->where('waktu_mulai >=', date('Y-m-d', strtotime('-6 days')))
@@ -370,7 +370,7 @@ class ProgressController extends BaseController
                 MAX(sp.waktu_mulai) as last_activity
             ')
             ->join('riwayat_belajar rb', 'rb.id_siswa = s.id', 'left')
-            ->join('sesi_pembelajaran sp', 'sp.id_siswa = s.id', 'left')
+            ->join('sesi_latihan sp', 'sp.id_siswa = s.id', 'left')
             ->groupBy('s.id, s.nama_lengkap, s.nis, s.kelas, s.status');
 
         // Apply filters

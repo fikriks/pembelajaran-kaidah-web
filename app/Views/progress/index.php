@@ -37,7 +37,7 @@
 
 <!-- Students with Progress Section -->
 <div class="row">
-    <div class="col-lg-8">
+    <div class="col-12">
         <!-- Students Progress Table -->
         <div class="card border-0 shadow-sm">
             <div class="card-header border-0 bg-white py-3">

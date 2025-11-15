@@ -7,7 +7,7 @@ use App\Models\SesiLatihanModel;
 use App\Models\SoalModel;
 use App\Models\PilihanJawabanModel;
 use App\Models\RiwayatBelajarModel;
-use App\Models\MateriKaidahModel;
+use App\Models\BabModel;
 use App\Libraries\LCMAlgorithm;
 use App\Libraries\APIHelper;
 use CodeIgniter\API\ResponseTrait;
@@ -20,7 +20,7 @@ class SesiController extends BaseController
     protected $soalModel;
     protected $pilihanJawabanModel;
     protected $riwayatBelajarModel;
-    protected $materiKaidahModel;
+    protected $babModel;
     protected $lcm;
 
     public function __construct()
@@ -29,7 +29,7 @@ class SesiController extends BaseController
         $this->soalModel = new SoalModel();
         $this->pilihanJawabanModel = new PilihanJawabanModel();
         $this->riwayatBelajarModel = new RiwayatBelajarModel();
-        $this->materiKaidahModel = new MateriKaidahModel();
+        $this->babModel = new BabModel();
         $this->lcm = new LCMAlgorithm();
     }
 
@@ -44,7 +44,7 @@ class SesiController extends BaseController
         $userId = 1;
 
         $rules = [
-            'kaidah_id' => 'required|integer',
+            'id_bab' => 'required|integer',
             'jumlah_soal' => 'permit_empty|integer|greater_than[0]|less_than_equal_to[50]'
         ];
 
@@ -52,13 +52,13 @@ class SesiController extends BaseController
             return $this->fail($this->validator->getErrors(), 400);
         }
 
-        $kaidahId = $this->request->getVar('kaidah_id');
+        $kaidahId = $this->request->getVar('id_bab');
         $jumlahSoal = $this->request->getVar('jumlah_soal') ?? 20;
 
-        // Verify kaidah exists
-        $kaidah = $this->materiKaidahModel->find($kaidahId);
-        if (!$kaidah) {
-            return $this->fail('Kaidah tidak ditemukan', 404);
+        // Verify bab exists
+        $bab = $this->babModel->find($kaidahId);
+        if (!$bab) {
+            return $this->fail('Bab tidak ditemukan', 404);
         }
 
         // Check if user has active session
@@ -74,23 +74,23 @@ class SesiController extends BaseController
         // Get all questions for this kaidah/bab
         $allSoal = $this->soalModel->where('id_bab', $kaidahId)->findAll();
         if (empty($allSoal)) {
-            return $this->fail('Belum ada soal untuk kaidah ini', 400);
+            return $this->fail('Belum ada soal untuk bab ini', 400);
         }
 
         if ($jumlahSoal > count($allSoal)) {
             $jumlahSoal = count($allSoal);
         }
 
-        // Generate seed for LCM
-        $seed = $this->lcm->generateSeed($userId, $kaidahId);
-
-        // Generate randomized questions using LCM
-        $randomizedSoal = $this->lcm->generateRandomQuestions($allSoal, $jumlahSoal, $seed);
+        // Simple randomization for now
+        shuffle($allSoal);
+        $randomizedSoal = array_slice($allSoal, 0, $jumlahSoal);
+        $seed = time();
 
         // Create new session
         $sessionData = [
             'id_siswa' => $userId,
             'id_bab' => $kaidahId,
+            'id_materi' => $kaidahId, // Keep for compatibility
             'seed_digunakan' => $seed,
             'total_soal' => $jumlahSoal,
             'soal_benar' => 0,
@@ -102,7 +102,7 @@ class SesiController extends BaseController
 
         $idSesi = $this->sesiLatihanModel->insert($sessionData);
         if (!$idSesi) {
-            return $this->fail('Gagal memulai sesi pembelajaran', 500);
+            return $this->fail('Gagal memulai sesi latihan', 500);
         }
 
         // Format questions for mobile app
@@ -158,8 +158,8 @@ class SesiController extends BaseController
             'data' => [
                 'sesi' => [
                     'id_sesi' => $idSesi,
-                    'kaidah_id' => $kaidahId,
-                    'judul_kaidah' => $kaidah['judul_kaidah'],
+                    'id_materi' => $kaidahId,
+                    'judul_kaidah' => $bab['nama_bab'] ?? 'Unknown',
                     'jumlah_soal' => $jumlahSoal,
                     'seed_used' => $seed,
                     'waktu_mulai' => $sessionData['waktu_mulai']
@@ -210,7 +210,7 @@ class SesiController extends BaseController
         }
 
         // Get kaidah info
-        $kaidah = $this->materiKaidahModel->find($activeSession['id_materi']);
+        $kaidah = $this->babModel->find($activeSession['id_bab']);
 
         // Calculate session duration
         $startTime = strtotime($activeSession['waktu_mulai']);
@@ -224,7 +224,7 @@ class SesiController extends BaseController
             'data' => [
                 'sesi' => [
                     'id_sesi' => $activeSession['id_sesi'],
-                    'kaidah_id' => $activeSession['id_materi'],
+                    'id_bab' => $activeSession['id_bab'],
                     'judul_kaidah' => $kaidah['judul_kaidah'] ?? 'Unknown',
                     'total_soal' => $activeSession['total_soal'],
                     'soal_benar' => $activeSession['soal_benar'],
@@ -267,7 +267,7 @@ class SesiController extends BaseController
         }
 
         // Get kaidah info
-        $kaidah = $this->materiKaidahModel->find($sesi['id_materi']);
+        $kaidah = $this->babModel->find($sesi['id_bab']);
 
         $response = [
             'status' => 'success',
@@ -276,7 +276,7 @@ class SesiController extends BaseController
             'data' => [
                 'sesi' => [
                     'id_sesi' => $sesi['id_sesi'],
-                    'kaidah_id' => $sesi['id_materi'],
+                    'id_bab' => $sesi['id_bab'],
                     'judul_kaidah' => $kaidah['judul_kaidah'] ?? 'Unknown',
                     'total_soal' => $sesi['total_soal'],
                     'soal_benar' => $sesi['soal_benar'],
@@ -358,7 +358,7 @@ class SesiController extends BaseController
         // For now, we'll just update the session score
         // In a complete implementation, you'd save to detail_jawaban_siswa table
         if ($isBenar) {
-            $this->sesiLatihanModel->increment($id, 'soal_benar');
+            $this->sesiLatihanModel->increment('soal_benar', 1, ['id_sesi' => $id]);
 
             // Update score (simple calculation)
             $sesiUpdated = $this->sesiLatihanModel->find($id);
@@ -378,6 +378,38 @@ class SesiController extends BaseController
         ];
 
         return $this->respond($response, 200);
+    }
+
+    /**
+     * Finish active session (no ID required)
+     * POST /api/sesi/finish
+     */
+    public function finishSession()
+    {
+        $authHeader = $this->request->getHeader('Authorization');
+        if (!$authHeader) {
+            return $this->fail('Token diperlukan', 401);
+        }
+
+        $token = str_replace('Bearer ', '', $authHeader->getValue());
+        $userId = $this->extractUserIdFromToken($token);
+
+        if (!$userId) {
+            return $this->fail('Token tidak valid', 401);
+        }
+
+        // Find active session for this user
+        $activeSession = $this->sesiLatihanModel
+            ->where('id_siswa', $userId)
+            ->where('status', 'sedang_berjalan')
+            ->orderBy('waktu_mulai', 'DESC')
+            ->first();
+
+        if (!$activeSession) {
+            return $this->fail('Tidak ada sesi aktif yang ditemukan', 404);
+        }
+
+        return $this->finish($activeSession['id_sesi']);
     }
 
     /**
@@ -428,13 +460,12 @@ class SesiController extends BaseController
 
         $riwayat = $this->riwayatBelajarModel
             ->where('id_siswa', $userId)
-            ->where('id_materi', $sesi['id_materi'])
+            ->where('id_materi', $sesi['id_bab'])
             ->first();
 
         if ($riwayat) {
             $this->riwayatBelajarModel->update($riwayat['id_riwayat'], [
                 'status' => 'selesai',
-                'persentase_penguasaan' => $completionPercentage,
                 'waktu_akses_terakhir' => date('Y-m-d H:i:s'),
                 'waktu_diubah' => date('Y-m-d H:i:s')
             ]);
@@ -488,7 +519,7 @@ class SesiController extends BaseController
         }
 
         // Get kaidah info
-        $kaidah = $this->materiKaidahModel->find($sesi['id_materi']);
+        $kaidah = $this->babModel->find($sesi['id_bab']);
 
         $persentaseBenar = ($sesi['soal_benar'] / $sesi['total_soal']) * 100;
 
@@ -500,7 +531,7 @@ class SesiController extends BaseController
                 'sesi' => [
                     'id_sesi' => $sesi['id_sesi'],
                     'kaidah' => [
-                        'id_materi' => $sesi['id_materi'],
+                        'id_bab' => $sesi['id_bab'],
                         'judul_kaidah' => $kaidah['judul_kaidah'] ?? 'Unknown'
                     ],
                     'total_soal' => $sesi['total_soal'],

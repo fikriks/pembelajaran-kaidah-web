@@ -16,7 +16,7 @@ use CodeIgniter\Model;
  */
 class SesiModel extends Model
 {
-    protected $table = 'sesi_pembelajaran';
+    protected $table = 'sesi_latihan';
     protected $primaryKey = 'id_sesi';
     protected $useAutoIncrement = true;
     protected $returnType = 'array';
@@ -121,21 +121,21 @@ class SesiModel extends Model
     public function getSesiWithRelations($idSesi = null)
     {
         $builder = $this->select('
-            sesi_pembelajaran.*,
+            sesi_latihan.*,
             materi_kaidah.judul_kaidah,
             materi_kaidah.tingkat_kesulitan as tingkat_kesulitan_materi,
             siswa.nama_lengkap as nama_siswa,
             siswa.kelas,
             siswa.nis
         ')
-        ->join('materi_kaidah', 'materi_kaidah.id_materi = sesi_pembelajaran.id_materi')
-        ->join('siswa', 'siswa.id = sesi_pembelajaran.id_siswa');
+        ->join('materi_kaidah', 'materi_kaidah.id_materi = sesi_latihan.id_materi')
+        ->join('siswa', 'siswa.id = sesi_latihan.id_siswa');
 
         if ($idSesi) {
-            $builder = $builder->where('sesi_pembelajaran.id_sesi', $idSesi);
+            $builder = $builder->where('sesi_latihan.id_sesi', $idSesi);
         }
 
-        $result = $builder->orderBy('sesi_pembelajaran.waktu_mulai', 'DESC')
+        $result = $builder->orderBy('sesi_latihan.waktu_mulai', 'DESC')
                           ->findAll();
 
         return $idSesi ? ($result[0] ?? null) : $result;
@@ -300,13 +300,13 @@ class SesiModel extends Model
         return $this->select('
             materi_kaidah.judul_kaidah,
             COUNT(*) as total_sesi,
-            AVG(sesi_pembelajaran.skor) as rata_rata_skor,
-            MAX(sesi_pembelajaran.skor) as skor_tertinggi,
-            AVG(sesi_pembelajaran.durasi_detik/60) as rata_rata_durasi_menit
+            AVG(sesi_latihan.skor) as rata_rata_skor,
+            MAX(sesi_latihan.skor) as skor_tertinggi,
+            AVG(sesi_latihan.durasi_detik/60) as rata_rata_durasi_menit
         ')
-        ->join('materi_kaidah', 'materi_kaidah.id_materi = sesi_pembelajaran.id_materi')
-        ->where('sesi_pembelajaran.status', 'selesai')
-        ->groupBy('sesi_pembelajaran.id_materi')
+        ->join('materi_kaidah', 'materi_kaidah.id_materi = sesi_latihan.id_materi')
+        ->where('sesi_latihan.status', 'selesai')
+        ->groupBy('sesi_latihan.id_materi')
         ->orderBy('total_sesi', 'DESC')
         ->limit($limit)
         ->findAll();
@@ -322,12 +322,12 @@ class SesiModel extends Model
             siswa.kelas,
             siswa.nis,
             COUNT(*) as total_sesi,
-            AVG(sesi_pembelajaran.skor) as rata_rata_skor,
-            MAX(sesi_pembelajaran.skor) as skor_tertinggi,
-            SUM(CASE WHEN sesi_pembelajaran.status = "selesai" THEN 1 ELSE 0 END) as sesi_selesai
+            AVG(sesi_latihan.skor) as rata_rata_skor,
+            MAX(sesi_latihan.skor) as skor_tertinggi,
+            SUM(CASE WHEN sesi_latihan.status = "selesai" THEN 1 ELSE 0 END) as sesi_selesai
         ')
-        ->join('siswa', 'siswa.id = sesi_pembelajaran.id_siswa')
-        ->groupBy('sesi_pembelajaran.id_siswa')
+        ->join('siswa', 'siswa.id = sesi_latihan.id_siswa')
+        ->groupBy('sesi_latihan.id_siswa')
         ->orderBy('rata_rata_skor', 'DESC')
         ->limit($limit)
         ->findAll();
@@ -429,13 +429,13 @@ class SesiModel extends Model
     public function searchSesi($keyword, $status = null)
     {
         $builder = $this->select('
-            sesi_pembelajaran.*,
+            sesi_latihan.*,
             materi_kaidah.judul_kaidah,
             siswa.nama_lengkap as nama_siswa,
             siswa.kelas
         ')
-        ->join('materi_kaidah', 'materi_kaidah.id_materi = sesi_pembelajaran.id_materi')
-        ->join('siswa', 'siswa.id = sesi_pembelajaran.id_siswa')
+        ->join('materi_kaidah', 'materi_kaidah.id_materi = sesi_latihan.id_materi')
+        ->join('siswa', 'siswa.id = sesi_latihan.id_siswa')
         ->groupStart()
             ->like('siswa.nama_lengkap', $keyword)
             ->orLike('siswa.nis', $keyword)
@@ -443,10 +443,10 @@ class SesiModel extends Model
         ->groupEnd();
 
         if ($status) {
-            $builder = $builder->where('sesi_pembelajaran.status', $status);
+            $builder = $builder->where('sesi_latihan.status', $status);
         }
 
-        return $builder->orderBy('sesi_pembelajaran.waktu_mulai', 'DESC')
+        return $builder->orderBy('sesi_latihan.waktu_mulai', 'DESC')
                       ->findAll();
     }
 
@@ -456,24 +456,24 @@ class SesiModel extends Model
     public function getSesiWithPagination($perPage = 10, $page = 1, $filters = [])
     {
         $builder = $this->select('
-            sesi_pembelajaran.*,
+            sesi_latihan.*,
             materi_kaidah.judul_kaidah,
             siswa.nama_lengkap as nama_siswa,
             siswa.kelas,
             siswa.nis
         ')
-        ->join('materi_kaidah', 'materi_kaidah.id_materi = sesi_pembelajaran.id_materi')
-        ->join('siswa', 'siswa.id = sesi_pembelajaran.id_siswa');
+        ->join('materi_kaidah', 'materi_kaidah.id_materi = sesi_latihan.id_materi')
+        ->join('siswa', 'siswa.id = sesi_latihan.id_siswa');
 
         // Apply filters
         if (!empty($filters['status'])) {
-            $builder->where('sesi_pembelajaran.status', $filters['status']);
+            $builder->where('sesi_latihan.status', $filters['status']);
         }
         if (!empty($filters['id_materi'])) {
-            $builder->where('sesi_pembelajaran.id_materi', $filters['id_materi']);
+            $builder->where('sesi_latihan.id_materi', $filters['id_materi']);
         }
         if (!empty($filters['id_siswa'])) {
-            $builder->where('sesi_pembelajaran.id_siswa', $filters['id_siswa']);
+            $builder->where('sesi_latihan.id_siswa', $filters['id_siswa']);
         }
         if (!empty($filters['search'])) {
             $builder->groupStart()
@@ -483,7 +483,7 @@ class SesiModel extends Model
             ->groupEnd();
         }
 
-        $data = $builder->orderBy('sesi_pembelajaran.waktu_mulai', 'DESC')
+        $data = $builder->orderBy('sesi_latihan.waktu_mulai', 'DESC')
                        ->paginate($perPage, 'default', $page);
 
         return [

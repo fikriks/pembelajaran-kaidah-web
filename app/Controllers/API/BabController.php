@@ -159,7 +159,7 @@ class BabController extends BaseController
                     'progress_percentage' => 0,
                     'status_color' => 'secondary',
                     'next_action' => 'start',
-                    'is_unlocked' => $bab['urutan'] == 1 // First chapter is unlocked
+                    'is_unlocked' => $bab['urutan'] <= 2 // First 2 chapters are unlocked for testing
                 ];
 
                 $chapters[] = $chapterData;
@@ -230,9 +230,9 @@ class BabController extends BaseController
                 return $this->fail('Bab tidak aktif');
             }
 
-            // For now, only first chapter is unlocked
-            // In a real app, this would check user progress
-            $isUnlocked = $bab['urutan'] == 1;
+            // For testing, first 2 chapters are unlocked
+            // In a real app, this would check user progress of previous chapters
+            $isUnlocked = $bab['urutan'] <= 2;
 
             return $this->respond([
                 'status' => 'success',

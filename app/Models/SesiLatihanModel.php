@@ -14,6 +14,7 @@ class SesiLatihanModel extends Model
     protected $protectFields    = true;
     protected $allowedFields    = [
         'id_siswa',
+        'id_bab',
         'id_materi',
         'seed_digunakan',
         'total_soal',
@@ -22,7 +23,8 @@ class SesiLatihanModel extends Model
         'waktu_mulai',
         'waktu_selesai',
         'durasi_detik',
-        'status'
+        'status',
+        'waktu_dibuat'
     ];
 
     // Dates

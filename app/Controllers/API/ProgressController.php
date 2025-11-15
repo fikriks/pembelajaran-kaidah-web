@@ -56,10 +56,14 @@ class ProgressController extends BaseController
         $allKaidah = $this->materiKaidahModel->findAll();
         $totalKaidah = count($allKaidah);
 
-        // Get riwayat belajar untuk progress
-        $riwayatBelajar = $this->riwayatBelajarModel
+        // Get riwayat belajar untuk progress (using direct DB query for consistency)
+        $db = \Config\Database::connect();
+        $riwayatBelajar = $db->table('riwayat_belajar')
             ->where('id_siswa', $userId)
-            ->findAll();
+            ->orderBy('waktu_diubah', 'DESC')
+            ->get()
+            ->getResultArray();
+
 
         // Get completed sessions untuk statistik quiz
         $completedSessions = $this->sesiLatihanModel
@@ -91,34 +95,18 @@ class ProgressController extends BaseController
             $completionPercentage = 0;
             $lastAccessed = null;
 
-            // Determine status and completion based on riwayat belajar
+            // Simplified logic: hanya ada 2 status - belum_dimulai atau selesai
             if (!empty($riwayatItem)) {
                 $riwayat = reset($riwayatItem); // Get the most recent riwayat
-                $status = $riwayat['status'];
-                $completionPercentage = (float) $riwayat['persentase_penguasaan'];
-                $lastAccessed = $riwayat['waktu_akses_terakhir'];
+                // Langsung anggap selesai jika ada riwayat (user sudah membuka materi)
+                $status = 'selesai';
+                $completionPercentage = 100.0; // Selalu 100% jika sudah dibuka
+                $lastAccessed = $riwayat['waktu_akses_terakhir'] ?? $riwayat['waktu_diubah'];
             }
 
-            // Override with session data if available
-            if (!empty($kaidahSessions)) {
-                // Calculate completion percentage based on quiz performance
-                $bestScore = max(array_column($kaidahSessions, 'skor'));
-
-                // Update status based on best score
-                if ($bestScore >= 80) {
-                    $status = 'selesai';
-                    $completionPercentage = 100;
-                } elseif ($bestScore >= 50) {
-                    $status = 'sedang_belajar';
-                    // Use actual score as completion percentage
-                    $completionPercentage = (float) $bestScore;
-                } else {
-                    $status = 'sedang_belajar';
-                    $completionPercentage = (float) $bestScore;
-                }
-
-                $lastAccessed = max(array_column($kaidahSessions, 'waktu_selesai'));
-            }
+            // Note: Removed session override logic - kaidah progress should be based on riwayat_belajar only
+            // Quiz sessions are tracked separately for quiz completion, not for learning progress
+            // This ensures that learning material completion (riwayat_belajar) takes precedence
 
             $kaidahProgress[] = [
                 'id_materi' => $kaidah['id_materi'],
@@ -149,14 +137,16 @@ class ProgressController extends BaseController
                 ],
                 'overview' => [
                     'total_kaidah' => $totalKaidah,
+                    // Simplified: hanya 2 status - selesai (100%) atau belum_dimulai (0%)
                     'kaidah_selesai' => count(array_filter($kaidahProgress, fn($k) => $k['status'] == 'selesai')),
-                    'kaidah_sedang_belajar' => count(array_filter($kaidahProgress, fn($k) => $k['status'] == 'sedang_belajar')),
+                    'kaidah_sedang_belajar' => 0, // Tidak ada lagi status sedang_belajar
                     'kaidah_belum_dimulai' => count(array_filter($kaidahProgress, fn($k) => $k['status'] == 'belum_dimulai')),
                     'total_sesi' => $totalSesi,
                     'rata_rata_skor' => round($avgScore, 2),
                     'total_soal_dijawab' => $totalQuestions,
                     'total_jawaban_benar' => $correctAnswers,
                     'persentase_benar_keseluruhan' => $totalQuestions > 0 ? round(($correctAnswers / $totalQuestions) * 100, 1) : 0,
+                    // Simplified: berdasarkan status 'selesai' saja
                     'persentase_kemajuan' => $totalKaidah > 0 ? round((count(array_filter($kaidahProgress, fn($k) => $k['status'] == 'selesai')) / $totalKaidah) * 100, 1) : 0,
                     // Add kaidah_progress to overview for Android compatibility
                     'kaidah_progress' => $kaidahProgress
@@ -275,7 +265,7 @@ class ProgressController extends BaseController
         $db = \Config\Database::connect();
 
         // Get session statistics
-        $sessionStats = $db->table('sesi_pembelajaran')
+        $sessionStats = $db->table('sesi_latihan')
             ->select('
                 COUNT(*) as total_sessions,
                 SUM(CASE WHEN status = "selesai" THEN 1 ELSE 0 END) as completed_sessions,
@@ -292,7 +282,7 @@ class ProgressController extends BaseController
             ->getRowArray();
 
         // Get kaidah breakdown
-        $kaidahStats = $db->table('sesi_pembelajaran sp')
+        $kaidahStats = $db->table('sesi_latihan sp')
             ->select('
                 mk.id_materi,
                 mk.judul_kaidah,
@@ -402,7 +392,7 @@ class ProgressController extends BaseController
         }
 
         // Get sessions in last 7 days
-        $sessions = $db->table('sesi_pembelajaran')
+        $sessions = $db->table('sesi_latihan')
             ->select('DATE(waktu_mulai) as date, COUNT(*) as sessions')
             ->where('id_siswa', $userId)
             ->where('waktu_mulai >=', date('Y-m-d', strtotime('-6 days')))
@@ -504,7 +494,7 @@ class ProgressController extends BaseController
     {
         $db = \Config\Database::connect();
 
-        $builder = $db->table('sesi_pembelajaran sp')
+        $builder = $db->table('sesi_latihan sp')
             ->select('
                 sp.*,
                 mk.judul_kaidah,
@@ -577,7 +567,7 @@ class ProgressController extends BaseController
             default => '%Y-%m'
         };
 
-        $history = $db->table('sesi_pembelajaran')
+        $history = $db->table('sesi_latihan')
             ->select("
                 DATE_FORMAT(waktu_mulai, '$dateFormat') as period,
                 COUNT(*) as total_sessions,
@@ -615,7 +605,7 @@ class ProgressController extends BaseController
     {
         $db = \Config\Database::connect();
 
-        $performance = $db->table('sesi_pembelajaran')
+        $performance = $db->table('sesi_latihan')
             ->select("
                 DATE_FORMAT(waktu_mulai, '%Y-%m') as month,
                 COUNT(*) as sessions,
@@ -648,7 +638,7 @@ class ProgressController extends BaseController
         $db = \Config\Database::connect();
 
         // Get dates of completed sessions in last 30 days
-        $sessions = $db->table('sesi_pembelajaran')
+        $sessions = $db->table('sesi_latihan')
             ->select('DISTINCT DATE(waktu_selesai) as date')
             ->where('id_siswa', $userId)
             ->where('status', 'selesai')
@@ -725,7 +715,7 @@ class ProgressController extends BaseController
     {
         $db = \Config\Database::connect();
 
-        $data = $db->table('sesi_pembelajaran sp')
+        $data = $db->table('sesi_latihan sp')
             ->select('
                 mk.id_materi,
                 mk.judul_kaidah,
@@ -755,7 +745,7 @@ class ProgressController extends BaseController
     {
         $db = \Config\Database::connect();
 
-        $session = $db->table('sesi_pembelajaran')
+        $session = $db->table('sesi_latihan')
             ->where('id_siswa', $userId)
             ->where('status', 'selesai')
             ->orderBy('waktu_selesai', 'ASC')
@@ -808,21 +798,20 @@ class ProgressController extends BaseController
                 ->getRowArray();
 
             if ($existingRiwayat) {
-                // Update existing record
+                // Update existing record - langsung selesai (tidak perlu persentase lagi)
                 $db->table('riwayat_belajar')
                     ->where('id_riwayat', $existingRiwayat['id_riwayat'])
                     ->update([
                         'status' => 'selesai',
-                        'persentase_penguasaan' => 100.0,
-                        'waktu_diubah' => date('Y-m-d H:i:s')
+                        'waktu_diubah' => date('Y-m-d H:i:s'),
+                        'waktu_akses_terakhir' => date('Y-m-d H:i:s')
                     ]);
             } else {
-                // Create new record
+                // Create new record - langsung selesai (tidak perlu persentase lagi)
                 $db->table('riwayat_belajar')->insert([
                     'id_siswa' => $userId,
                     'id_materi' => $id,
                     'status' => 'selesai',
-                    'persentase_penguasaan' => 100.0,
                     'waktu_diubah' => date('Y-m-d H:i:s'),
                     'waktu_dibuat' => date('Y-m-d H:i:s'),
                     'waktu_akses_terakhir' => date('Y-m-d H:i:s')
@@ -840,6 +829,7 @@ class ProgressController extends BaseController
                     ]);
             }
 
+    
             $response = [
                 'status' => 'success',
                 'message' => 'Progress materi berhasil diperbarui',
@@ -900,14 +890,16 @@ class ProgressController extends BaseController
             ->get()
             ->getRowArray();
 
+        // Simplified logic: hanya ada 2 status
         $status = 'belum_dimulai';
         $completionPercentage = 0;
         $lastAccessed = null;
 
         if ($riwayat) {
-            $status = $riwayat['status'];
-            $completionPercentage = (float) $riwayat['persentase_penguasaan'];
-            $lastAccessed = $riwayat['waktu_diubah'];
+            // Langsung anggap selesai jika ada riwayat
+            $status = 'selesai';
+            $completionPercentage = 100.0; // Selalu 100%
+            $lastAccessed = $riwayat['waktu_akses_terakhir'] ?? $riwayat['waktu_diubah'];
         }
 
         $response = [
