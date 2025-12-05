@@ -53,10 +53,9 @@ class SiswaController extends BaseController
     {
         $search = $this->request->getGet('search');
         $kelas = $this->request->getGet('kelas');
-        $page = $this->request->getGet('page') ?? 1;
-        $perPage = 10;
 
-        $paginationData = $this->siswaModel->getSiswaPaginated($perPage, $page, $search, $kelas);
+        // Get all siswa data (no pagination for DataTables)
+        $siswaData = $this->siswaModel->getAllSiswa($search, $kelas);
 
         // Get all unique kelas for filter dropdown
         $kelasOptions = [];
@@ -71,10 +70,8 @@ class SiswaController extends BaseController
         // Prepare data for view with proper structure
         $data = [
             'title' => 'Manajemen Siswa',
-            'siswa' => $paginationData['data'],
-            'total' => $paginationData['total'],
-            'perPage' => $paginationData['perPage'],
-            'currentPage' => $paginationData['currentPage'],
+            'siswa' => $siswaData,
+            'total' => count($siswaData),
             'search' => $search,
             'selectedKelas' => $kelas,
             'kelasOptions' => $kelasOptions,
@@ -189,7 +186,7 @@ class SiswaController extends BaseController
 
             if (!$hasChanges) {
                 log_message('info', 'No changes detected for student: ID ' . $id);
-                session()->setFlashdata('success', 'Berhasil mengubah data siswa');
+                session()->setFlashdata('success', 'Tidak ada perubahan data yang dilakukan');
                 return redirect()->to('/siswa');
             }
 
@@ -206,7 +203,7 @@ class SiswaController extends BaseController
 
                 if ($affectedRows === 0 && empty($dbError['message'])) {
                     log_message('info', 'Update successful but no rows affected (data unchanged): ID ' . $id);
-                    session()->setFlashdata('success', 'Data siswa berhasil diperbarui');
+                    session()->setFlashdata('success', 'Data siswa berhasil diperbarui (tidak ada perubahan)');
                     return redirect()->to('/siswa');
                 } else {
                     log_message('error', 'Database error on update: ' . json_encode($dbError));

@@ -32,7 +32,7 @@ $old_input = session()->getFlashdata('_ci_old_input') ?? [];
     </div>
 <?php endif; ?>
 
-<form action="<?= site_url('login') ?>" method="post" class="auth-form needs-validation" novalidate>
+<form action="<?= site_url('login') ?>" method="post" class="auth-form">
     <?= csrf_field() ?>
 
     <div class="mb-3">

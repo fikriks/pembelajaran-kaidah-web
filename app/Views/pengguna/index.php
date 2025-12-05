@@ -149,8 +149,8 @@
 <?= $this->section('scripts') ?>
 <script>
     $(document).ready(function() {
-        // Get DataTable instance
-        const table = $('#penggunaTable').DataTable();
+        // DataTables sudah di-initialize otomatis oleh datatables-helper.js
+        // Tidak perlu manual initialization
     });
 
     // Toggle status

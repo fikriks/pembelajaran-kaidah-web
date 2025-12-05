@@ -79,21 +79,7 @@
             });
         }, 5000);
 
-        // Form validation feedback
-        document.addEventListener('DOMContentLoaded', function() {
-            const forms = document.querySelectorAll('.needs-validation');
 
-            Array.from(forms).forEach(function(form) {
-                form.addEventListener('submit', function(event) {
-                    if (!form.checkValidity()) {
-                        event.preventDefault();
-                        event.stopPropagation();
-                    }
-
-                    form.classList.add('was-validated');
-                }, false);
-            });
-        });
 
         // Show/hide password functionality
         document.querySelectorAll('.toggle-password').forEach(function(button) {

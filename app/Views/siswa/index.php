@@ -122,7 +122,7 @@
                                                 class="btn btn-sm btn-secondary me-1"
                                                 onclick="confirmResetPassword(<?= $item['id'] ?>)"
                                                 title="Reset Password">
-                                            <i class="ti ti-key"></i> Reset
+                                            <i class="ti ti-key"></i> Reset Password
                                         </button>
                                         <button type="button"
                                                 class="btn btn-sm btn-danger"
@@ -210,8 +210,8 @@
 // DataTables will be auto-initialized by datatables-helper.js
 
 $(document).ready(function() {
-    // Get DataTable instance
-    const table = $('#siswaTable').DataTable();
+    // DataTables sudah di-initialize otomatis oleh datatables-helper.js
+    // Tidak perlu manual initialization
 });
 
 function confirmDelete(id) {

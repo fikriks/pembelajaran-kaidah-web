@@ -74,7 +74,7 @@
             </div>
 
             <!-- Form -->
-            <form method="POST" action="<?= site_url('pengguna/' . $user['id_pengguna']) ?>" class="needs-validation" novalidate>
+            <form method="POST" action="<?= site_url('pengguna/' . $user['id_pengguna']) ?>">
                 <?= csrf_field() ?>
                 <input type="hidden" name="_method" value="PUT">
 
@@ -385,7 +385,7 @@ function showNotification(message, type = 'info') {
 
 // Real-time validation
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('.needs-validation');
+    const form = document.querySelector('form');
     const passwordInput = document.getElementById('kata_sandi');
     const confirmInput = document.getElementById('confirm_password');
     const usernameInput = document.getElementById('nama_pengguna');

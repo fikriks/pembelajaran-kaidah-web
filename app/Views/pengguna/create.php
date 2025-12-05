@@ -42,7 +42,7 @@
             </div>
 
             <!-- Form -->
-            <form method="post" action="<?= site_url('pengguna/store') ?>" class="needs-validation" novalidate>
+            <form method="post" action="<?= site_url('pengguna/store') ?>">
                 <?= csrf_field() ?>
 
                 <div class="row">
@@ -244,7 +244,7 @@ function showNotification(message, type = 'info') {
 
 // Real-time validation
 document.addEventListener('DOMContentLoaded', function() {
-    const form = document.querySelector('.needs-validation');
+    const form = document.querySelector('form');
     const passwordInput = document.getElementById('kata_sandi');
     const confirmInput = document.getElementById('confirm_password');
     const usernameInput = document.getElementById('nama_pengguna');

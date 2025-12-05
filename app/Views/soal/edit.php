@@ -172,7 +172,7 @@
         <!-- Flash Messages -->
         <?= $this->include('partials/flash_messages') ?>
 
-        <form method="POST" action="<?= site_url('soal') ?>" id="soalForm" class="needs-validation" novalidate>
+        <form method="POST" action="<?= site_url('soal') ?>" id="soalForm">
             <?= csrf_field() ?>
 
             <!-- Informasi Soal -->
@@ -360,23 +360,14 @@ const maxJawaban = 10;
 
 // Form validation
 document.addEventListener('DOMContentLoaded', function() {
-    const forms = document.querySelectorAll('.needs-validation');
-    Array.from(forms).forEach(function(form) {
-        form.addEventListener('submit', function(event) {
-            if (!form.checkValidity()) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-
-            // Custom validation untuk jawaban
-            if (!validateJawaban()) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-
-            form.classList.add('was-validated');
-        }, false);
-    });
+    // Custom validation untuk jawaban
+    const form = document.getElementById('soalForm');
+    form.addEventListener('submit', function(event) {
+        if (!validateJawaban()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    }, false);
 
     // Initialize
     updateJawabanLabels();

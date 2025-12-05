@@ -3,9 +3,12 @@
 <?php if (session()->has('success')): ?>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('Flash data - success:', '<?= session('success') ?>'); // Debug
             // Check if toast object is available before using it
             if (typeof toast !== 'undefined' && toast && typeof toast.success === 'function') {
                 toast.success('<?= esc(str_replace("'", "\'", session('success'))) ?>');
+            } else {
+                console.error('Toast object not available for success message');
             }
         });
     </script>
@@ -14,9 +17,12 @@
 <?php if (session()->has('error')): ?>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('Flash data - error:', '<?= session('error') ?>'); // Debug
             // Check if toast object is available before using it
             if (typeof toast !== 'undefined' && toast && typeof toast.error === 'function') {
                 toast.error('<?= esc(str_replace("'", "\'", session('error'))) ?>');
+            } else {
+                console.error('Toast object not available for error message');
             }
         });
     </script>
@@ -25,18 +31,22 @@
 <?php if (session()->has('errors')): ?>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('Flash data - errors:', '<?= json_encode(session('errors')) ?>'); // Debug
             // Check if toast object is available before using it
             if (typeof toast !== 'undefined' && toast && typeof toast.error === 'function') {
                 <?php
                 $errors = session('errors');
                 if (is_array($errors)) {
                     foreach ($errors as $error): ?>
+                        console.log('Validation error:', '<?= esc(str_replace("'", "\'", $error)) ?>'); // Debug
                         toast.error('<?= esc(str_replace("'", "\'", $error)) ?>');
                     <?php endforeach;
                 } else { ?>
                     toast.error('<?= esc(str_replace("'", "\'", $errors)) ?>');
                 <?php }
                 ?>
+            } else {
+                console.error('Toast object not available for validation errors');
             }
         });
     </script>
@@ -64,19 +74,3 @@
     </script>
 <?php endif; ?>
 
-<!-- Alternative: Data attributes for manual trigger (if needed) -->
-<?php if (session()->has('success')): ?>
-    <div class="d-none" data-flash-success="<?= esc(session('success')) ?>"></div>
-<?php endif; ?>
-
-<?php if (session()->has('error')): ?>
-    <div class="d-none" data-flash-error="<?= esc(session('error')) ?>"></div>
-<?php endif; ?>
-
-<?php if (session()->has('info')): ?>
-    <div class="d-none" data-flash-info="<?= esc(session('info')) ?>"></div>
-<?php endif; ?>
-
-<?php if (session()->has('warning')): ?>
-    <div class="d-none" data-flash-warning="<?= esc(session('warning')) ?>"></div>
-<?php endif; ?>

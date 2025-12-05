@@ -87,7 +87,7 @@
         <!-- Flash Messages -->
         <?= $this->include('partials/flash_messages') ?>
 
-        <form method="POST" action="<?= site_url('kaidah/' . $kaidah['id_materi']) ?>" class="needs-validation" novalidate>
+        <form method="POST" action="<?= site_url('kaidah/' . $kaidah['id_materi']) ?>">
             <?= csrf_field() ?>
             <input type="hidden" name="_method" value="PUT">
 
@@ -225,21 +225,7 @@
 
 <?= $this->section('scripts') ?>
 <script>
-// Form validation
-document.addEventListener('DOMContentLoaded', function() {
-    const forms = document.querySelectorAll('.needs-validation');
 
-    Array.from(forms).forEach(function(form) {
-        form.addEventListener('submit', function(event) {
-            if (!form.checkValidity()) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-
-            form.classList.add('was-validated');
-        }, false);
-    });
-});
 
 // Character counter for deskripsi
 const deskripsi = document.getElementById('deskripsi');

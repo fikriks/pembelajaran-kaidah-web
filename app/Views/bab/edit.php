@@ -39,7 +39,7 @@
             </div>
         </div>
 
-        <form method="POST" action="<?= site_url('bab/' . $bab['id_bab']) ?>" class="needs-validation" novalidate>
+        <form method="POST" action="<?= site_url('bab/' . $bab['id_bab']) ?>">
             <?= csrf_field() ?>
             <input type="hidden" name="_method" value="PUT">
 
@@ -127,21 +127,7 @@
 
 <?= $this->section('scripts') ?>
 <script>
-// Form validation
-(function() {
-    'use strict';
-    var forms = document.querySelectorAll('.needs-validation');
 
-    Array.prototype.slice.call(forms).forEach(function(form) {
-        form.addEventListener('submit', function(event) {
-            if (!form.checkValidity()) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            form.classList.add('was-validated');
-        }, false);
-    });
-})();
 
 // Auto-capitalize nama bab
 document.getElementById('nama_bab').addEventListener('input', function(e) {

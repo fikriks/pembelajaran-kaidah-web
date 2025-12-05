@@ -57,7 +57,7 @@
             </div>
         </div>
 
-        <form method="POST" action="<?= site_url('siswa/' . $siswa['id']) ?>" class="needs-validation" novalidate>
+        <form method="POST" action="<?= site_url('siswa/' . $siswa['id']) ?>">
             <?= csrf_field() ?>
             <input type="hidden" name="_method" value="PUT">
 
@@ -159,21 +159,7 @@
 
 <?= $this->section('scripts') ?>
 <script>
-// Form validation
-document.addEventListener('DOMContentLoaded', function() {
-    const forms = document.querySelectorAll('.needs-validation');
 
-    Array.from(forms).forEach(function(form) {
-        form.addEventListener('submit', function(event) {
-            if (!form.checkValidity()) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-
-            form.classList.add('was-validated');
-        }, false);
-    });
-});
 
 // Delete confirmation
 function confirmDelete(id) {

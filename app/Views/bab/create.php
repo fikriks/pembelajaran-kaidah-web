@@ -28,7 +28,7 @@
         <!-- Flash Messages -->
         <?= $this->include('partials/flash_messages') ?>
 
-        <form method="POST" action="<?= site_url('bab') ?>" class="needs-validation" novalidate>
+        <form method="POST" action="<?= site_url('bab') ?>">
             <?= csrf_field() ?>
 
             <!-- Row 1: Nama Bab dan Urutan -->
@@ -112,21 +112,7 @@
 
 <?= $this->section('scripts') ?>
 <script>
-// Form validation
-(function() {
-    'use strict';
-    var forms = document.querySelectorAll('.needs-validation');
 
-    Array.prototype.slice.call(forms).forEach(function(form) {
-        form.addEventListener('submit', function(event) {
-            if (!form.checkValidity()) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            form.classList.add('was-validated');
-        }, false);
-    });
-})();
 
 // Auto-capitalize nama bab
 document.getElementById('nama_bab').addEventListener('input', function(e) {

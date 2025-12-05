@@ -42,7 +42,7 @@
         <!-- Flash Messages -->
         <?= $this->include('partials/flash_messages') ?>
 
-        <form method="POST" action="<?= site_url('siswa') ?>" class="needs-validation" novalidate>
+        <form method="POST" action="<?= site_url('siswa') ?>">
             <?= csrf_field() ?>
 
             <div class="row">
@@ -112,30 +112,6 @@
 <script>
 // Form validation
 document.addEventListener('DOMContentLoaded', function() {
-    const forms = document.querySelectorAll('.needs-validation');
-
-    Array.from(forms).forEach(function(form) {
-        form.addEventListener('submit', function(event) {
-            if (!form.checkValidity()) {
-                event.preventDefault();
-                event.stopPropagation();
-
-                // Show validation error toast using Notyf
-                if (typeof toast !== 'undefined' && toast.error) {
-                    toast.error('Mohon lengkapi semua field yang wajib diisi.');
-                } else if (typeof notyf !== 'undefined') {
-                    // Fallback to direct Notyf usage
-                    notyf.error('Mohon lengkapi semua field yang wajib diisi.');
-                } else {
-                    console.error('Toast and Notyf objects not available');
-                    alert('Mohon lengkapi semua field yang wajib diisi.');
-                }
-            }
-
-            form.classList.add('was-validated');
-        }, false);
-    });
-
     // Debug toast availability
     console.log('Toast object availability:', typeof toast);
     console.log('Notyf object availability:', typeof notyf);

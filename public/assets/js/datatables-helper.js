@@ -94,6 +94,7 @@ window.DataTableHelper = {
         // Configuration for student tables
         students: {
             pageLength: 15,
+            lengthMenu: [[10, 15, 25, 50, -1], [10, 15, 25, 50, "Semua"]],
             order: [[0, 'asc']], // Sort by NIS
             columnDefs: [
                 {
@@ -105,7 +106,20 @@ window.DataTableHelper = {
                     targets: [4], // Status column
                     className: 'text-center'
                 }
-            ]
+            ],
+            initComplete: function() {
+                // Ensure length menu is properly initialized
+                var api = this.api();
+                
+                // Style length select
+                var lengthSelect = $('.dataTables_length select');
+                if (lengthSelect.length && !lengthSelect.hasClass('enhanced')) {
+                    lengthSelect.addClass('enhanced form-select');
+                }
+                
+                // Force refresh to ensure pagination works
+                api.draw();
+            }
         },
 
         // Configuration for report tables

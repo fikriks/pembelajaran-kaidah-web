@@ -39,7 +39,6 @@
       <?= $this->include('layouts/navbar.php') ?>
 
       <div class="container-fluid">
-        <?= $this->include('partials/flash_messages') ?>
         <?= $this->renderSection('content') ?>
 
         <?= $this->include('layouts/footer.php') ?>
@@ -60,6 +59,9 @@
   <!-- Notyf JavaScript -->
   <script src="<?= base_url('assets/libs/notyf/notyf.min.js') ?>"></script>
   <script src="<?= base_url('assets/js/toast-helper.js') ?>"></script>
+
+  <!-- Flash Messages (loaded after Notyf) -->
+  <?= $this->include('partials/flash_messages') ?>
 
   <!-- Additional Page-specific JavaScript -->
   <?= $this->renderSection('scripts') ?>

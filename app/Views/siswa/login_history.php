@@ -156,7 +156,7 @@
                                 <div class="col-md-3 text-end">
                                     <div class="time-badge rounded-3 d-inline-block">
                                         <i class="ti ti-clock-hour-4 me-1"></i>
-                                        <?= $this->include('partials/time_ago', ['time' => $login['login_time']]) ?>
+                                         <?= time_ago($login['login_time']) ?>
                                     </div>
                                 </div>
                             </div>

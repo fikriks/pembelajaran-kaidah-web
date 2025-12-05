@@ -172,4 +172,20 @@ class SiswaModel extends Model
             'currentPage' => $page
         ];
     }
+
+    public function getAllSiswa($search = '', $kelas = '')
+    {
+        $builder = $this->builder();
+
+        if (!empty($search)) {
+            $builder->like('nis', $search)
+                   ->orLike('nama_lengkap', $search);
+        }
+
+        if (!empty($kelas)) {
+            $builder->where('kelas', $kelas);
+        }
+
+        return $builder->get()->getResultArray();
+    }
 }
