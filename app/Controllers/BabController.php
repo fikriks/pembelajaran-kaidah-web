@@ -196,12 +196,11 @@ class BabController extends BaseController
                 ]
             ],
             'urutan' => [
-                'rules' => "required|integer|greater_than_equal_to[1]|is_unique[bab.urutan,id_bab,{$id}]",
+                'rules' => "required|integer|greater_than_equal_to[1]",
                 'errors' => [
                     'required' => 'Urutan wajib diisi',
                     'integer' => 'Urutan harus berupa angka',
-                    'greater_than_equal_to' => 'Urutan minimal 1',
-                    'is_unique' => 'Urutan sudah digunakan, gunakan urutan lain'
+                    'greater_than_equal_to' => 'Urutan minimal 1'
                 ]
             ],
             'is_active' => [
@@ -224,6 +223,15 @@ class BabController extends BaseController
             'urutan' => $this->request->getPost('urutan'),
             'is_active' => $this->request->getPost('is_active')
         ];
+
+        // Custom validation for urutan uniqueness only if changed
+        if ($data['urutan'] != $bab['urutan']) {
+            $existingBab = $this->babModel->where('urutan', $data['urutan'])->first();
+            if ($existingBab && $existingBab['id_bab'] != $id) {
+                session()->setFlashdata('errors', ['urutan' => 'Urutan sudah digunakan, gunakan urutan lain']);
+                return redirect()->back()->withInput();
+            }
+        }
 
         try {
             if ($this->babModel->update($id, $data)) {

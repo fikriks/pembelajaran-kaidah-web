@@ -95,7 +95,7 @@
                     </div>
                     <div class="form-check form-check-inline">
                         <input class="form-check-input" type="radio" name="is_active" id="status_nonaktif"
-                               value="0" <?= old('is_active') == '0' ? 'checked' : '' ?> required>
+                               value="0" <?= old('is_active', $bab['is_active']) == '0' ? 'checked' : '' ?> required>
                         <label class="form-check-label" for="status_nonaktif">
                             <i class="ti ti-circle-x me-1 text-danger"></i>Nonaktif
                         </label>
