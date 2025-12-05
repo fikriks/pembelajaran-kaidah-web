@@ -233,17 +233,37 @@ class BabController extends BaseController
             }
         }
 
+        // Debug: Log data before update
+        log_message('info', 'Updating bab ID: ' . $id);
+        log_message('info', 'Update data: ' . json_encode($data));
+        log_message('info', 'Current bab data: ' . json_encode($bab));
+
         try {
             if ($this->babModel->update($id, $data)) {
                 session()->setFlashdata('success', 'Data bab berhasil diperbarui');
                 return redirect()->to('/bab');
             } else {
-                session()->setFlashdata('error', 'Gagal memperbarui data bab');
+                // Check database error for more details
+                $dbError = $this->babModel->errors();
+                $affectedRows = $this->babModel->db->affectedRows();
+                
+                log_message('error', 'Update bab failed - Affected rows: ' . $affectedRows);
+                log_message('error', 'Database errors: ' . json_encode($dbError));
+                
+                if (!empty($dbError)) {
+                    session()->setFlashdata('error', 'Gagal memperbarui data bab: ' . implode(', ', $dbError));
+                } else if ($affectedRows === 0) {
+                    session()->setFlashdata('error', 'Tidak ada perubahan data yang dilakukan');
+                } else {
+                    session()->setFlashdata('error', 'Gagal memperbarui data bab. Silakan coba lagi.');
+                }
+                
                 return redirect()->back()->withInput();
             }
         } catch (\Exception $e) {
-            log_message('error', 'Error saat update bab: ' . $e->getMessage());
-            session()->setFlashdata('error', 'Terjadi kesalahan saat memperbarui data bab');
+            log_message('error', 'Exception saat update bab: ' . $e->getMessage());
+            log_message('error', 'Exception trace: ' . $e->getTraceAsString());
+            session()->setFlashdata('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
             return redirect()->back()->withInput();
         }
     }
