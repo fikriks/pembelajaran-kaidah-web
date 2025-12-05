@@ -103,7 +103,8 @@ class KaidahController extends BaseController
         ];
 
         if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+            session()->setFlashdata('errors', $this->validator->getErrors());
+            return redirect()->back()->withInput();
         }
 
         // Prepare data
@@ -121,13 +122,16 @@ class KaidahController extends BaseController
             $id = $this->materiKaidahModel->insert($data);
 
             if (!$id) {
-                return redirect()->back()->withInput()->with('error', 'Gagal menyimpan materi kaidah');
+                session()->setFlashdata('error', 'Gagal menyimpan materi kaidah');
+                return redirect()->back()->withInput();
             }
 
-            return redirect()->to('/kaidah')->with('success', 'Materi kaidah berhasil ditambahkan');
+            session()->setFlashdata('success', 'Materi kaidah berhasil ditambahkan');
+            return redirect()->to('/kaidah');
         } catch (\Exception $e) {
             log_message('error', 'Error creating kaidah: ' . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan sistem. Silakan coba lagi.');
+            session()->setFlashdata('error', 'Terjadi kesalahan sistem. Silakan coba lagi.');
+            return redirect()->back()->withInput();
         }
     }
 
@@ -203,7 +207,8 @@ class KaidahController extends BaseController
         ];
 
         if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+            session()->setFlashdata('errors', $this->validator->getErrors());
+            return redirect()->back()->withInput();
         }
 
         // Prepare data

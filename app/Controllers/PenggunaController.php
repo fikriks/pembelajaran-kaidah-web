@@ -151,8 +151,8 @@ class PenggunaController extends BaseController
         $user = $this->penggunaModel->find($id);
 
         if (!$user) {
-            return redirect()->to(site_url('pengguna'))
-                           ->with('error', 'Pengguna tidak ditemukan.');
+            session()->setFlashdata('error', 'Pengguna tidak ditemukan.');
+            return redirect()->to(site_url('pengguna'));
         }
 
         $this->data = array_merge($this->data, [
@@ -173,8 +173,8 @@ class PenggunaController extends BaseController
         $user = $this->penggunaModel->find($id);
 
         if (!$user) {
-            return redirect()->to(site_url('pengguna'))
-                           ->with('error', 'Pengguna tidak ditemukan.');
+            session()->setFlashdata('error', 'Pengguna tidak ditemukan.');
+            return redirect()->to(site_url('pengguna'));
         }
 
         $this->data = array_merge($this->data, [
@@ -196,8 +196,8 @@ class PenggunaController extends BaseController
         $user = $this->penggunaModel->find($id);
 
         if (!$user) {
-            return redirect()->to(site_url('pengguna'))
-                           ->with('error', 'Pengguna tidak ditemukan.');
+            session()->setFlashdata('error', 'Pengguna tidak ditemukan.');
+            return redirect()->to(site_url('pengguna'));
         }
 
         $rules = [
@@ -247,10 +247,9 @@ class PenggunaController extends BaseController
         }
 
         if (!$this->validate($rules)) {
-            return redirect()->back()
-                           ->withInput()
-                           ->with('errors', $this->validator->getErrors())
-                           ->with('error', 'Data pengguna gagal diperbarui. Periksa kembali input Anda.');
+            session()->setFlashdata('errors', $this->validator->getErrors());
+            session()->setFlashdata('error', 'Data pengguna gagal diperbarui. Periksa kembali input Anda.');
+            return redirect()->back()->withInput();
         }
 
         $data = [
@@ -269,9 +268,8 @@ class PenggunaController extends BaseController
             // Cek apakah ada perubahan data
             $existingUser = $this->penggunaModel->find($id);
             if (!$existingUser) {
-                return redirect()->back()
-                               ->withInput()
-                               ->with('error', 'Pengguna tidak ditemukan.');
+                session()->setFlashdata('error', 'Pengguna tidak ditemukan.');
+                return redirect()->back()->withInput();
             }
 
             // Bandingkan data untuk mendeteksi perubahan
@@ -287,14 +285,14 @@ class PenggunaController extends BaseController
 
             // Jika tidak ada perubahan, anggap sebagai sukses
             if (!$hasChanges) {
-                return redirect()->to(site_url('pengguna'))
-                               ->with('success', 'Data pengguna berhasil diperbarui.');
+                session()->setFlashdata('success', 'Data pengguna berhasil diperbarui.');
+                return redirect()->to(site_url('pengguna'));
             }
 
             // Lakukan update dengan data yang berubah saja
             if ($this->penggunaModel->update($id, $updateData)) {
-                return redirect()->to(site_url('pengguna'))
-                               ->with('success', 'Data pengguna berhasil diperbarui.');
+                session()->setFlashdata('success', 'Data pengguna berhasil diperbarui.');
+                return redirect()->to(site_url('pengguna'));
             }
 
             // Log error untuk debugging
@@ -303,9 +301,8 @@ class PenggunaController extends BaseController
                 'data' => json_encode($updateData)
             ]);
 
-            return redirect()->back()
-                           ->withInput()
-                           ->with('error', 'Gagal memperbarui data pengguna. Pastikan semua data terisi dengan benar.');
+            session()->setFlashdata('error', 'Gagal memperbarui data pengguna. Pastikan semua data terisi dengan benar.');
+            return redirect()->back()->withInput();
 
         } catch (\Exception $e) {
             // Log exception untuk debugging
@@ -313,9 +310,8 @@ class PenggunaController extends BaseController
                 'message' => $e->getMessage()
             ]);
 
-            return redirect()->back()
-                           ->withInput()
-                           ->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+            session()->setFlashdata('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+            return redirect()->back()->withInput();
         }
     }
 
@@ -329,20 +325,20 @@ class PenggunaController extends BaseController
         $user = $this->penggunaModel->find($id);
 
         if (!$user) {
-            return redirect()->to(site_url('pengguna'))
-                           ->with('error', 'Pengguna tidak ditemukan.');
+            session()->setFlashdata('error', 'Pengguna tidak ditemukan.');
+            return redirect()->to(site_url('pengguna'));
         }
 
         // Prevent deletion of current user
         if ($this->currentUser['id_pengguna'] == $id) {
-            return redirect()->to(site_url('pengguna'))
-                           ->with('error', 'Tidak dapat menghapus akun yang sedang digunakan.');
+            session()->setFlashdata('error', 'Tidak dapat menghapus akun yang sedang digunakan.');
+            return redirect()->to(site_url('pengguna'));
         }
 
         try {
             if ($this->penggunaModel->delete($id)) {
-                return redirect()->to(site_url('pengguna'))
-                               ->with('success', 'Pengguna berhasil dihapus.');
+                session()->setFlashdata('success', 'Pengguna berhasil dihapus.');
+                return redirect()->to(site_url('pengguna'));
             }
 
             // Log error untuk debugging
@@ -350,8 +346,8 @@ class PenggunaController extends BaseController
                 'id' => $id
             ]);
 
-            return redirect()->to(site_url('pengguna'))
-                           ->with('error', 'Gagal menghapus pengguna. Pengguna mungkin sedang digunakan oleh sistem.');
+            session()->setFlashdata('error', 'Gagal menghapus pengguna. Pengguna mungkin sedang digunakan oleh sistem.');
+            return redirect()->to(site_url('pengguna'));
 
         } catch (\Exception $e) {
             // Log exception untuk debugging
@@ -359,8 +355,8 @@ class PenggunaController extends BaseController
                 'message' => $e->getMessage()
             ]);
 
-            return redirect()->to(site_url('pengguna'))
-                           ->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+            session()->setFlashdata('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+            return redirect()->to(site_url('pengguna'));
         }
     }
 
