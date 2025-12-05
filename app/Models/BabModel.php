@@ -25,35 +25,10 @@ class BabModel extends Model
     protected $createdField  = 'waktu_dibuat';
     protected $updatedField  = 'waktu_diubah';
 
-    // Validation
-    protected $validationRules      = [
-        'nama_bab' => 'required|min_length[3]|max_length[100]|is_unique[bab.nama_bab,id_bab,{id_bab}]',
-        'deskripsi' => 'max_length[1000]',
-        'urutan' => 'required|integer|greater_than_equal_to[1]|is_unique[bab.urutan,id_bab,{id_bab}]',
-        'is_active' => 'required|in_list[0,1]'
-    ];
-    protected $validationMessages   = [
-        'nama_bab' => [
-            'required' => 'Nama bab harus diisi',
-            'min_length' => 'Nama bab minimal 3 karakter',
-            'max_length' => 'Nama bab maksimal 100 karakter',
-            'is_unique' => 'Nama bab sudah digunakan'
-        ],
-        'deskripsi' => [
-            'max_length' => 'Deskripsi maksimal 1000 karakter'
-        ],
-        'urutan' => [
-            'required' => 'Urutan harus diisi',
-            'integer' => 'Urutan harus berupa angka',
-            'greater_than_equal_to' => 'Urutan minimal 1',
-            'is_unique' => 'Urutan sudah digunakan'
-        ],
-        'is_active' => [
-            'required' => 'Status harus dipilih',
-            'in_list' => 'Status tidak valid'
-        ]
-    ];
-    protected $skipValidation       = false;
+    // Validation (disabled in model - handled in controller)
+    protected $validationRules      = [];
+    protected $validationMessages   = [];
+    protected $skipValidation       = true;
     protected $cleanValidationRules = true;
 
     // Callbacks
