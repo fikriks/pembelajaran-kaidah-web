@@ -104,7 +104,6 @@ class PenggunaController extends BaseController
 
         if (!$this->validate($rules)) {
             session()->setFlashdata('errors', $this->validator->getErrors());
-            session()->setFlashdata('error', 'Data pengguna gagal disimpan. Periksa kembali input Anda.');
             return redirect()->back()->withInput();
         }
 
@@ -248,7 +247,6 @@ class PenggunaController extends BaseController
 
         if (!$this->validate($rules)) {
             session()->setFlashdata('errors', $this->validator->getErrors());
-            session()->setFlashdata('error', 'Data pengguna gagal diperbarui. Periksa kembali input Anda.');
             return redirect()->back()->withInput();
         }
 

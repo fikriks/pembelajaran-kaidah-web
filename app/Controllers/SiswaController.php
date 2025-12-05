@@ -98,7 +98,6 @@ class SiswaController extends BaseController
 
         if (!$this->validate($rules)) {
             session()->setFlashdata('errors', $this->validator->getErrors());
-            session()->setFlashdata('error', 'Validasi gagal. Periksa kembali input Anda.');
             return redirect()->back()->withInput();
         }
 
@@ -165,7 +164,6 @@ class SiswaController extends BaseController
         if (!$this->validate($rules)) {
             $errors = $this->validator->getErrors();
             session()->setFlashdata('errors', $errors);
-            session()->setFlashdata('error', 'Validasi gagal. Periksa kembali input Anda.');
             return redirect()->back()->withInput();
         }
 
