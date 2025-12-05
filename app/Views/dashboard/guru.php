@@ -168,8 +168,8 @@
                                     <small class="text-muted">
                                         Urutan: <?= $material['urutan'] ?>
                                     </small>
-                                    <span class="badge bg-<?= $material['is_active'] ? 'success' : 'secondary' ?> rounded-3">
-                                        <?= $material['is_active'] ? 'Aktif' : 'Nonaktif' ?>
+                                    <span class="badge bg-success rounded-3">
+                                        Aktif
                                     </span>
                                 </div>
                             </div>
