@@ -181,12 +181,11 @@ class BabController extends BaseController
         // Validation rules
         $rules = [
             'nama_bab' => [
-                'rules' => "required|min_length[3]|max_length[100]|is_unique[bab.nama_bab,id_bab,{$id}]",
+                'rules' => "required|min_length[3]|max_length[100]",
                 'errors' => [
                     'required' => 'Nama bab wajib diisi',
                     'min_length' => 'Nama bab minimal 3 karakter',
-                    'max_length' => 'Nama bab maksimal 100 karakter',
-                    'is_unique' => 'Nama bab sudah digunakan, gunakan nama lain'
+                    'max_length' => 'Nama bab maksimal 100 karakter'
                 ]
             ],
             'deskripsi' => [
@@ -224,6 +223,15 @@ class BabController extends BaseController
             'is_active' => $this->request->getPost('is_active')
         ];
 
+        // Custom validation for nama_bab uniqueness only if changed
+        if ($data['nama_bab'] != $bab['nama_bab']) {
+            $existingBab = $this->babModel->where('nama_bab', $data['nama_bab'])->first();
+            if ($existingBab && $existingBab['id_bab'] != $id) {
+                session()->setFlashdata('errors', ['nama_bab' => 'Nama bab sudah digunakan, gunakan nama lain']);
+                return redirect()->back()->withInput();
+            }
+        }
+
         // Custom validation for urutan uniqueness only if changed
         if ($data['urutan'] != $bab['urutan']) {
             $existingBab = $this->babModel->where('urutan', $data['urutan'])->first();
@@ -233,37 +241,16 @@ class BabController extends BaseController
             }
         }
 
-        // Debug: Log data before update
-        log_message('info', 'Updating bab ID: ' . $id);
-        log_message('info', 'Update data: ' . json_encode($data));
-        log_message('info', 'Current bab data: ' . json_encode($bab));
-
         try {
             if ($this->babModel->update($id, $data)) {
                 session()->setFlashdata('success', 'Data bab berhasil diperbarui');
                 return redirect()->to('/bab');
             } else {
-                // Check database error for more details
-                $dbError = $this->babModel->errors();
-                $affectedRows = $this->babModel->db->affectedRows();
-                
-                log_message('error', 'Update bab failed - Affected rows: ' . $affectedRows);
-                log_message('error', 'Database errors: ' . json_encode($dbError));
-                
-                if (!empty($dbError)) {
-                    session()->setFlashdata('error', 'Gagal memperbarui data bab: ' . implode(', ', $dbError));
-                } else if ($affectedRows === 0) {
-                    session()->setFlashdata('error', 'Tidak ada perubahan data yang dilakukan');
-                } else {
-                    session()->setFlashdata('error', 'Gagal memperbarui data bab. Silakan coba lagi.');
-                }
-                
+                session()->setFlashdata('error', 'Gagal memperbarui data bab');
                 return redirect()->back()->withInput();
             }
         } catch (\Exception $e) {
-            log_message('error', 'Exception saat update bab: ' . $e->getMessage());
-            log_message('error', 'Exception trace: ' . $e->getTraceAsString());
-            session()->setFlashdata('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+            session()->setFlashdata('error', 'Terjadi kesalahan saat memperbarui data bab');
             return redirect()->back()->withInput();
         }
     }
