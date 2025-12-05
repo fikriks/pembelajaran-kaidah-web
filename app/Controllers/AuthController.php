@@ -37,7 +37,7 @@ class AuthController extends BaseController
         // Validate input
         $rules = [
             'nama_pengguna' => 'required|min_length[3]',
-            'kata_sandi'     => 'required|min_length[6]'
+            'kata_sandi'     => 'required'
         ];
 
         if (!$this->validate($rules)) {
@@ -50,35 +50,52 @@ class AuthController extends BaseController
         $nama_pengguna = $this->request->getPost('nama_pengguna');
         $kata_sandi     = $this->request->getPost('kata_sandi');
 
-        // Attempt authentication
-        $user = $this->penggunaModel->authenticate($nama_pengguna, $kata_sandi);
+        // Check if username exists
+        $user = $this->penggunaModel->where('nama_pengguna', $nama_pengguna)->first();
 
-        if ($user) {
-            // Set session data for compatibility
-            $sessionData = [
-                'id_pengguna'   => $user['id_pengguna'],
-                'nama_pengguna' => $user['nama_pengguna'],
-                'nama_lengkap'  => $user['nama_lengkap'],
-                'hak_akses'     => $user['hak_akses'],
-                'foto_profil'   => $user['foto_profil'],
-                'logged_in'     => true
-            ];
-
-            // Set session for BaseController compatibility
-            $this->session->set('user', $sessionData);
-
-            // Set individual session variables for view compatibility
-            $this->session->set('user_role', $user['hak_akses']);
-            $this->session->set('user_id', $user['id_pengguna']);
-            $this->session->set('user_name', $user['nama_lengkap']);
-
-            return redirect()->to(site_url('dashboard'))
-                           ->with('success', 'Selamat datang, ' . $user['nama_lengkap'] . '!');
+        if (!$user) {
+            // Username tidak ditemukan
+            return redirect()->back()
+                           ->withInput()
+                           ->with('error', 'Username tidak ditemukan. Periksa kembali username Anda.');
         }
 
-        return redirect()->back()
-                       ->withInput()
-                       ->with('error', 'Nama pengguna atau kata sandi salah.');
+        // Check if user is active
+        if ($user['status'] !== 'AKTIF') {
+            return redirect()->back()
+                           ->withInput()
+                           ->with('error', 'Akun Anda tidak aktif. Hubungi administrator untuk mengaktifkan akun.');
+        }
+
+        // Verify password
+        if (!password_verify($kata_sandi, $user['kata_sandi'])) {
+            // Password salah
+            return redirect()->back()
+                           ->withInput()
+                           ->with('error', 'Password salah. Periksa kembali password Anda.');
+        }
+
+        // Authentication successful
+        // Set session data for compatibility
+        $sessionData = [
+            'id_pengguna'   => $user['id_pengguna'],
+            'nama_pengguna' => $user['nama_pengguna'],
+            'nama_lengkap'  => $user['nama_lengkap'],
+            'hak_akses'     => $user['hak_akses'],
+            'foto_profil'   => $user['foto_profil'],
+            'logged_in'     => true
+        ];
+
+        // Set session for BaseController compatibility
+        $this->session->set('user', $sessionData);
+
+        // Set individual session variables for view compatibility
+        $this->session->set('user_role', $user['hak_akses']);
+        $this->session->set('user_id', $user['id_pengguna']);
+        $this->session->set('user_name', $user['nama_lengkap']);
+
+        return redirect()->to(site_url('dashboard'))
+                       ->with('success', 'Selamat datang, ' . $user['nama_lengkap'] . '!');
     }
 
     /**
