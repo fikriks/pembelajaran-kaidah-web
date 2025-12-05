@@ -243,4 +243,12 @@ class SesiLatihanModel extends Model
 
         return $builder->findAll();
     }
+
+    public function getStatsByMateri($id_materi)
+    {
+        return $this->select('COUNT(*) as total_soal, AVG(skor) as rata_rata_poin, MIN(skor) as poin_terendah, MAX(skor) as poin_tertinggi')
+                    ->where('id_materi', $id_materi)
+                    ->where('status', 'selesai')
+                    ->first();
+    }
 }

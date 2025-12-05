@@ -248,6 +248,7 @@
                     <button type="button" class="btn-action btn-delete"
                             onclick="confirmDelete(<?= $item['id_bab'] ?>, '<?= esc($item['nama_bab']) ?>')" title="Hapus">
                         <i class="ti ti-trash"></i>
+                        <span class="ms-1">Hapus</span>
                     </button>
                 </div>
             </div>
