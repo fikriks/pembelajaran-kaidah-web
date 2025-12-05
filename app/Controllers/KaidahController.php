@@ -140,7 +140,8 @@ class KaidahController extends BaseController
         $kaidah = $this->materiKaidahModel->find($id);
 
         if (!$kaidah) {
-            return redirect()->to('/kaidah')->with('error', 'Materi kaidah tidak ditemukan');
+            session()->setFlashdata('error', 'Materi kaidah tidak ditemukan');
+            return redirect()->to('/kaidah');
         }
 
         $data = [
@@ -157,7 +158,8 @@ class KaidahController extends BaseController
         $kaidah = $this->materiKaidahModel->find($id);
 
         if (!$kaidah) {
-            return redirect()->to('/kaidah')->with('error', 'Materi kaidah tidak ditemukan');
+            session()->setFlashdata('error', 'Materi kaidah tidak ditemukan');
+            return redirect()->to('/kaidah');
         }
 
         // Validation rules
@@ -223,13 +225,16 @@ class KaidahController extends BaseController
 
         try {
             if (!$this->materiKaidahModel->update($id, $data)) {
-                return redirect()->back()->withInput()->with('error', 'Gagal mengupdate materi kaidah');
+                session()->setFlashdata('error', 'Gagal mengupdate materi kaidah');
+                return redirect()->back()->withInput();
             }
 
-            return redirect()->to('/kaidah')->with('success', 'Materi kaidah berhasil diupdate');
+            session()->setFlashdata('success', 'Materi kaidah berhasil diupdate');
+            return redirect()->to('/kaidah');
         } catch (\Exception $e) {
             log_message('error', 'Error updating kaidah: ' . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan sistem. Silakan coba lagi.');
+            session()->setFlashdata('error', 'Terjadi kesalahan sistem. Silakan coba lagi.');
+            return redirect()->back()->withInput();
         }
     }
 
@@ -238,18 +243,22 @@ class KaidahController extends BaseController
         $kaidah = $this->materiKaidahModel->find($id);
 
         if (!$kaidah) {
-            return redirect()->to('/kaidah')->with('error', 'Materi kaidah tidak ditemukan');
+            session()->setFlashdata('error', 'Materi kaidah tidak ditemukan');
+            return redirect()->to('/kaidah');
         }
 
         try {
             if (!$this->materiKaidahModel->delete($id)) {
-                return redirect()->to('/kaidah')->with('error', 'Gagal menghapus materi kaidah');
+                session()->setFlashdata('error', 'Gagal menghapus materi kaidah');
+                return redirect()->to('/kaidah');
             }
 
-            return redirect()->to('/kaidah')->with('success', 'Materi kaidah berhasil dihapus');
+            session()->setFlashdata('success', 'Materi kaidah berhasil dihapus');
+            return redirect()->to('/kaidah');
         } catch (\Exception $e) {
             log_message('error', 'Error deleting kaidah: ' . $e->getMessage());
-            return redirect()->to('/kaidah')->with('error', 'Terjadi kesalahan sistem. Silakan coba lagi.');
+            session()->setFlashdata('error', 'Terjadi kesalahan sistem. Silakan coba lagi.');
+            return redirect()->to('/kaidah');
         }
     }
 
@@ -258,7 +267,8 @@ class KaidahController extends BaseController
         $kaidah = $this->materiKaidahModel->getWithCreatorById($id);
 
         if (!$kaidah) {
-            return redirect()->to('/kaidah')->with('error', 'Materi kaidah tidak ditemukan');
+            session()->setFlashdata('error', 'Materi kaidah tidak ditemukan');
+            return redirect()->to('/kaidah');
         }
 
         $data = [

@@ -148,13 +148,15 @@ class SoalController extends BaseController
         ];
 
         if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+            session()->setFlashdata('errors', $this->validator->getErrors());
+            return redirect()->back()->withInput();
         }
 
         // Validate pilihan jawaban
         $pilihanJawaban = $this->request->getPost('pilihan_jawaban');
         if (empty($pilihanJawaban) || !is_array($pilihanJawaban)) {
-            return redirect()->back()->withInput()->with('error', 'Pilihan jawaban harus diisi minimal 2 opsi');
+            session()->setFlashdata('error', 'Pilihan jawaban harus diisi minimal 2 opsi');
+            return redirect()->back()->withInput();
         }
 
         // Validate jawaban data
@@ -177,13 +179,16 @@ class SoalController extends BaseController
             $idSoal = $this->soalModel->saveSoalWithJawaban($soalData, $pilihanJawaban);
 
             if (!$idSoal) {
-                return redirect()->back()->withInput()->with('error', 'Gagal menyimpan soal');
+                session()->setFlashdata('error', 'Gagal menyimpan soal');
+                return redirect()->back()->withInput();
             }
 
-            return redirect()->to('/soal')->with('success', 'Soal berhasil ditambahkan');
+            session()->setFlashdata('success', 'Soal berhasil ditambahkan');
+            return redirect()->to('/soal');
         } catch (\Exception $e) {
             log_message('error', 'Error creating soal: ' . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan sistem. Silakan coba lagi.');
+            session()->setFlashdata('error', 'Terjadi kesalahan sistem. Silakan coba lagi.');
+            return redirect()->back()->withInput();
         }
     }
 
@@ -257,13 +262,15 @@ class SoalController extends BaseController
         ];
 
         if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+            session()->setFlashdata('errors', $this->validator->getErrors());
+            return redirect()->back()->withInput();
         }
 
         // Validate pilihan jawaban
         $pilihanJawaban = $this->request->getPost('pilihan_jawaban');
         if (empty($pilihanJawaban) || !is_array($pilihanJawaban)) {
-            return redirect()->back()->withInput()->with('error', 'Pilihan jawaban harus diisi minimal 2 opsi');
+            session()->setFlashdata('error', 'Pilihan jawaban harus diisi minimal 2 opsi');
+            return redirect()->back()->withInput();
         }
 
         // Validate jawaban data
