@@ -97,22 +97,38 @@ class SiswaController extends BaseController
         $rules['nis']['errors']['is_unique'] = 'NIS sudah digunakan, gunakan NIS lain';
 
         if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+            session()->setFlashdata('errors', $this->validator->getErrors());
+            session()->setFlashdata('error', 'Validasi gagal. Periksa kembali input Anda.');
+            return redirect()->back()->withInput();
         }
 
         $data = [
             'nis' => $this->request->getPost('nis'),
             'nama_lengkap' => $this->request->getPost('nama_lengkap'),
-            'kata_sandi' => $this->siswaModel->generateRandomPassword(),
+            'kata_sandi' => $this->siswaModel->getDefaultPassword(),
             'jenis_kelamin' => $this->request->getPost('jenis_kelamin'),
             'kelas' => $this->request->getPost('kelas'),
             'status' => 'AKTIF'
         ];
 
         if ($this->siswaModel->insert($data)) {
-            return redirect()->to('/siswa')->with('success', 'Data siswa berhasil ditambahkan');
+            // Get the default password for display
+            $defaultPassword = $this->siswaModel->getDefaultPassword();
+            session()->setFlashdata('success', "Data siswa berhasil ditambahkan. Password default: <strong>{$defaultPassword}</strong>");
+            return redirect()->to('/siswa');
         } else {
-            return redirect()->back()->with('error', 'Gagal menambahkan data siswa');
+            // Get database error for debugging
+            $dbError = $this->siswaModel->error();
+            $errorMessage = 'Gagal menambahkan data siswa';
+
+            // Add specific error info if available
+            if ($dbError) {
+                log_message('error', 'Siswa insert error: ' . json_encode($dbError));
+                $errorMessage .= '. Terjadi kesalahan database.';
+            }
+
+            session()->setFlashdata('error', $errorMessage);
+            return redirect()->back()->withInput();
         }
     }
 
@@ -148,7 +164,9 @@ class SiswaController extends BaseController
 
         if (!$this->validate($rules)) {
             $errors = $this->validator->getErrors();
-            return redirect()->back()->withInput()->with('errors', $errors);
+            session()->setFlashdata('errors', $errors);
+            session()->setFlashdata('error', 'Validasi gagal. Periksa kembali input Anda.');
+            return redirect()->back()->withInput();
         }
 
         $data = [
@@ -173,14 +191,16 @@ class SiswaController extends BaseController
 
             if (!$hasChanges) {
                 log_message('info', 'No changes detected for student: ID ' . $id);
-                return redirect()->to('/siswa')->with('success', 'Berhasil mengubah data siswa');
+                session()->setFlashdata('success', 'Berhasil mengubah data siswa');
+                return redirect()->to('/siswa');
             }
 
             $updateResult = $this->siswaModel->update($id, $data);
 
             if ($updateResult) {
                 log_message('info', 'Student updated successfully: ID ' . $id);
-                return redirect()->to('/siswa')->with('success', 'Data siswa berhasil diperbarui');
+                session()->setFlashdata('success', 'Data siswa berhasil diperbarui');
+                return redirect()->to('/siswa');
             } else {
                 // Check if update failed due to no changes vs actual error
                 $affectedRows = $this->siswaModel->db->affectedRows();
@@ -188,16 +208,19 @@ class SiswaController extends BaseController
 
                 if ($affectedRows === 0 && empty($dbError['message'])) {
                     log_message('info', 'Update successful but no rows affected (data unchanged): ID ' . $id);
-                    return redirect()->to('/siswa')->with('success', 'Data siswa berhasil diperbarui');
+                    session()->setFlashdata('success', 'Data siswa berhasil diperbarui');
+                    return redirect()->to('/siswa');
                 } else {
                     log_message('error', 'Database error on update: ' . json_encode($dbError));
                     log_message('error', 'Failed to update student: ID ' . $id);
-                    return redirect()->back()->with('error', 'Gagal memperbarui data siswa. Silakan coba lagi.');
+                    session()->setFlashdata('error', 'Gagal memperbarui data siswa. Silakan coba lagi.');
+                    return redirect()->back()->withInput();
                 }
             }
         } catch (\Exception $e) {
             log_message('error', 'Exception in update: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Gagal memperbarui data siswa. Terjadi kesalahan sistem.');
+            session()->setFlashdata('error', 'Gagal memperbarui data siswa. Terjadi kesalahan sistem.');
+            return redirect()->back()->withInput();
         }
     }
 
@@ -206,13 +229,16 @@ class SiswaController extends BaseController
         $siswa = $this->siswaModel->find($id);
 
         if (!$siswa) {
-            return redirect()->to('/siswa')->with('error', 'Data siswa tidak ditemukan');
+            session()->setFlashdata('error', 'Data siswa tidak ditemukan');
+            return redirect()->to('/siswa');
         }
 
         if ($this->siswaModel->delete($id)) {
-            return redirect()->to('/siswa')->with('success', 'Data siswa berhasil dihapus');
+            session()->setFlashdata('success', 'Data siswa berhasil dihapus');
+            return redirect()->to('/siswa');
         } else {
-            return redirect()->to('/siswa')->with('error', 'Gagal menghapus data siswa');
+            session()->setFlashdata('error', 'Gagal menghapus data siswa');
+            return redirect()->to('/siswa');
         }
     }
 
@@ -221,15 +247,18 @@ class SiswaController extends BaseController
         $siswa = $this->siswaModel->find($id);
 
         if (!$siswa) {
-            return redirect()->to('/siswa')->with('error', 'Data siswa tidak ditemukan');
+            session()->setFlashdata('error', 'Data siswa tidak ditemukan');
+            return redirect()->to('/siswa');
         }
 
         $newPassword = $this->siswaModel->generateRandomPassword();
 
         if ($this->siswaModel->update($id, ['kata_sandi' => $newPassword])) {
-            return redirect()->to('/siswa')->with('success', "Password berhasil direset. Password baru: {$newPassword}");
+            session()->setFlashdata('success', "Password berhasil direset. Password baru: {$newPassword}");
+            return redirect()->to('/siswa');
         } else {
-            return redirect()->to('/siswa')->with('error', 'Gagal reset password');
+            session()->setFlashdata('error', 'Gagal reset password');
+            return redirect()->to('/siswa');
         }
     }
 
@@ -238,7 +267,8 @@ class SiswaController extends BaseController
         $siswa = $this->siswaModel->find($id);
 
         if (!$siswa) {
-            return redirect()->to('/siswa')->with('error', 'Data siswa tidak ditemukan');
+            session()->setFlashdata('error', 'Data siswa tidak ditemukan');
+            return redirect()->to('/siswa');
         }
 
         $db = \Config\Database::connect();

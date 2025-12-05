@@ -86,16 +86,13 @@
                 </div>
             </div>
 
-            <div class="form-group mb-4">
-                <div class="form-check form-switch">
-                    <input class="form-check-input" type="checkbox" id="generatePassword" name="generate_password" checked>
-                    <label class="form-check-label" for="generatePassword">
-                        Generate random password otomatis
-                    </label>
+            <input type="hidden" name="password_info" value="default">
+
+            <div class="alert alert-info d-flex align-items-center" role="alert">
+                <i class="ti ti-info-circle me-2"></i>
+                <div>
+                    Password default akan diset ke <strong>123456789</strong> untuk siswa baru.
                 </div>
-                <small class="form-text text-muted">
-                    Password akan digenerate otomatis dan ditampilkan setelah data berhasil disimpan.
-                </small>
             </div>
 
             <div class="d-flex gap-2">
@@ -122,11 +119,46 @@ document.addEventListener('DOMContentLoaded', function() {
             if (!form.checkValidity()) {
                 event.preventDefault();
                 event.stopPropagation();
+
+                // Show validation error toast using Notyf
+                if (typeof toast !== 'undefined' && toast.error) {
+                    toast.error('Mohon lengkapi semua field yang wajib diisi.');
+                } else if (typeof notyf !== 'undefined') {
+                    // Fallback to direct Notyf usage
+                    notyf.error('Mohon lengkapi semua field yang wajib diisi.');
+                } else {
+                    console.error('Toast and Notyf objects not available');
+                    alert('Mohon lengkapi semua field yang wajib diisi.');
+                }
             }
 
             form.classList.add('was-validated');
         }, false);
     });
+
+    // Debug toast availability
+    console.log('Toast object availability:', typeof toast);
+    console.log('Notyf object availability:', typeof notyf);
+
+    if (typeof toast !== 'undefined') {
+        console.log('Toast object is available');
+        // Test error toast for invalid fields
+        setTimeout(() => {
+            if (document.querySelectorAll('.is-invalid').length > 0) {
+                toast.error('Ada field yang belum diisi dengan benar.');
+            }
+        }, 500);
+    } else if (typeof notyf !== 'undefined') {
+        console.log('Direct Notyf object is available');
+        // Test error toast for invalid fields
+        setTimeout(() => {
+            if (document.querySelectorAll('.is-invalid').length > 0) {
+                notyf.error('Ada field yang belum diisi dengan benar.');
+            }
+        }, 500);
+    } else {
+        console.error('Both Toast and Notyf objects are not available');
+    }
 });
 </script>
 <?= $this->endSection() ?>

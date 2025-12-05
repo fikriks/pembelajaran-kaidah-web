@@ -133,11 +133,17 @@ class SiswaModel extends Model
                    ->findAll();
     }
 
-    // Generate random password
+    // Generate default password for new siswa
     public function generateRandomPassword($length = 8)
     {
-        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        return substr(str_shuffle($chars), 0, $length);
+        // Return default password for all new siswa (keeping method name for compatibility)
+        return '123456789';
+    }
+
+    // Alternative method name for clarity
+    public function getDefaultPassword()
+    {
+        return '123456789';
     }
 
     // Get siswa with pagination
