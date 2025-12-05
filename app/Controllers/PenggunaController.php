@@ -103,10 +103,9 @@ class PenggunaController extends BaseController
         ];
 
         if (!$this->validate($rules)) {
-            return redirect()->back()
-                           ->withInput()
-                           ->with('errors', $this->validator->getErrors())
-                           ->with('error', 'Data pengguna gagal disimpan. Periksa kembali input Anda.');
+            session()->setFlashdata('errors', $this->validator->getErrors());
+            session()->setFlashdata('error', 'Data pengguna gagal disimpan. Periksa kembali input Anda.');
+            return redirect()->back()->withInput();
         }
 
         $data = [
@@ -119,8 +118,8 @@ class PenggunaController extends BaseController
 
         try {
             if ($this->penggunaModel->insert($data)) {
-                return redirect()->to(site_url('pengguna'))
-                               ->with('success', 'Pengguna baru berhasil ditambahkan.');
+                session()->setFlashdata('success', 'Pengguna baru berhasil ditambahkan.');
+                return redirect()->to(site_url('pengguna'));
             }
 
             // Log error untuk debugging
@@ -128,9 +127,8 @@ class PenggunaController extends BaseController
                 'data' => json_encode($data)
             ]);
 
-            return redirect()->back()
-                           ->withInput()
-                           ->with('error', 'Gagal menambahkan pengguna. Pastikan semua data terisi dengan benar.');
+            session()->setFlashdata('error', 'Gagal menambahkan pengguna. Pastikan semua data terisi dengan benar.');
+            return redirect()->back()->withInput();
 
         } catch (\Exception $e) {
             // Log exception untuk debugging
@@ -138,9 +136,8 @@ class PenggunaController extends BaseController
                 'message' => $e->getMessage()
             ]);
 
-            return redirect()->back()
-                           ->withInput()
-                           ->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+            session()->setFlashdata('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
+            return redirect()->back()->withInput();
         }
     }
 
