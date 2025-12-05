@@ -246,11 +246,22 @@ class BabController extends BaseController
                 session()->setFlashdata('success', 'Data bab berhasil diperbarui');
                 return redirect()->to('/bab');
             } else {
-                session()->setFlashdata('error', 'Gagal memperbarui data bab');
+                // Check database error for more details
+                $dbError = $this->babModel->errors();
+                $affectedRows = $this->babModel->db->affectedRows();
+                
+                if (!empty($dbError)) {
+                    session()->setFlashdata('error', 'Gagal memperbarui data bab: ' . implode(', ', $dbError));
+                } else if ($affectedRows === 0) {
+                    session()->setFlashdata('error', 'Tidak ada perubahan data yang dilakukan');
+                } else {
+                    session()->setFlashdata('error', 'Gagal memperbarui data bab. Silakan coba lagi.');
+                }
+                
                 return redirect()->back()->withInput();
             }
         } catch (\Exception $e) {
-            session()->setFlashdata('error', 'Terjadi kesalahan saat memperbarui data bab');
+            session()->setFlashdata('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
             return redirect()->back()->withInput();
         }
     }
