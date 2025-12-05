@@ -408,7 +408,8 @@ class SesiController extends BaseController
         $sesi = $this->sesiModel->getSesiForMobile($id);
 
         if (!$sesi) {
-            return redirect()->to('/sesi')->with('error', 'Sesi tidak ditemukan');
+            session()->setFlashdata('error', 'Sesi tidak ditemukan');
+            return redirect()->to('/sesi');
         }
 
         $data = [

@@ -162,7 +162,8 @@ class SoalController extends BaseController
         // Validate jawaban data
         $validation = $this->soalModel->validatePilihanJawaban($pilihanJawaban);
         if (!$validation['success']) {
-            return redirect()->back()->withInput()->with('error', $validation['message']);
+            session()->setFlashdata('error', $validation['message']);
+            return redirect()->back()->withInput();
         }
 
         // Prepare soal data
@@ -200,7 +201,8 @@ class SoalController extends BaseController
         $soal = $this->soalModel->getSoalWithRelations($id);
 
         if (!$soal) {
-            return redirect()->to('/soal')->with('error', 'Soal tidak ditemukan');
+            session()->setFlashdata('error', 'Soal tidak ditemukan');
+            return redirect()->to('/soal');
         }
 
         // Get all materi for dropdown
@@ -224,7 +226,8 @@ class SoalController extends BaseController
         $soal = $this->soalModel->find($id);
 
         if (!$soal) {
-            return redirect()->to('/soal')->with('error', 'Soal tidak ditemukan');
+            session()->setFlashdata('error', 'Soal tidak ditemukan');
+            return redirect()->to('/soal');
         }
 
         // Validate form data
@@ -276,7 +279,8 @@ class SoalController extends BaseController
         // Validate jawaban data
         $validation = $this->soalModel->validatePilihanJawaban($pilihanJawaban);
         if (!$validation['success']) {
-            return redirect()->back()->withInput()->with('error', $validation['message']);
+            session()->setFlashdata('error', $validation['message']);
+            return redirect()->back()->withInput();
         }
 
         // Prepare soal data
@@ -290,13 +294,16 @@ class SoalController extends BaseController
         try {
             // Update soal dengan pilihan jawaban (transactional)
             if (!$this->soalModel->updateSoalWithJawaban($id, $soalData, $pilihanJawaban)) {
-                return redirect()->back()->withInput()->with('error', 'Gagal mengupdate soal');
+                session()->setFlashdata('error', 'Gagal mengupdate soal');
+            return redirect()->back()->withInput();
             }
 
-            return redirect()->to('/soal')->with('success', 'Soal berhasil diupdate');
+            session()->setFlashdata('success', 'Soal berhasil diupdate');
+            return redirect()->to('/soal');
         } catch (\Exception $e) {
             log_message('error', 'Error updating soal: ' . $e->getMessage());
-            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan sistem. Silakan coba lagi.');
+            session()->setFlashdata('error', 'Terjadi kesalahan sistem. Silakan coba lagi.');
+            return redirect()->back()->withInput();
         }
     }
 
@@ -308,18 +315,22 @@ class SoalController extends BaseController
         $soal = $this->soalModel->find($id);
 
         if (!$soal) {
-            return redirect()->to('/soal')->with('error', 'Soal tidak ditemukan');
+            session()->setFlashdata('error', 'Soal tidak ditemukan');
+            return redirect()->to('/soal');
         }
 
         try {
             if (!$this->soalModel->deleteSoalWithJawaban($id)) {
-                return redirect()->to('/soal')->with('error', 'Gagal menghapus soal');
+                session()->setFlashdata('error', 'Gagal menghapus soal');
+            return redirect()->to('/soal');
             }
 
-            return redirect()->to('/soal')->with('success', 'Soal berhasil dihapus');
+            session()->setFlashdata('success', 'Soal berhasil dihapus');
+            return redirect()->to('/soal');
         } catch (\Exception $e) {
             log_message('error', 'Error deleting soal: ' . $e->getMessage());
-            return redirect()->to('/soal')->with('error', 'Terjadi kesalahan sistem. Silakan coba lagi.');
+            session()->setFlashdata('error', 'Terjadi kesalahan sistem. Silakan coba lagi.');
+            return redirect()->to('/soal');
         }
     }
 
@@ -331,7 +342,8 @@ class SoalController extends BaseController
         $soal = $this->soalModel->getSoalWithRelations($id);
 
         if (!$soal) {
-            return redirect()->to('/soal')->with('error', 'Soal tidak ditemukan');
+            session()->setFlashdata('error', 'Soal tidak ditemukan');
+            return redirect()->to('/soal');
         }
 
         $data = [
@@ -382,14 +394,16 @@ class SoalController extends BaseController
         // Validate materi exists
         $materi = $this->kaidahModel->find($materiId);
         if (!$materi) {
-            return redirect()->to('/soal')->with('error', 'Materi tidak ditemukan');
+            session()->setFlashdata('error', 'Materi tidak ditemukan');
+            return redirect()->to('/soal');
         }
 
         // Get all soal for materi
         $allSoal = $this->soalModel->getByMateri($materiId);
 
         if (empty($allSoal)) {
-            return redirect()->to('/soal')->with('error', 'Tidak ada soal untuk materi ini');
+            session()->setFlashdata('error', 'Tidak ada soal untuk materi ini');
+            return redirect()->to('/soal');
         }
 
         // Generate preview dengan LCM
@@ -548,6 +562,7 @@ class SoalController extends BaseController
     public function export()
     {
         // TODO: Implement export functionality
-        return redirect()->to('/soal')->with('info', 'Fitur export akan segera tersedia');
+        session()->setFlashdata('info', 'Fitur export akan segera tersedia');
+            return redirect()->to('/soal');
     }
 }

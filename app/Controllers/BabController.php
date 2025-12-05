@@ -92,7 +92,8 @@ class BabController extends BaseController
         ];
 
         if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+            session()->setFlashdata('errors', $this->validator->getErrors());
+            return redirect()->back()->withInput();
         }
 
         $data = [
@@ -213,7 +214,8 @@ class BabController extends BaseController
         ];
 
         if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $this->validator->getErrors());
+            session()->setFlashdata('errors', $this->validator->getErrors());
+            return redirect()->back()->withInput();
         }
 
         $data = [
