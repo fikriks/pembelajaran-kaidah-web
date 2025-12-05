@@ -102,39 +102,54 @@
         </div>
     </div>
 
-    <!-- Material Performance -->
+    <!-- Student Progress per Material -->
     <div class="col-lg-6">
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-body">
                 <h5 class="card-title mb-3">
-                    <i class="ti ti-chart-bar me-2"></i>Performance Materi
+                    <i class="ti ti-user-check me-2"></i>Progress Materi Tiap Siswa
                 </h5>
                 
-                <?php if (!empty($material_performance)): ?>
-                    <div class="list-group list-group-flush">
-                        <?php foreach ($material_performance as $material): ?>
+                <?php if (!empty($student_progress)): ?>
+                    <div class="list-group list-group-flush" style="max-height: 300px; overflow-y: auto;">
+                        <?php 
+                        $counter = 0;
+                        foreach ($student_progress as $progress): 
+                            if ($counter >= 8) break; // Limit to 8 items
+                            $counter++;
+                        ?>
                             <div class="list-group-item border-0 px-0 py-2">
                                 <div class="d-flex justify-content-between align-items-center">
                                     <div class="flex-grow-1">
-                                        <h6 class="mb-1"><?= esc($material['judul_kaidah']) ?></h6>
+                                        <h6 class="mb-1"><?= esc($progress['nama_siswa']) ?></h6>
+                                        <small class="text-muted">
+                                            <?= esc($progress['kelas']) ?> • <?= esc($progress['judul_kaidah']) ?>
+                                        </small>
                                         <div class="progress mb-1" style="height: 6px;">
                                             <div class="progress-bar bg-success" 
-                                                 style="width: <?= min(100, $material['average_score'] ?? 0) ?>%">
+                                                 style="width: <?= $progress['progress_percent'] ?>%">
                                             </div>
                                         </div>
                                         <small class="text-muted">
-                                            Rata-rata: <?= round($material['average_score'] ?? 0, 1) ?>% • 
-                                            Sesi: <?= $material['total_sessions'] ?? 0 ?>
+                                            Skor Terbaik: <?= $progress['best_score'] ?>% • 
+                                            Sesi: <?= $progress['total_sessions'] ?>
                                         </small>
                                     </div>
                                 </div>
                             </div>
                         <?php endforeach; ?>
                     </div>
+                    <?php if (count($student_progress) > 8): ?>
+                        <div class="text-center mt-2">
+                            <small class="text-muted">
+                                Menampilkan 8 dari <?= count($student_progress) ?> progress siswa
+                            </small>
+                        </div>
+                    <?php endif; ?>
                 <?php else: ?>
                     <div class="text-center py-4">
-                        <i class="ti ti-chart-bar fs-1 text-muted mb-3"></i>
-                        <p class="text-muted mb-0">Belum ada data performance</p>
+                        <i class="ti ti-user-check fs-1 text-muted mb-3"></i>
+                        <p class="text-muted mb-0">Belum ada data progress siswa</p>
                     </div>
                 <?php endif; ?>
             </div>

@@ -136,6 +136,9 @@ class DashboardController extends BaseController
         // Get material performance
         $materialPerformance = $this->getMaterialPerformance($userId);
 
+        // Get student progress per material
+        $studentProgress = $this->getStudentProgressPerMaterial($userId);
+
         // Get activity data for chart (last 7 days for guru's materials)
         $activityData = $this->getGuruActivityData($userId, 7);
 
@@ -145,6 +148,7 @@ class DashboardController extends BaseController
             'my_materials' => $myMaterials,
             'recent_sessions' => $recentSessions,
             'material_performance' => $materialPerformance,
+            'student_progress' => $studentProgress,
             'activity_data' => $activityData
         ]);
 
@@ -229,6 +233,51 @@ class DashboardController extends BaseController
         }
 
         return $performance;
+    }
+
+    /**
+     * Get student progress per material for guru dashboard
+     */
+    private function getStudentProgressPerMaterial($userId)
+    {
+        // Get all students
+        $students = $this->siswaModel->where('status', 'AKTIF')->findAll();
+        
+        // Get guru's materials
+        $materials = $this->materiKaidahModel->select('id_materi, judul_kaidah')
+                                            ->where('dibuat_oleh', $userId)
+                                            ->findAll();
+        
+        $progress = [];
+        
+        foreach ($students as $student) {
+            foreach ($materials as $material) {
+                // Get student's best session for this material
+                $bestSession = $this->sesiLatihanModel->select('MAX(skor) as best_score, COUNT(*) as total_sessions')
+                                                     ->where('id_siswa', $student['id'])
+                                                     ->where('id_materi', $material['id_materi'])
+                                                     ->where('status', 'selesai')
+                                                     ->first();
+                
+                if ($bestSession && $bestSession['total_sessions'] > 0) {
+                    $progress[] = [
+                        'nama_siswa' => $student['nama_lengkap'],
+                        'kelas' => $student['kelas'],
+                        'judul_kaidah' => $material['judul_kaidah'],
+                        'best_score' => round($bestSession['best_score'], 1),
+                        'total_sessions' => $bestSession['total_sessions'],
+                        'progress_percent' => min(100, $bestSession['best_score'])
+                    ];
+                }
+            }
+        }
+        
+        // Sort by best score descending
+        usort($progress, function($a, $b) {
+            return $b['best_score'] <=> $a['best_score'];
+        });
+        
+        return $progress;
     }
 
     /**
