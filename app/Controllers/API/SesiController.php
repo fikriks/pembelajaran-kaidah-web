@@ -52,8 +52,11 @@ class SesiController extends BaseController
             return $this->fail($this->validator->getErrors(), 400);
         }
 
-        $kaidahId = $this->request->getVar('id_bab');
-        $jumlahSoal = $this->request->getVar('jumlah_soal') ?? 20;
+        $input = $this->request->getJSON(true);
+        $kaidahId = $input['id_bab'] ?? null;
+        // Use id_materi instead of id_bab for table compatibility
+        $idMateri = $kaidahId;
+        $jumlahSoal = $input['jumlah_soal'] ?? 20;
 
         // Verify bab exists
         $bab = $this->babModel->find($kaidahId);
@@ -89,8 +92,7 @@ class SesiController extends BaseController
         // Create new session
         $sessionData = [
             'id_siswa' => $userId,
-            'id_bab' => $kaidahId,
-            'id_materi' => $kaidahId, // Keep for compatibility
+            'id_materi' => $kaidahId, // Use id_materi instead of id_bab
             'seed_digunakan' => $seed,
             'total_soal' => $jumlahSoal,
             'soal_benar' => 0,
@@ -460,7 +462,7 @@ class SesiController extends BaseController
 
         $riwayat = $this->riwayatBelajarModel
             ->where('id_siswa', $userId)
-            ->where('id_materi', $sesi['id_bab'])
+            ->where('id_materi', $sesi['id_materi'])
             ->first();
 
         if ($riwayat) {
