@@ -62,12 +62,11 @@ class PenggunaController extends BaseController
 
         $rules = [
             'nama_pengguna' => [
-                'rules' => 'required|min_length[3]|max_length[50]|alpha_numeric_space|is_unique[pengguna.nama_pengguna]',
+                'rules' => 'required|min_length[3]|max_length[50]|is_unique[pengguna.nama_pengguna]',
                 'errors' => [
                     'required' => 'Username wajib diisi',
                     'min_length' => 'Username minimal 3 karakter',
                     'max_length' => 'Username maksimal 50 karakter',
-                    'alpha_numeric_space' => 'Username hanya boleh mengandung huruf, angka, dan spasi',
                     'is_unique' => 'Username sudah digunakan, silakan pilih username lain'
                 ]
             ],
@@ -201,12 +200,11 @@ class PenggunaController extends BaseController
 
         $rules = [
             'nama_pengguna' => [
-                'rules' => "required|min_length[3]|max_length[50]|alpha_numeric_space|is_unique[pengguna.nama_pengguna,id_pengguna,{$id}]",
+                'rules' => "required|min_length[3]|max_length[50]|is_unique[pengguna.nama_pengguna,id_pengguna,{$id}]",
                 'errors' => [
                     'required' => 'Username wajib diisi',
                     'min_length' => 'Username minimal 3 karakter',
                     'max_length' => 'Username maksimal 50 karakter',
-                    'alpha_numeric_space' => 'Username hanya boleh mengandung huruf, angka, dan spasi',
                     'is_unique' => 'Username sudah digunakan oleh pengguna lain'
                 ]
             ],

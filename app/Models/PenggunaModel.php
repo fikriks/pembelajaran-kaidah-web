@@ -29,7 +29,7 @@ class PenggunaModel extends Model
 
     // Validation
     protected $validationRules      = [
-        'nama_pengguna' => 'required|min_length[3]|max_length[50]|alpha_numeric_space|is_unique[pengguna.nama_pengguna,id_pengguna,{id_pengguna}]',
+        'nama_pengguna' => 'required|min_length[3]|max_length[50]|is_unique[pengguna.nama_pengguna,id_pengguna,{id_pengguna}]',
         'kata_sandi'    => 'required|min_length[6]',
         'nama_lengkap'  => 'required|min_length[3]|max_length[100]',
         'hak_akses'     => 'required|in_list[ADMIN,GURU]',
@@ -40,7 +40,6 @@ class PenggunaModel extends Model
             'required'      => 'Nama pengguna harus diisi',
             'min_length'    => 'Nama pengguna minimal 3 karakter',
             'max_length'    => 'Nama pengguna maksimal 50 karakter',
-            'alpha_numeric_space' => 'Nama pengguna hanya boleh mengandung huruf, angka, dan spasi',
             'is_unique'     => 'Nama pengguna sudah digunakan'
         ],
         'kata_sandi' => [

@@ -42,7 +42,7 @@
             </div>
 
             <!-- Form -->
-            <form method="post" action="<?= site_url('pengguna/store') ?>">
+            <form method="post" action="<?= site_url('pengguna') ?>">
                 <?= csrf_field() ?>
 
                 <div class="row">
@@ -52,11 +52,11 @@
                             <label for="nama_pengguna" class="form-label">Username *</label>
                             <input type="text" class="form-control" id="nama_pengguna" name="nama_pengguna"
                                    value="<?= old('nama_pengguna') ?>" required minlength="3" maxlength="50"
-                                   pattern="[a-zA-Z0-9\s]+" placeholder="contoh: admin123">
+                                   placeholder="contoh: admin123">
                             <div class="invalid-feedback">
-                                Username harus diisi (3-50 karakter, huruf, angka, dan spasi)
+                                Username harus diisi (3-50 karakter)
                             </div>
-                            <small class="text-muted">Hanya huruf, angka, dan spasi yang diperbolehkan</small>
+                            <small class="text-muted">Username minimal 3 karakter dan maksimal 50 karakter</small>
                         </div>
 
                         <div class="mb-3">
@@ -252,12 +252,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Username validation
     usernameInput.addEventListener('input', function() {
         const value = this.value;
-        const pattern = /^[a-zA-Z0-9\s]*$/;
 
-        if (!pattern.test(value)) {
-            this.setCustomValidity('Username hanya boleh mengandung huruf, angka, dan spasi');
-            this.classList.add('is-invalid');
-        } else if (value.length < 3) {
+        if (value.length < 3) {
             this.setCustomValidity('Username minimal 3 karakter');
             this.classList.add('is-invalid');
         } else {
