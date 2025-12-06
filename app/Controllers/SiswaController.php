@@ -160,6 +160,10 @@ class SiswaController extends BaseController
 
         if (!$this->validate($rules)) {
             $errors = $this->validator->getErrors();
+
+            // Log validation errors for debugging
+            log_message('error', 'Siswa validation errors: ' . json_encode($errors));
+
             session()->setFlashdata('errors', $errors);
             return redirect()->back()->withInput();
         }
@@ -175,21 +179,31 @@ class SiswaController extends BaseController
         try {
             // Check if data has actually changed
             $currentSiswa = $this->siswaModel->find($id);
-            $hasChanges = false;
 
+            if (!$currentSiswa) {
+                log_message('error', 'Student not found: ID ' . $id);
+                session()->setFlashdata('error', 'Data siswa tidak ditemukan');
+                return redirect()->back()->withInput();
+            }
+
+            log_message('info', 'Current student data: ' . json_encode($currentSiswa));
+            log_message('info', 'Update data: ' . json_encode($data));
+
+            $hasChanges = false;
             foreach ($data as $key => $value) {
                 if ($currentSiswa[$key] !== $value) {
                     $hasChanges = true;
-                    break;
+                    log_message('info', "Change detected: {$key} from '{$currentSiswa[$key]}' to '{$value}'");
                 }
             }
 
             if (!$hasChanges) {
                 log_message('info', 'No changes detected for student: ID ' . $id);
-                session()->setFlashdata('success', 'Tidak ada perubahan data yang dilakukan');
+                session()->setFlashdata('info', 'Tidak ada perubahan data yang dilakukan');
                 return redirect()->to('/siswa');
             }
 
+            log_message('info', 'Attempting to update student: ID ' . $id);
             $updateResult = $this->siswaModel->update($id, $data);
 
             if ($updateResult) {
@@ -201,20 +215,30 @@ class SiswaController extends BaseController
                 $affectedRows = $this->siswaModel->db->affectedRows();
                 $dbError = $this->siswaModel->db->error();
 
+                log_message('error', 'Update failed - Affected rows: ' . $affectedRows);
+                log_message('error', 'Update failed - Database error: ' . json_encode($dbError));
+                log_message('error', 'Update failed - Last query: ' . $this->siswaModel->db->getLastQuery());
+
                 if ($affectedRows === 0 && empty($dbError['message'])) {
                     log_message('info', 'Update successful but no rows affected (data unchanged): ID ' . $id);
                     session()->setFlashdata('success', 'Data siswa berhasil diperbarui (tidak ada perubahan)');
                     return redirect()->to('/siswa');
                 } else {
-                    log_message('error', 'Database error on update: ' . json_encode($dbError));
-                    log_message('error', 'Failed to update student: ID ' . $id);
-                    session()->setFlashdata('error', 'Gagal memperbarui data siswa. Silakan coba lagi.');
+                    // Get model validation errors
+                    $modelErrors = $this->siswaModel->errors();
+                    if (!empty($modelErrors)) {
+                        log_message('error', 'Model validation errors: ' . json_encode($modelErrors));
+                        session()->setFlashdata('errors', $modelErrors);
+                    } else {
+                        session()->setFlashdata('error', 'Gagal memperbarui data siswa. Database error: ' . ($dbError['message'] ?? 'Unknown error'));
+                    }
                     return redirect()->back()->withInput();
                 }
             }
         } catch (\Exception $e) {
             log_message('error', 'Exception in update: ' . $e->getMessage());
-            session()->setFlashdata('error', 'Gagal memperbarui data siswa. Terjadi kesalahan sistem.');
+            log_message('error', 'Exception trace: ' . $e->getTraceAsString());
+            session()->setFlashdata('error', 'Gagal memperbarui data siswa. Terjadi kesalahan sistem: ' . $e->getMessage());
             return redirect()->back()->withInput();
         }
     }

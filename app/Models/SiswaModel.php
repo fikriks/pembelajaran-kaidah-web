@@ -30,7 +30,7 @@ class SiswaModel extends Model
 
     // Validation
     protected $validationRules      = [
-        'nis' => 'required|is_unique[siswa.nis,id,{id}]|min_length[5]|max_length[20]',
+        'nis' => 'required|min_length[5]|max_length[20]',
         'nama_lengkap' => 'required|min_length[3]|max_length[100]',
         'kata_sandi' => 'required|min_length[6]',
         'jenis_kelamin' => 'required|in_list[L,P]',
@@ -41,7 +41,6 @@ class SiswaModel extends Model
     protected $validationMessages   = [
         'nis' => [
             'required' => 'NIS wajib diisi',
-            'is_unique' => 'NIS sudah digunakan',
             'min_length' => 'NIS minimal 5 karakter',
             'max_length' => 'NIS maksimal 20 karakter'
         ],
@@ -94,7 +93,7 @@ class SiswaModel extends Model
     // Get siswa by NIS for login
     public function getSiswaByNis($nis)
     {
-        return $this->where('nis', $nis)->where('status', 'aktif')->first();
+        return $this->where('nis', $nis)->where('status', 'AKTIF')->first();
     }
 
     // Verify password
@@ -114,8 +113,8 @@ class SiswaModel extends Model
     {
         return [
             'total' => $this->countAllResults(),
-            'aktif' => $this->where('status', 'aktif')->countAllResults(),
-            'nonaktif' => $this->where('status', 'nonaktif')->countAllResults(),
+            'aktif' => $this->where('status', 'AKTIF')->countAllResults(),
+            'nonaktif' => $this->where('status', 'NONAKTIF')->countAllResults(),
         ];
     }
 

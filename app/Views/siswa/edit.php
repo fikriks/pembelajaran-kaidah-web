@@ -64,58 +64,68 @@
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="nis" class="form-label">NIS *</label>
-                    <input type="text" class="form-control" id="nis" name="nis"
-                           value="<?= esc($siswa['nis']) ?>"
+                    <input type="text" class="form-control <?= (session()->has('errors.nis')) ? 'is-invalid' : '' ?>" id="nis" name="nis"
+                           value="<?= esc(old('nis', $siswa['nis'])) ?>"
                            placeholder="Masukkan Nomor Induk Siswa" required>
-                    <div class="invalid-feedback">
-                        NIS wajib diisi (minimal 5 karakter)
-                    </div>
+                    <?php if (session()->has('errors.nis')): ?>
+                        <div class="invalid-feedback d-block">
+                            <?= esc(session('errors.nis')) ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="nama_lengkap" class="form-label">Nama Lengkap *</label>
-                    <input type="text" class="form-control" id="nama_lengkap" name="nama_lengkap"
-                           value="<?= esc($siswa['nama_lengkap']) ?>"
+                    <input type="text" class="form-control <?= (session()->has('errors.nama_lengkap')) ? 'is-invalid' : '' ?>" id="nama_lengkap" name="nama_lengkap"
+                           value="<?= esc(old('nama_lengkap', $siswa['nama_lengkap'])) ?>"
                            placeholder="Masukkan nama lengkap siswa" required>
-                    <div class="invalid-feedback">
-                        Nama lengkap wajib diisi
-                    </div>
+                    <?php if (session()->has('errors.nama_lengkap')): ?>
+                        <div class="invalid-feedback d-block">
+                            <?= esc(session('errors.nama_lengkap')) ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="jenis_kelamin" class="form-label">Jenis Kelamin *</label>
-                    <select class="form-select" id="jenis_kelamin" name="jenis_kelamin" required>
+                    <select class="form-select <?= (session()->has('errors.jenis_kelamin')) ? 'is-invalid' : '' ?>" id="jenis_kelamin" name="jenis_kelamin" required>
                         <option value="">Pilih jenis kelamin</option>
-                        <option value="L" <?= ($siswa['jenis_kelamin'] === 'L') ? 'selected' : '' ?>>Laki-laki</option>
-                        <option value="P" <?= ($siswa['jenis_kelamin'] === 'P') ? 'selected' : '' ?>>Perempuan</option>
+                        <option value="L" <?= (old('jenis_kelamin', $siswa['jenis_kelamin']) === 'L') ? 'selected' : '' ?>>Laki-laki</option>
+                        <option value="P" <?= (old('jenis_kelamin', $siswa['jenis_kelamin']) === 'P') ? 'selected' : '' ?>>Perempuan</option>
                     </select>
-                    <div class="invalid-feedback">
-                        Jenis kelamin wajib dipilih
-                    </div>
+                    <?php if (session()->has('errors.jenis_kelamin')): ?>
+                        <div class="invalid-feedback d-block">
+                            <?= esc(session('errors.jenis_kelamin')) ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label for="kelas" class="form-label">Kelas *</label>
-                    <input type="text" class="form-control" id="kelas" name="kelas"
-                           value="<?= esc($siswa['kelas']) ?>"
+                    <input type="text" class="form-control <?= (session()->has('errors.kelas')) ? 'is-invalid' : '' ?>" id="kelas" name="kelas"
+                           value="<?= esc(old('kelas', $siswa['kelas'])) ?>"
                            placeholder="Contoh: XI-A, X-B" required>
-                    <div class="invalid-feedback">
-                        Kelas wajib diisi
-                    </div>
+                    <?php if (session()->has('errors.kelas')): ?>
+                        <div class="invalid-feedback d-block">
+                            <?= esc(session('errors.kelas')) ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
 
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label for="status" class="form-label">Status Akun *</label>
-                    <select class="form-select" id="status" name="status" required>
+                    <select class="form-select <?= (session()->has('errors.status')) ? 'is-invalid' : '' ?>" id="status" name="status" required>
                         <option value="">Pilih status</option>
-                        <option value="AKTIF" <?= ($siswa['status'] === 'AKTIF') ? 'selected' : '' ?>>Aktif</option>
-                        <option value="NONAKTIF" <?= ($siswa['status'] === 'NONAKTIF') ? 'selected' : '' ?>>Nonaktif</option>
+                        <option value="AKTIF" <?= (old('status', $siswa['status']) === 'AKTIF') ? 'selected' : '' ?>>Aktif</option>
+                        <option value="NONAKTIF" <?= (old('status', $siswa['status']) === 'NONAKTIF') ? 'selected' : '' ?>>Nonaktif</option>
                     </select>
-                    <div class="invalid-feedback">
-                        Status wajib dipilih
-                    </div>
+                    <?php if (session()->has('errors.status')): ?>
+                        <div class="invalid-feedback d-block">
+                            <?= esc(session('errors.status')) ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label">Password Saat Ini</label>
