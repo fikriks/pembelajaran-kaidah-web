@@ -129,7 +129,8 @@ class Filters extends BaseFilters
                 'soal*',
                 'reports*',
                 'settings*',
-                'progress*'      // All progress routes
+                'progress*',     // All progress routes
+                'profile*'       // All profile routes
             ]
         ],
         // Apply debug toolbar only to web routes (not API)

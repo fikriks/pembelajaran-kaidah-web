@@ -33,7 +33,8 @@ class PenggunaModel extends Model
         'kata_sandi'    => 'required|min_length[6]',
         'nama_lengkap'  => 'required|min_length[3]|max_length[100]',
         'hak_akses'     => 'required|in_list[ADMIN,GURU]',
-        'status'        => 'required|in_list[AKTIF,NONAKTIF]'
+        'status'        => 'required|in_list[AKTIF,NONAKTIF]',
+        'foto_profil'   => 'permit_empty|max_size[foto_profil,2048]'
     ];
     protected $validationMessages   = [
         'nama_pengguna' => [
@@ -58,6 +59,10 @@ class PenggunaModel extends Model
         'status' => [
             'required'      => 'Status harus dipilih',
             'in_list'       => 'Status tidak valid'
+        ],
+        'foto_profil' => [
+            'max_size'      => 'Ukuran foto maksimal 2MB',
+            'is_image'      => 'File harus berupa gambar (JPG, PNG, GIF)'
         ]
     ];
     protected $skipValidation       = false;
@@ -76,7 +81,8 @@ class PenggunaModel extends Model
         }
 
         // Hash password jika bukan update tanpa mengubah password
-        if (isset($data['id']) && $data['data']['kata_sandi'] === $this->getPasswordHash($data['id'])) {
+        // Check if the password is already hashed (starts with $2y$)
+        if (isset($data['id']) && strpos($data['data']['kata_sandi'], '$2y$') === 0) {
             return $data;
         }
 
@@ -99,6 +105,15 @@ class PenggunaModel extends Model
 
     protected function getPasswordHash($id)
     {
+        // Handle case where id is an array
+        if (is_array($id)) {
+            $id = $id[0] ?? null;
+        }
+        
+        if (!$id) {
+            return null;
+        }
+        
         $user = $this->find($id);
         return $user ? $user['kata_sandi'] : null;
     }

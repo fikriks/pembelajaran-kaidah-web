@@ -172,6 +172,15 @@ $routes->group('laporan', function($routes) {
     $routes->get('performance', 'LaporanController::performance');
 });
 
+// Profile Management
+$routes->group('profile', ['filter' => 'auth'], function($routes) {
+    $routes->get('/', 'ProfileController::index');
+    $routes->get('edit', 'ProfileController::edit');
+    $routes->post('update', 'ProfileController::update');
+    $routes->post('change-password', 'ProfileController::changePassword');
+
+});
+
 // Settings (Admin only)
 $routes->get('/settings', 'SettingsController::index');
 
