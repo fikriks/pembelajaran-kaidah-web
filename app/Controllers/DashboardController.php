@@ -99,7 +99,9 @@ class DashboardController extends BaseController
             'material_stats' => $materialStats,
             'difficulty_stats' => $difficultyStats,
             'top_performers' => $topPerformers,
-            'activity_data' => $activityData
+            'activity_data' => $activityData,
+            'greeting' => $this->getGreeting(),
+            'user_role_display' => $this->getRoleDisplayName($this->currentUser['hak_akses'])
         ]);
 
         return view('dashboard/admin', $this->data);
@@ -149,7 +151,9 @@ class DashboardController extends BaseController
             'recent_sessions' => $recentSessions,
             'material_performance' => $materialPerformance,
             'student_progress' => $studentProgress,
-            'activity_data' => $activityData
+            'activity_data' => $activityData,
+            'greeting' => $this->getGreeting(),
+            'user_role_display' => $this->getRoleDisplayName($this->currentUser['hak_akses'])
         ]);
 
         return view('dashboard/guru', $this->data);

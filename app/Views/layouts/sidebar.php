@@ -28,6 +28,19 @@
 
         <li class="nav-small-cap">
           <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+          <span class="hide-menu">Profil Saya</span>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link <?= (strpos(current_url(), site_url('profile')) !== false) ? 'active' : '' ?>" href="<?= site_url('profile') ?>" aria-expanded="false">
+            <span>
+              <i class="ti ti-user"></i>
+            </span>
+            <span class="hide-menu">Profil Saya</span>
+          </a>
+        </li>
+
+        <li class="nav-small-cap">
+          <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
           <span class="hide-menu">Manajemen Bab</span>
         </li>
         <li class="sidebar-item">
@@ -87,6 +100,7 @@
         </li>
 
 
+  
         <?php if (session()->get('user_role') === 'ADMIN'): ?>
         <li class="nav-small-cap">
           <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
@@ -95,7 +109,7 @@
         <li class="sidebar-item">
           <a class="sidebar-link <?= (strpos(current_url(), site_url('pengguna')) !== false) ? 'active' : '' ?>" href="<?= site_url('pengguna') ?>" aria-expanded="false">
             <span>
-              <i class="ti ti-user"></i>
+              <i class="ti ti-users"></i>
             </span>
             <span class="hide-menu">Manajemen User</span>
           </a>
@@ -110,6 +124,10 @@
         </li>
         <?php endif; ?>
 
+        <li class="nav-small-cap">
+          <i class="ti ti-dots nav-small-cap-icon fs-4"></i>
+          <span class="hide-menu">Sesi</span>
+        </li>
         <li class="sidebar-item">
           <a class="sidebar-link" href="<?= site_url('logout') ?>" aria-expanded="false">
             <span>

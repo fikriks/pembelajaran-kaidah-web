@@ -4,18 +4,31 @@
 
 <?= $this->section('content') ?>
 
-<!-- Page Header -->
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h4 class="fw-bold text-dark">Dashboard Pembelajaran</h4>
-        <nav aria-label="breadcrumb">
-            <ol class="breadcrumb mb-0">
-                <li class="breadcrumb-item">Selamat datang di Sistem Pembelajaran Kaidah Bahasa Arab</li>
-            </ol>
-        </nav>
-    </div>
-    <div>
-        <span class="text-muted"> <?= date('d F Y H:i') ?></span>
+<!-- Greeting Section -->
+<div class="card border-0 shadow-sm mb-4 bg-gradient-primary">
+    <div class="card-body py-4">
+        <div class="row align-items-center">
+            <div class="col-auto">
+                <img src="<?= $userPhoto ?>" alt="Profile" class="rounded-circle" style="width: 80px; height: 80px; object-fit: cover; border: 4px solid rgba(255,255,255,0.2);">
+            </div>
+            <div class="col">
+                <h2 class="mb-1 text-white fw-bold"><?= $greeting ?>, <?= $currentUser['nama_lengkap'] ?>!</h2>
+                <p class="mb-0 text-white">Selamat datang kembali di dashboard Pembelajaran Kaidah Bahasa Arab</p>
+                <div class="d-flex align-items-center mt-2">
+                    <span class="badge bg-success bg-opacity-75 text-white me-2">
+                        <i class="ti ti-user me-1"></i><?= $user_role_display ?>
+                    </span>
+                    <span class="text-white small">
+                        <i class="ti ti-clock me-1"></i><?= date('d F Y H:i') ?>
+                    </span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <a href="<?= site_url('profile') ?>" class="btn btn-light btn-sm">
+                    <i class="ti ti-user me-1"></i> Lihat Profil
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 

@@ -113,6 +113,9 @@ class PenggunaController extends BaseController
             'status'        => $this->request->getPost('status'),
             'kata_sandi'    => $this->request->getPost('kata_sandi')
         ];
+        
+        // Ensure password is hashed by the model
+        // The model's hashPassword method will handle this automatically
 
         try {
             if ($this->penggunaModel->insert($data)) {
@@ -258,6 +261,7 @@ class PenggunaController extends BaseController
         // Add password if provided
         if (!empty($password)) {
             $data['kata_sandi'] = $password;
+            // The model's hashPassword method will handle hashing automatically
         }
 
         try {

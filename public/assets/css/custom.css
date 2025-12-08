@@ -495,6 +495,46 @@
 }
 
 /* ================================
+   SIDEBAR ENHANCEMENTS
+   ================================ */
+
+/* Fix untuk padding bawah sidebar agar tombol keluar tidak tenggelam */
+.sidebar-nav {
+    padding-bottom: 80px !important;
+}
+
+/* Pastikan sidebar memiliki scroll yang proper */
+.left-sidebar {
+    overflow: hidden;
+    position: relative;
+}
+
+/* Tambahkan spacer untuk memberikan ruang di bagian bawah sidebar */
+#sidebarnav::after {
+    content: '';
+    display: block;
+    height: 60px;
+    width: 100%;
+}
+
+/* Fix untuk SimpleBar scrollbar styling */
+.simplebar-scrollbar::before {
+    background-color: rgba(0, 0, 0, 0.3) !important;
+    border-radius: 4px !important;
+}
+
+/* Responsive sidebar padding untuk mobile */
+@media (max-width: 768px) {
+    .sidebar-nav {
+        padding-bottom: 60px !important;
+    }
+
+    #sidebarnav::after {
+        height: 40px;
+    }
+}
+
+/* ================================
    LOADING STATES
    ================================ */
 .loading-skeleton {

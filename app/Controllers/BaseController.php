@@ -95,6 +95,16 @@ abstract class BaseController extends Controller
     {
         // Share current user
         $this->data['currentUser'] = $this->currentUser;
+        
+        // Share user photo path
+        if ($this->currentUser) {
+            $userPhoto = $this->currentUser['foto_profil'] ?? 'user-1.jpg';
+            $photoPath = base_url('assets/images/profile/' . $userPhoto);
+            if ($userPhoto !== 'user-1.jpg' && file_exists(WRITEPATH . 'uploads/profile/' . $userPhoto)) {
+                $photoPath = base_url('uploads/profile/' . $userPhoto);
+            }
+            $this->data['userPhoto'] = $photoPath;
+        }
 
         // Share site config
         $this->data['siteName'] = 'Pembelajaran Kaidah Bahasa Arab';
@@ -304,6 +314,37 @@ abstract class BaseController extends Controller
         if ($this->currentUser['hak_akses'] !== $role) {
             return redirect()->to(site_url('dashboard'))->with('error', 'Anda tidak memiliki hak akses');
         }
+    }
+
+    /**
+     * Get time-based greeting
+     */
+    protected function getGreeting()
+    {
+        $hour = (int) date('H');
+
+        if ($hour >= 5 && $hour < 10) {
+            return 'Selamat Pagi';
+        } elseif ($hour >= 10 && $hour < 15) {
+            return 'Selamat Siang';
+        } elseif ($hour >= 15 && $hour < 18) {
+            return 'Selamat Sore';
+        } else {
+            return 'Selamat Malam';
+        }
+    }
+
+    /**
+     * Get user role display name
+     */
+    protected function getRoleDisplayName($role)
+    {
+        $roleNames = [
+            'ADMIN' => 'Administrator',
+            'GURU' => 'Guru'
+        ];
+
+        return $roleNames[$role] ?? $role;
     }
 
     /**
