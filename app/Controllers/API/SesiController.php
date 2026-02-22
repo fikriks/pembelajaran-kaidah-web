@@ -8,6 +8,7 @@ use App\Models\SoalModel;
 use App\Models\PilihanJawabanModel;
 use App\Models\RiwayatBelajarModel;
 use App\Models\BabModel;
+use App\Models\DetailJawabanSiswaModel;
 use App\Libraries\LCMAlgorithm;
 use App\Libraries\APIHelper;
 use CodeIgniter\API\ResponseTrait;
@@ -21,6 +22,7 @@ class SesiController extends BaseController
     protected $pilihanJawabanModel;
     protected $riwayatBelajarModel;
     protected $babModel;
+    protected $detailJawabanSiswaModel;
     protected $lcm;
 
     public function __construct()
@@ -30,6 +32,7 @@ class SesiController extends BaseController
         $this->pilihanJawabanModel = new PilihanJawabanModel();
         $this->riwayatBelajarModel = new RiwayatBelajarModel();
         $this->babModel = new BabModel();
+        $this->detailJawabanSiswaModel = new DetailJawabanSiswaModel();
         $this->lcm = new LCMAlgorithm();
     }
 
@@ -39,9 +42,18 @@ class SesiController extends BaseController
      */
     public function start()
     {
-        // No authentication required for simplicity
-        // Use default user ID for demo purposes
-        $userId = 1;
+        // Extract user ID from token
+        $authHeader = $this->request->getHeader('Authorization');
+        if (!$authHeader) {
+            return $this->fail('Token diperlukan', 401);
+        }
+
+        $token = str_replace('Bearer ', '', $authHeader->getValue());
+        $userId = $this->extractUserIdFromToken($token);
+
+        if (!$userId) {
+            return $this->fail('Token tidak valid', 401);
+        }
 
         $rules = [
             'id_bab' => 'required|integer',
@@ -212,7 +224,7 @@ class SesiController extends BaseController
         }
 
         // Get kaidah info
-        $kaidah = $this->babModel->find($activeSession['id_bab']);
+        $kaidah = $this->babModel->find($activeSession['id_materi']);
 
         // Calculate session duration
         $startTime = strtotime($activeSession['waktu_mulai']);
@@ -226,8 +238,8 @@ class SesiController extends BaseController
             'data' => [
                 'sesi' => [
                     'id_sesi' => $activeSession['id_sesi'],
-                    'id_bab' => $activeSession['id_bab'],
-                    'judul_kaidah' => $kaidah['judul_kaidah'] ?? 'Unknown',
+                    'id_bab' => $activeSession['id_materi'],
+                    'judul_kaidah' => $kaidah['nama_bab'] ?? 'Unknown',
                     'total_soal' => $activeSession['total_soal'],
                     'soal_benar' => $activeSession['soal_benar'],
                     'skor' => $activeSession['skor'],
@@ -348,17 +360,23 @@ class SesiController extends BaseController
 
         $isBenar = $jawaban['is_benar'];
 
-        // Save answer detail (you might want to create a separate table for this)
+        // Get current question order (urutan_soal)
+        $existingAnswers = $this->detailJawabanSiswaModel->where('id_sesi', $id)->findAll();
+        $urutanSoal = count($existingAnswers) + 1;
+
+        // Save answer detail to database
         $answerData = [
             'id_sesi' => $id,
             'id_soal' => $idSoal,
             'id_pilihan' => $idPilihan,
+            'urutan_soal' => $urutanSoal,
             'is_benar' => $isBenar,
             'waktu_jawab' => date('Y-m-d H:i:s')
         ];
 
-        // For now, we'll just update the session score
-        // In a complete implementation, you'd save to detail_jawaban_siswa table
+        $this->detailJawabanSiswaModel->insert($answerData);
+
+        // Update session score
         if ($isBenar) {
             $this->sesiLatihanModel->increment('soal_benar', 1, ['id_sesi' => $id]);
 
@@ -412,6 +430,52 @@ class SesiController extends BaseController
         }
 
         return $this->finish($activeSession['id_sesi']);
+    }
+
+    /**
+     * Cancel/delete active session tanpa menyelesaikan
+     * Digunakan ketika user keluar dari quiz sebelum selesai
+     * POST /api/sesi/cancel
+     */
+    public function cancelSession()
+    {
+        $authHeader = $this->request->getHeader('Authorization');
+        if (!$authHeader) {
+            return $this->fail('Token diperlukan', 401);
+        }
+
+        $token = str_replace('Bearer ', '', $authHeader->getValue());
+        $userId = $this->extractUserIdFromToken($token);
+
+        if (!$userId) {
+            return $this->fail('Token tidak valid', 401);
+        }
+
+        // Find active session for this user
+        $activeSession = $this->sesiLatihanModel
+            ->where('id_siswa', $userId)
+            ->where('status', 'sedang_berjalan')
+            ->orderBy('waktu_mulai', 'DESC')
+            ->first();
+
+        if (!$activeSession) {
+            return $this->fail('Tidak ada sesi aktif yang ditemukan', 404);
+        }
+
+        // Delete/cancel the session
+        $this->sesiLatihanModel->delete($activeSession['id_sesi']);
+
+        $response = [
+            'status' => 'success',
+            'message' => 'Sesi pembelajaran berhasil dibatalkan',
+            'code' => 200,
+            'data' => [
+                'id_sesi' => $activeSession['id_sesi'],
+                'cancelled' => true
+            ]
+        ];
+
+        return $this->respond($response, 200);
     }
 
     /**

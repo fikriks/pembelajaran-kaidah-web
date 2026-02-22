@@ -33,20 +33,20 @@ class KaidahController extends BaseController
     /**
      * Get all kaidah for mobile with simple progress tracking
      * GET /api/kaidah
+     * No pagination - returns all kaidah grouped by bab
      */
     public function index()
     {
         // Get query parameters
         $search = $this->request->getVar('search');
-        $page = $this->request->getVar('page') ?? 1;
-        $limit = $this->request->getVar('limit') ?? 20;
 
         // For simplicity, use default user ID 1 for demo
         $userId = 1;
 
-        // Get all materi kaidah with bab info
+        // Get all materi kaidah with bab info - NO PAGINATION
         $builder = $this->materiKaidahModel->select('materi_kaidah.*, bab.nama_bab')
                                                     ->join('bab', 'bab.id_bab = materi_kaidah.id_bab')
+                                                    ->orderBy('materi_kaidah.id_bab', 'ASC')
                                                     ->orderBy('materi_kaidah.urutan', 'ASC');
 
         // Apply search filter if provided
@@ -55,11 +55,8 @@ class KaidahController extends BaseController
                    ->orLike('materi_kaidah.deskripsi', $search);
         }
 
-        // Get total count
-        $total = $builder->countAllResults(false);
-
-        // Get data with pagination
-        $kaidahList = $builder->get($limit, ($page - 1) * $limit)->getResultArray();
+        // Get ALL data without pagination
+        $kaidahList = $builder->findAll();
 
         // Add progress info for each kaidah
         foreach ($kaidahList as &$kaidah) {
@@ -94,12 +91,7 @@ class KaidahController extends BaseController
             'code' => 200,
             'data' => [
                 'kaidah' => $kaidahList,
-                'pagination' => [
-                    'current_page' => (int)$page,
-                    'per_page' => (int)$limit,
-                    'total' => $total,
-                    'total_pages' => ceil($total / $limit)
-                ]
+                'total' => count($kaidahList)
             ]
         ];
 

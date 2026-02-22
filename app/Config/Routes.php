@@ -214,6 +214,7 @@ $routes->group('api', ['namespace' => 'App\Controllers\API'], function($routes) 
     $routes->post('sesi/start', 'SesiController::start');
     $routes->get('sesi/active', 'SesiController::active');
     $routes->post('sesi/finish', 'SesiController::finishSession');
+    $routes->post('sesi/cancel', 'SesiController::cancelSession');
     $routes->get('sesi/(:num)', 'SesiController::show/$1');
     $routes->post('sesi/(:num)/jawab', 'SesiController::submitJawaban/$1');
     $routes->post('sesi/(:num)/finish', 'SesiController::finish/$1');

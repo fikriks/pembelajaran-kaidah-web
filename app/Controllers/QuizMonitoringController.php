@@ -291,17 +291,17 @@ class QuizMonitoringController extends BaseController
                 djs.id_detail,
                 djs.id_sesi,
                 djs.id_soal,
-                djs.id_pilihan_jawaban,
-                djs.is_benar,
+                djs.id_pilihan,
+                djs.is_benar as jawaban_benar,
                 so.pertanyaan,
                 so.tipe_soal,
-                mk.judul_kaidah,
+                b.nama_bab,
                 pj.teks_jawaban,
-                pj.is_kunci
+                pj.is_benar as pilihan_benar
             ')
             ->join('soal so', 'so.id_soal = djs.id_soal')
-            ->join('materi_kaidah mk', 'mk.id_materi = so.id_materi')
-            ->join('pilihan_jawaban pj', 'pj.id_pilihan = djs.id_pilihan_jawaban', 'left')
+            ->join('bab b', 'b.id_bab = so.id_bab')
+            ->join('pilihan_jawaban pj', 'pj.id_pilihan = djs.id_pilihan', 'left')
             ->where('djs.id_sesi', $sesiId)
             ->orderBy('so.id_soal', 'ASC')
             ->get()
@@ -324,18 +324,18 @@ class QuizMonitoringController extends BaseController
                 'id_soal' => $answer['id_soal'],
                 'pertanyaan' => $answer['pertanyaan'],
                 'tipe_soal' => $answer['tipe_soal'],
-                'judul_kaidah' => $answer['judul_kaidah'],
-                'jawaban_siswa' => $answer['id_pilihan_jawaban'],
+                'judul_kaidah' => $answer['nama_bab'],
+                'jawaban_siswa' => $answer['id_pilihan'],
                 'teks_jawaban_siswa' => $answer['teks_jawaban'],
-                'is_benar' => $answer['is_benar'],
+                'is_benar' => $answer['jawaban_benar'],
                 'semua_pilihan' => array_map(function($option) use ($answer) {
                     return [
                         'id_pilihan' => $option['id_pilihan'],
                         'teks_jawaban' => $option['teks_jawaban'],
-                        'is_kunci' => $option['is_kunci'],
-                        'is_selected' => $option['id_pilihan'] == $answer['id_pilihan_jawaban'],
-                        'badge_class' => $option['is_kunci'] ? 'success' :
-                                       ($option['id_pilihan'] == $answer['id_pilihan_jawaban'] ? 'danger' : 'secondary')
+                        'is_benar' => $option['is_benar'],
+                        'is_selected' => $option['id_pilihan'] == $answer['id_pilihan'],
+                        'badge_class' => $option['is_benar'] ? 'success' :
+                                       ($option['id_pilihan'] == $answer['id_pilihan'] ? 'danger' : 'secondary')
                     ];
                 }, $allOptions)
             ];

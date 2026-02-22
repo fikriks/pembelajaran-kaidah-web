@@ -111,7 +111,7 @@
                     <?php else: ?>
                         <?php $questionNumber = 1; ?>
                         <?php foreach ($answers as $answer): ?>
-                            <div class="border rounded p-4 mb-3 <?= $answer['is_benar'] ? 'border-success bg-success bg-opacity-5' : 'border-danger bg-danger bg-opacity-5' ?>">
+                            <div class="border rounded p-4 mb-3 <?= $answer['is_benar'] ? 'border-success bg-white' : 'border-danger bg-white' ?>">
                                 <div class="d-flex justify-content-between align-items-start mb-3">
                                     <div class="d-flex align-items-start">
                                         <div class="rounded-circle bg-primary bg-opacity-10 p-2 me-3">
@@ -158,7 +158,7 @@
                                                         <div class="d-flex justify-content-between align-items-center">
                                                             <span><?= esc($option['teks_jawaban']) ?></span>
                                                             <div>
-                                                                <?php if ($option['is_kunci']): ?>
+                                                                <?php if ($option['is_benar']): ?>
                                                                     <span class="badge bg-success rounded-3 me-2">
                                                                         <i class="ti ti-star me-1"></i>Kunci Jawaban
                                                                     </span>
@@ -236,14 +236,14 @@ function getStatusBadge($status) {
 }
 
 function getOptionClass($option) {
-    if ($option['is_kunci'] && $option['is_selected']) {
-        return 'border-success bg-success bg-opacity-10'; // Correct answer selected
-    } elseif ($option['is_kunci']) {
-        return 'border-success bg-success bg-opacity-5';  // Correct answer not selected
+    if ($option['is_benar'] && $option['is_selected']) {
+        return 'border border-2 border-success bg-white'; // Correct answer selected
+    } elseif ($option['is_benar']) {
+        return 'border border-2 border-success bg-white';  // Correct answer not selected
     } elseif ($option['is_selected']) {
-        return 'border-danger bg-danger bg-opacity-10';   // Wrong answer selected
+        return 'border border-2 border-danger bg-white';   // Wrong answer selected
     } else {
-        return 'border-secondary bg-light';              // Other options
+        return 'border border-2 border-secondary bg-white'; // Other options
     }
 }
 ?>
